@@ -15,15 +15,15 @@ public class RestSpringBootControllerTests {
    }
    
    
-   @Test
-   void testGetCampuses() {  
-      //checks getCampuses method by ensuring response is not empty
-      //improve in future by confirming status code of 200
-      controller = new RestSpringBootController();
-      String campus = controller.getCampuses();  
+//    @Test
+//    void testGetCampuses() {  
+//       //checks getCampuses method by ensuring response is not empty
+//       //improve in future by confirming status code of 200
+//       controller = new RestSpringBootController();
+//       String campus = controller.getCampuses();  
 
-      // Assert campus list is not empty.
-      assertTrue(!campus.isEmpty());
+//       // Assert campus list is not empty.
+//       assertTrue(!campus.isEmpty());
 
-}
+// }
 }

@@ -35,20 +35,22 @@ public class RestSpringBootController {
    @GetMapping("/token")
    @ResponseBody
    public String getToken() {
+      // Echo 360 endpoint to generate a new access token
       String uri = "https://echo360.org.uk/oauth2/access_token";
       String grantType = "client_credentials";
       
+      // Pull Echo 360 client secrets from environment - secrets.properties
       String clientId = environment.getProperty("env.data.clientId");
       String clientSecret = environment.getProperty("env.data.clientSecret");
+
+      // Concatenate uri and params into request
       String request = uri + "?grant_type=" + grantType
                         + "&client_id=" + clientId
                         + "&client_secret=" + clientSecret;
 
+      // Send acess token request via rest template
       RestTemplate restTemplate = new RestTemplate();
       String result = restTemplate.postForObject(request, null, String.class);
-
-      System.out.println(request);
-      System.out.println(result.toString());
 
       return result;
    }
