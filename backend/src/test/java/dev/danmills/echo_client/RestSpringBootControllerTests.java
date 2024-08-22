@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.danmills.echo_client.api.controller.RestSpringBootController;
+
 public class RestSpringBootControllerTests {
    
    RestSpringBootController controller;

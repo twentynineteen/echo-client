@@ -1,4 +1,6 @@
-package dev.danmills.echo_client.model;
+package dev.danmills.echo_client.persistence;
+
+import dev.danmills.echo_client.persistence.entity.Campus;
 
 public class Campuses {
    private Campus[] data;

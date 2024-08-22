@@ -1,4 +1,4 @@
-package dev.danmills.echo_client.model;
+package dev.danmills.echo_client.persistence.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;
