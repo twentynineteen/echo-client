@@ -1,18 +1,30 @@
 package dev.danmills.echo_client.model;
 
-import java.util.concurrent.TimeUnit;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Token {
+   @JsonProperty
    String tokenType;
+   @JsonProperty
    String accessToken;
-   TimeUnit expiresIn;
+   @JsonProperty
+   String expiresIn;
+   @JsonProperty
    String refreshToken;
-   
-   public Token(String tokenType, String accessToken, TimeUnit expiresIn, String refreshToken) {
-      this.tokenType = tokenType;
-      this.accessToken = accessToken;
-      this.expiresIn = expiresIn;
-      this.refreshToken = refreshToken;
+
+   @JsonCreator
+   public Token(
+      @JsonProperty("token_type")String tokenType, 
+      @JsonProperty("access_token")String accessToken, 
+      @JsonProperty("expires_in")String expiresIn, 
+      @JsonProperty("refresh_token")String refreshToken) {
+         super();
+         this.tokenType = tokenType;
+         this.accessToken = accessToken;
+         this.expiresIn = expiresIn;
+         this.refreshToken = refreshToken;
    }
 
    public String getTokenType() {
@@ -31,11 +43,11 @@ public class Token {
       this.accessToken = accessToken;
    }
 
-   public TimeUnit getExpiresIn() {
+   public String getExpiresIn() {
       return expiresIn;
    }
 
-   public void setExpiresIn(TimeUnit expiresIn) {
+   public void setExpiresIn(String expiresIn) {
       this.expiresIn = expiresIn;
    }
 

@@ -2,12 +2,24 @@ package dev.danmills.echo_client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dev.danmills.echo_client.model.Campus;
+import dev.danmills.echo_client.model.Token;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+
 
 @RestController
 public class RestSpringBootController {
@@ -15,18 +27,11 @@ public class RestSpringBootController {
    // Autowire the Environment object for accessing environment variables
    @Autowired
    private Environment environment;
-   
-   @RequestMapping("/hello")
-   public String hello() {
-       return "Hello world";
-   }
 
-   @GetMapping(value = "/callclienthello")
-   private String getHelloClient() {
-      String uri = "http://localhost:8080/hello";
-      RestTemplate restTemplate = new RestTemplate();
-      String result = restTemplate.getForObject(uri, String.class);
-      return result;
+   
+   @RequestMapping("/")
+   public String hello() {
+       return "Hello, World!";
    }
    
    // This request sends a manual call to the echo API for an access token before printing to the console
@@ -52,26 +57,52 @@ public class RestSpringBootController {
       RestTemplate restTemplate = new RestTemplate();
       String result = restTemplate.postForObject(request, null, String.class);
 
-      return result;
+      //persist token to redis
+      LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory();
+		connectionFactory.afterPropertiesSet();
+
+		RedisTemplate<String, String> template = new RedisTemplate<>();
+		template.setConnectionFactory(connectionFactory);
+		template.setDefaultSerializer(StringRedisSerializer.UTF_8);
+		template.afterPropertiesSet();
+
+		template.opsForValue().set("token", result);
+
+		System.out.println("Value at token:" + template.opsForValue().get("token"));
+      String redisResult = template.opsForValue().get("token");
+		connectionFactory.destroy();
+
+      return redisResult;
+
    }
    
-   // // GET Campuses endpoint using hard coded token
-   // @GetMapping("/campuses")
-   // @ResponseBody
-   // public String getCampuses() {
-         
-   //    // Hard coded access token before implementation of refresh / access token middleware function
-   //       Token access_token = new Token("TOKEN_HERE");
+   // GET Campuses endpoint using hard coded token
+   @GetMapping("/campuses")
+   @ResponseBody
+   public String getCampuses() throws JsonMappingException, JsonProcessingException {
+       
+         LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory();
+         connectionFactory.afterPropertiesSet();
+         RedisTemplate<String, String> template = new RedisTemplate<>();
+         template.setConnectionFactory(connectionFactory);
+         template.setDefaultSerializer(StringRedisSerializer.UTF_8);
+         template.afterPropertiesSet();
 
-   //       String uri = "https://echo360.org.uk/public/api/v1/campuses?access_token=" + access_token.getToken();
+      // Pull access token from redis before implementation of refresh / access token middleware function
+         String access_token = new String(template.opsForValue().get("token"));
 
-   //       RestTemplate restTemplate = new RestTemplate();
-   //       String result = restTemplate.getForObject(uri, String.class);
-   //       // Campus result = restTemplate.getForObject(uri, Campus.class);
+         ObjectMapper objectMapper = new ObjectMapper();
+         Token token = objectMapper.readValue(access_token, Token.class);
 
-   //       System.out.println(result.toString());
-   //    return result;
-   //    // return result.toString();
-   // }
+         String uri = "https://echo360.org.uk/public/api/v1/campuses?access_token=" + token.getAccessToken();
+
+         RestTemplate restTemplate = new RestTemplate();
+         String result = restTemplate.getForObject(uri, String.class);
+
+         System.out.println(result);
+      return result;
+      // return result.toString();
+   }
    
 }
+
