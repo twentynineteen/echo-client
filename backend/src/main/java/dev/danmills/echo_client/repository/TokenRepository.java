@@ -1,4 +1,4 @@
-package dev.danmills.echo_client.persistence.repository;
+package dev.danmills.echo_client.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
