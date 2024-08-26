@@ -1,5 +1,6 @@
 package dev.danmills.echo_client.persistence.entity;
 
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -9,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @RedisHash
 public class Token {
    @Id
-   int id;
+   private String id;
    @JsonProperty
    String tokenType;
    @JsonProperty

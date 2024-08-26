@@ -38,6 +38,8 @@ public class EchoClientApplication {
 	@Bean
 	public CommandLineRunner run(RESTTokenService restTokenService) throws Exception {
 		return args -> {
+			log.info("Starting Command Line Middleware Service.");
+			restTokenService.postTokenRequest();
 			String quote = restTokenService.tokenMiddleware();
 			log.info("Token stored successfully: " + !quote.isEmpty());
 		};

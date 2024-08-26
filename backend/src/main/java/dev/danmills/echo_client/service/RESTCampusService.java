@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.danmills.echo_client.persistence.entity.Campus;
-import dev.danmills.echo_client.persistence.entity.TimeZone;
 
 @Service
 public class RESTCampusService {
@@ -105,11 +104,11 @@ public class RESTCampusService {
       String institutionId = data.get("institutionId").asText();
       String name = data.get("name").asText();
       String timeZone = data.get("timeZone").asText();
-      long timeZoneOffsetMinutes = data.get("timeZoneOffsetMinutes").asLong();
+      int timeZoneOffsetMinutes = data.get("timeZoneOffsetMinutes").asInt();
 
-      TimeZone convertedTimeZone = TimeZone.valueOf(timeZone);
+      // TimeZone convertedTimeZone = TimeZone.valueOf(timeZone);
 
-      return new Campus(id, institutionId, name, convertedTimeZone, timeZoneOffsetMinutes);
+      return new Campus(id, institutionId, name, timeZone, timeZoneOffsetMinutes);
    }
 
 }

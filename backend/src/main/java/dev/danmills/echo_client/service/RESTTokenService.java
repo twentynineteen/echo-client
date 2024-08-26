@@ -1,5 +1,6 @@
 package dev.danmills.echo_client.service;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 
 import dev.danmills.echo_client.persistence.entity.Token;
 
@@ -22,7 +24,11 @@ public class RESTTokenService {
    private Environment environment;
 
    public String tokenMiddleware() {
+      
       log.info("tokenMiddleware called.");
+
+      log.info(String.valueOf(tokenInRedis()));
+      
       while (tokenInRedis() == false) {
          log.info("No token found in Redis Account. Attempting to resolve.");
          postTokenRequest();
@@ -36,13 +42,20 @@ public class RESTTokenService {
          postTokenRefreshRequest(refreshToken);
       }
 
+      try {
+         getAccessTokenStringFromRedis();
+      } catch (Error e) {
+         throw new Error("Error", e);
+      }
+
       return getAccessTokenStringFromRedis();
       
    }
 
    public boolean tokenInRedis() {
       log.info("tokenInRedis called.");
-      if (getAccessTokenStringFromRedis().isEmpty()) {
+      log.info("get access Token String from Redis: " + getAccessTokenStringFromRedis());
+      if (getAccessTokenStringFromRedis() == null) {
          log.info("Token is not found in Redis cache.");
          return false;
       }
@@ -168,6 +181,7 @@ public class RESTTokenService {
 		template.setConnectionFactory(connectionFactory);
 		template.setDefaultSerializer(StringRedisSerializer.UTF_8);
 		template.afterPropertiesSet();
+
 
       String accessToken = template.opsForValue().get("access_token");
       String tokenType = template.opsForValue().get("token_type");

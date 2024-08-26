@@ -1,10 +1,7 @@
 package dev.danmills.echo_client.api.controller;
 
 import dev.danmills.echo_client.service.RESTTokenService;
-
 import org.springframework.web.bind.annotation.RestController;
-
-
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
