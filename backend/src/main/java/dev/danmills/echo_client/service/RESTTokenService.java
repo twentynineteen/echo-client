@@ -22,7 +22,7 @@ public class RESTTokenService {
    private Environment environment;
 
    public String tokenMiddleware() {
-
+      log.info("tokenMiddleware called.");
       while (tokenInRedis() == false) {
          log.info("No token found in Redis Account. Attempting to resolve.");
          postTokenRequest();
@@ -41,19 +41,32 @@ public class RESTTokenService {
    }
 
    public boolean tokenInRedis() {
+      log.info("tokenInRedis called.");
       if (getAccessTokenStringFromRedis().isEmpty()) {
+         log.info("Token is not found in Redis cache.");
          return false;
       }
+      log.info("Token is found in Redis cache.");
       return true;
    }
 
    public boolean checkTokenValid() {
+      log.info("checkTokenValid called.");
       // enter logic to determine token has not expired
-
+      Token token = getTokenFromRedis();
+      String expiry = token.getExpiryDate();
+      log.info("Expiry date is: " + expiry);
+      log.info("Current date is: " + (System.currentTimeMillis() / 1000));
+      if (Long.parseLong(expiry) < (System.currentTimeMillis() / 1000)) {
+         log.info("Token is invalid.");
+         return false;
+      }
+      log.info("Token is valid.");
       return true;
    }
 
    public Token refreshToken(Token token) {
+      log.info("refreshToken called.");
       String refreshToken = token.getRefreshToken();
       Token newToken = postTokenRefreshRequest(refreshToken);
       return newToken;
@@ -87,7 +100,7 @@ public class RESTTokenService {
 
    // HTTP Method to retrieve Token from echo 360 API and parse into Token class
    public Token postTokenRequest() {
-
+      log.info("PostTokenRequest called.");
       // Echo 360 endpoint to generate a new access token
       String uri = "https://echo360.org.uk/oauth2/access_token";
       String grantType = "client_credentials";
@@ -110,6 +123,7 @@ public class RESTTokenService {
 
    // Store a given Token class into Redis Cache
    public void storeTokenInRedis(Token token) {
+      log.info("storeTokenInRedis called.");
       //Initialise Redis connection
       LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory();
 		connectionFactory.afterPropertiesSet();
@@ -138,7 +152,7 @@ public class RESTTokenService {
    }
 
    public String getAccessTokenStringFromRedis() {
-
+      log.info("getAccessTokenStringFromRedis called.");
       Token token = getTokenFromRedis();
       String stringToken = token.getAccessToken();
 
@@ -146,7 +160,7 @@ public class RESTTokenService {
    }
 
    public Token getTokenFromRedis() {
-
+      log.info("getTokenFromRedis called.");
       LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory();
 		connectionFactory.afterPropertiesSet();
 

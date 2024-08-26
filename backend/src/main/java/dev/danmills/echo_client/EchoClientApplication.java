@@ -11,11 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.convert.RedisConverter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
-
-import dev.danmills.echo_client.persistence.entity.Token;
 import dev.danmills.echo_client.service.RESTTokenService;
-
-
 
 @SpringBootApplication
 @EnableRedisRepositories
@@ -38,13 +34,12 @@ public class EchoClientApplication {
 		SpringApplication.run(EchoClientApplication.class, args);
 	}
 
-
+	// This middleware call ensures that the Echo 360 token is available and valid on startup.
 	@Bean
 	public CommandLineRunner run(RESTTokenService restTokenService) throws Exception {
 		return args -> {
-			Token quote = restTokenService.postTokenRequest();
-			log.info("Token stored as: " + quote.getAccessToken());
-		
+			String quote = restTokenService.tokenMiddleware();
+			log.info("Token stored successfully: " + !quote.isEmpty());
 		};
 	}
 

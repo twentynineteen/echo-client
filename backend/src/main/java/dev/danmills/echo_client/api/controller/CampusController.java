@@ -51,7 +51,7 @@ public class CampusController {
 
    
    public List<Campus> getCampusRequest() {
-      String access_token = restTokenService.getAccessTokenFromRedis();
+      String access_token = restTokenService.getAccessTokenStringFromRedis();
       String uri = "https://echo360.org.uk/public/api/v1/campuses?access_token=" + access_token;
 
       List<Campus> campuses = new ArrayList<>();
