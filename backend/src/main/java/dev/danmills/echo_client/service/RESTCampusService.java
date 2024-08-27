@@ -18,8 +18,6 @@ import dev.danmills.echo_client.persistence.entity.Campuses;
 @Service
 public class RESTCampusService {
    
-   // private final CampusRepository campusRepository;
-   
    // declare Token Service for calls to echo 360 API
    private final RESTTokenService restTokenService;
 
@@ -60,6 +58,12 @@ public class RESTCampusService {
       return campuses;
    }
 
+      /**
+   * Method to call echo 360 Api for campus by ID.
+   * Uses restTokenService middleware to collect access token
+   *
+   * @return the single campus entity
+   */
    public Optional<Campus> getCampusById(String id) {
       // Request access token from redis cache via middleware
       log.info("getCampusById called...");
