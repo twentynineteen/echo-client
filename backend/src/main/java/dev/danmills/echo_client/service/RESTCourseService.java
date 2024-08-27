@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.danmills.echo_client.api.controller.CampusController;
 import dev.danmills.echo_client.persistence.entity.Course;
 import dev.danmills.echo_client.persistence.entity.Courses;
+import dev.danmills.echo_client.persistence.entity.RESTResponse;
 
 @Service
 public class RESTCourseService {
@@ -34,23 +35,21 @@ public class RESTCourseService {
    * Uses restTokenService middleware to collect access token
    *
    * @return the list of entities
-   * @throws JsonProcessingException 
-   * @throws JsonMappingException 
    */
-   public Courses getCourses() throws JsonMappingException, JsonProcessingException {
+   public RESTResponse<Course> getCourses() {
       log.info("getCourses called...");
       String access_token = restTokenService.tokenMiddleware();
-      String uri = "https://echo360.org.uk/public/api/v1/courses?access_token=" + access_token;
+      String base = "https://echo360.org.uk";
+      String query = "?access_token=";
+      String endpoint = "/public/api/v1/courses";
+      String uri = base + endpoint + query + access_token;
 
-      // Request Campuses from echo 360 and return as String.class
       RestTemplate restTemplate = new RestTemplate(); 
-      String responseEntity = restTemplate.getForObject(uri, String.class);
+      @SuppressWarnings("unchecked")
+      RESTResponse<Course> responseEntity = restTemplate.getForObject(uri, RESTResponse.class);
       log.info("ResponseEntity is successfully found. ");
       
-      // Convert string response to Courses.class
-      Courses courses = objectMapper.readValue(responseEntity, Courses.class); 
-
-      return courses;
+      return responseEntity;
    }
 
    /**

@@ -10,11 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
 import dev.danmills.echo_client.persistence.entity.Campus;
-import dev.danmills.echo_client.persistence.entity.Campuses;
+import dev.danmills.echo_client.persistence.entity.RESTResponse;
 import dev.danmills.echo_client.service.RESTCampusService;
 
 @RestController
@@ -36,7 +33,7 @@ public class CampusController {
    */
    @GetMapping("/campuses")
    @ResponseBody
-   public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
+   public RESTResponse<Campus> getCampuses() {
       log.info("Attempting to get campuses");
       return restCampusService.getCampuses();
    }

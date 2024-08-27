@@ -8,13 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.danmills.echo_client.api.controller.CampusController;
 import dev.danmills.echo_client.persistence.entity.Campus;
-import dev.danmills.echo_client.persistence.entity.Campuses;
+
+import dev.danmills.echo_client.persistence.entity.RESTResponse;
 
 @Service
 public class RESTCampusService {
@@ -43,7 +42,7 @@ public class RESTCampusService {
    *
    * @return the list of entities
    */
-   public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
+   public RESTResponse<Campus> getCampuses() {
       log.info("getCampusRequest called...");
       String access_token = restTokenService.tokenMiddleware();
       String base = "https://echo360.org.uk";
@@ -52,15 +51,12 @@ public class RESTCampusService {
       String uri = base + endpoint + query + access_token;
       // TODO: A Recursive REST Client / Handler class that collects API paginated responses.
 
-      // Request Campuses from echo 360 and return as String.class
       RestTemplate restTemplate = new RestTemplate(); 
-      String responseEntity = restTemplate.getForObject(uri, String.class);
-      log.info("ResponseEntity is successfully found. ");
-      
-      // Convert string response to Campuses.class
-      Campuses campuses = objectMapper.readValue(responseEntity, Campuses.class); 
+      @SuppressWarnings("unchecked")
+      RESTResponse<Campus> responseEntity = restTemplate.getForObject(uri, RESTResponse.class);
+      log.info("ResponseEntity is successfully found. ");   
 
-      return campuses;
+      return responseEntity;
    }
 
    /**
