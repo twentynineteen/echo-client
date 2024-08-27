@@ -48,7 +48,7 @@ public class RESTCampusService {
       String access_token = restTokenService.tokenMiddleware();
       String base = "https://echo360.org.uk";
       String query = "?access_token=";
-      String endpoint = "public/api/v1/campuses";
+      String endpoint = "/public/api/v1/campuses";
       String uri = base + endpoint + query + access_token;
       // TODO: A Recursive REST Client / Handler class that collects API paginated responses.
 

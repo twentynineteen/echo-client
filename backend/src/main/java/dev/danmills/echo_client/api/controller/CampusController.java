@@ -38,7 +38,7 @@ public class CampusController {
    @ResponseBody
    public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
       log.info("Attempting to get campuses");
-      return restCampusService.getCampusRequest();
+      return restCampusService.getCampuses();
    }
    
    /**
