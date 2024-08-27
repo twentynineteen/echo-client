@@ -1,9 +1,16 @@
 package dev.danmills.echo_client.service;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.danmills.echo_client.api.controller.CampusController;
 import dev.danmills.echo_client.persistence.entity.Campus;
 import dev.danmills.echo_client.persistence.entity.Campuses;
+import dev.danmills.echo_client.persistence.entity.RestResponse;
 
 @Service
 public class RESTCampusService {
@@ -42,10 +50,14 @@ public class RESTCampusService {
    *
    * @return the list of entities
    */
-   public Campuses getCampusRequest() throws JsonMappingException, JsonProcessingException {
+   public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
       log.info("getCampusRequest called...");
       String access_token = restTokenService.tokenMiddleware();
-      String uri = "https://echo360.org.uk/public/api/v1/campuses?access_token=" + access_token;
+      String base = "https://echo360.org.uk";
+      String query = "?access_token=";
+      String endpoint = "public/api/v1/campuses";
+      String uri = base + endpoint + query + access_token;
+      // TODO: A Recursive REST Client / Handler class that collects API paginated responses.
 
       // Request Campuses from echo 360 and return as String.class
       RestTemplate restTemplate = new RestTemplate(); 
