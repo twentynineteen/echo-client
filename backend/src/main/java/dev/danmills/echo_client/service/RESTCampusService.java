@@ -1,16 +1,10 @@
 package dev.danmills.echo_client.service;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.danmills.echo_client.api.controller.CampusController;
 import dev.danmills.echo_client.persistence.entity.Campus;
 import dev.danmills.echo_client.persistence.entity.Campuses;
-import dev.danmills.echo_client.persistence.entity.RestResponse;
 
 @Service
 public class RESTCampusService {
