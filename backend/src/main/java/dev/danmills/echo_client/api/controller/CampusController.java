@@ -1,9 +1,12 @@
 package dev.danmills.echo_client.api.controller;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -12,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import dev.danmills.echo_client.persistence.entity.Campus;
 import dev.danmills.echo_client.persistence.entity.Campuses;
 
 import dev.danmills.echo_client.service.RESTTokenService;
@@ -34,7 +38,11 @@ public class CampusController {
       this.objectMapper = objectMapper;
    }
 
-   // GET Campuses endpoint using the redis client token
+   /**
+   * Get all the campuses.
+   *
+   * @return the list of entities
+   */
    @GetMapping("/campuses")
    @ResponseBody
    public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
@@ -42,6 +50,12 @@ public class CampusController {
       return getCampusRequest();
    }
    
+   /**
+   * Method to call echo 360 Api for campuses.
+   * Uses restTokenService middleware to collect access token
+   *
+   * @return the list of entities
+   */
    public Campuses getCampusRequest() throws JsonMappingException, JsonProcessingException {
       log.info("getCampusRequest called...");
       String access_token = restTokenService.tokenMiddleware();
@@ -56,6 +70,31 @@ public class CampusController {
       Campuses campuses = objectMapper.readValue(responseEntity.toString(), Campuses.class); 
 
       return campuses;
+   }
+
+
+   /**
+   * Get one campus by ID.
+   *
+   * @param id is the id of the entity
+   * @return the list of entity
+   */
+   @GetMapping("/campuses/{id}")
+   @ResponseBody
+   public Optional<Campus> getCampusById(@PathVariable String id) {
+      // Request access token from redis cache via middleware
+      log.info("getCampusById called...");
+      String access_token = restTokenService.tokenMiddleware();
+      String uri = "https://echo360.org.uk/public/api/v1/campuses/" + id + "?access_token=" + access_token;
+
+      // Request campus from echo 360 and return as campus
+      RestTemplate restTemplate = new RestTemplate(); 
+      Campus responseEntity = restTemplate.getForObject(uri, Campus.class);
+      log.info("ResponseEntity is successfully found. ");
+      Optional<Campus> campus = Optional.ofNullable(responseEntity);
+
+      return campus;
+
    }
 
 }
