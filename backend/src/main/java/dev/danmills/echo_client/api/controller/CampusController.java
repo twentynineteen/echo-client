@@ -1,5 +1,6 @@
 package dev.danmills.echo_client.api.controller;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.danmills.echo_client.persistence.entity.Campus;
-import dev.danmills.echo_client.persistence.entity.RESTResponse;
 import dev.danmills.echo_client.service.RESTCampusService;
 
 @RestController
@@ -33,9 +33,9 @@ public class CampusController {
    */
    @GetMapping("/campuses")
    @ResponseBody
-   public RESTResponse<Campus> getCampuses() {
+   public ArrayList<Campus> getCampuses() {
       log.info("Attempting to get campuses");
-      return restCampusService.getCampuses();
+      return restCampusService.getPaginatedCampuses();
    }
    
    /**

@@ -1,5 +1,6 @@
 package dev.danmills.echo_client.service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -59,12 +60,47 @@ public class RESTCampusService {
       return responseEntity;
    }
 
+   @SuppressWarnings("null")
+   public ArrayList<Campus> getPaginated(String uri) {
+      String accessToken = restTokenService.tokenMiddleware();
+      String base = "https://echo360.org.uk";
+      String query = "&access_token=";
+
+      ArrayList<Campus> campus = new ArrayList<>();
+      RestTemplate restTemplate = new RestTemplate();
+      
+      @SuppressWarnings("unchecked")
+      RESTResponse<Campus> responseEntity = restTemplate.getForObject(uri, RESTResponse.class);
+      campus.addAll(responseEntity.getData());
+         if (responseEntity.isHasMore()) {
+            String newUri  = base + responseEntity.getNext() + query + accessToken;
+            return getPaginated(newUri);
+         } else {
+            return campus;
+         }
+   }
+
+   public ArrayList<Campus> getPaginatedCampuses() {
+      log.info("Collecting Campuses using paginated response");
+      String accessToken = restTokenService.tokenMiddleware();
+      String base = "https://echo360.org.uk";
+      String query = "&access_token=";
+      String endpoint = "/public/api/v1/campuses?limit=100";
+      String uri = base + endpoint + query + accessToken;
+
+      ArrayList<Campus> campuses = getPaginated(uri);
+
+
+      return campuses;
+   }
+
    /**
    * Method to call echo 360 Api for campus by ID.
    * Uses restTokenService middleware to collect access token
    *
    * @return the single campus entity
    */
+   @SuppressWarnings("null")
    public Optional<Campus> getCampusById(String id) {
       // Request access token from redis cache via middleware
       log.info("getCampusById called...");
@@ -74,7 +110,11 @@ public class RESTCampusService {
       // Request campus from echo 360 and return as campus
       RestTemplate restTemplate = new RestTemplate(); 
       Campus responseEntity = restTemplate.getForObject(uri, Campus.class);
-      log.info("ResponseEntity is successfully found. ");
+      try {
+         log.info("ResponseEntity is successfully found: " + responseEntity.getName());
+      } catch (Exception e) {
+         log.info("Could not find a valid response: " + e);
+      }
       Optional<Campus> campus = Optional.ofNullable(responseEntity);
 
       return campus;

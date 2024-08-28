@@ -1,26 +1,24 @@
 package dev.danmills.echo_client.service;
 
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.danmills.echo_client.api.controller.CampusController;
 import dev.danmills.echo_client.persistence.entity.Course;
-import dev.danmills.echo_client.persistence.entity.Courses;
 import dev.danmills.echo_client.persistence.entity.RESTResponse;
 
 @Service
 public class RESTCourseService {
 
-   // declare Token Service for calls to echo 360 API
-   private final RESTTokenService restTokenService;
+   private RESTTokenService restTokenService = new RESTTokenService();
    private static final Logger log = LoggerFactory.getLogger(CampusController.class);
    private final ObjectMapper objectMapper;
 
@@ -30,6 +28,9 @@ public class RESTCourseService {
       this.objectMapper = objectMapper;
    }
 
+   String accessToken = restTokenService.tokenMiddleware();
+   String base = "https://echo360.org.uk";
+   RestTemplate restTemplate = new RestTemplate();
    /**
    * Method to call echo 360 Api for courses.
    * Uses restTokenService middleware to collect access token
@@ -38,11 +39,11 @@ public class RESTCourseService {
    */
    public RESTResponse<Course> getCourses() {
       log.info("getCourses called...");
-      String access_token = restTokenService.tokenMiddleware();
-      String base = "https://echo360.org.uk";
+      
       String query = "?access_token=";
       String endpoint = "/public/api/v1/courses";
-      String uri = base + endpoint + query + access_token;
+      String uri = base + endpoint + query + accessToken;
+
 
       RestTemplate restTemplate = new RestTemplate(); 
       @SuppressWarnings("unchecked")
@@ -50,6 +51,46 @@ public class RESTCourseService {
       log.info("ResponseEntity is successfully found. ");
       
       return responseEntity;
+   }
+
+   @SuppressWarnings("null")
+   public ArrayList<Course> getPaginated(String requestURI) {
+      log.info("Calling Request URI: ");
+      log.info(requestURI);
+      ArrayList<Course> courses = new ArrayList<>();
+      
+      @SuppressWarnings("unchecked")
+      RESTResponse<Course> responseEntity = restTemplate.getForObject(requestURI, RESTResponse.class);
+      courses.addAll(responseEntity.getData());
+      // log.info(courses.toString());
+
+      String hasMorePages = Boolean.toString(responseEntity.hasMore());
+      log.info("Has more pages is: " + hasMorePages);
+
+         if (responseEntity.hasMore()) {
+            String offset = responseEntity.getNext();
+            log.info("Offset is: " + offset);
+            String newUri  = base + offset + "&access_token=" + accessToken;
+            try {
+               getPaginated(newUri);
+            } catch (Exception e) {
+               log.info("Tried to call next page " + e);
+            }
+            return courses;
+         } else {
+            return courses;
+         }
+   }
+
+   public ArrayList<Course> getPaginatedCourses() {
+      log.info("Collecting Courses using paginated response");
+      String query = "&access_token=";
+      String endpoint = "/public/api/v1/courses?limit=10";
+      String uri = base + endpoint + query + accessToken;
+
+      ArrayList<Course> courses = getPaginated(uri);
+
+      return courses;
    }
 
    /**
