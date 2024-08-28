@@ -28,7 +28,9 @@ public class RESTCourseService {
       this.objectMapper = objectMapper;
    }
 
-   String accessToken = restTokenService.tokenMiddleware();
+
+
+   
    String base = "https://echo360.org.uk";
    RestTemplate restTemplate = new RestTemplate();
    /**
@@ -39,7 +41,7 @@ public class RESTCourseService {
    */
    public RESTResponse<Course> getCourses() {
       log.info("getCourses called...");
-      
+      String accessToken = restTokenService.tokenMiddleware();
       String query = "?access_token=";
       String endpoint = "/public/api/v1/courses";
       String uri = base + endpoint + query + accessToken;
@@ -58,6 +60,7 @@ public class RESTCourseService {
       log.info("Calling Request URI: ");
       log.info(requestURI);
       ArrayList<Course> courses = new ArrayList<>();
+      String accessToken = restTokenService.tokenMiddleware();
       
       @SuppressWarnings("unchecked")
       RESTResponse<Course> responseEntity = restTemplate.getForObject(requestURI, RESTResponse.class);
@@ -84,6 +87,7 @@ public class RESTCourseService {
 
    public ArrayList<Course> getPaginatedCourses() {
       log.info("Collecting Courses using paginated response");
+      String accessToken = restTokenService.tokenMiddleware();
       String query = "&access_token=";
       String endpoint = "/public/api/v1/courses?limit=10";
       String uri = base + endpoint + query + accessToken;
