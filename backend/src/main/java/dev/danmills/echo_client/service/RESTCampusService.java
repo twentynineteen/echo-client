@@ -2,20 +2,20 @@ package dev.danmills.echo_client.service;
 
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.echo360.sdk.Echo360Api;
+import com.echo360.sdk.model.objects.Campus;
+import com.echo360.sdk.model.requests.AuthRequest;
+import com.echo360.sdk.util.Echo360Exception;
+import com.echo360.sdk.util.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dev.danmills.echo_client.api.controller.CampusController;
-import dev.danmills.echo_client.persistence.entity.Campus;
 import dev.danmills.echo_client.persistence.entity.Campuses;
-import com.echo360.sdk.
 
 @Service
 public class RESTCampusService {
@@ -23,19 +23,49 @@ public class RESTCampusService {
    // declare Token Service for calls to echo 360 API
    private final RESTTokenService restTokenService;
 
-   private static final Logger log = LoggerFactory.getLogger(CampusController.class);
+   // private static final Logger log = LoggerFactory.getLogger(RESTCampusService.class);
+   private static final Logger log = new Logger();
    
    private final ObjectMapper objectMapper;
+
+   // Autowire the Environment object for accessing environment variables
+   private final Environment environment;
    
    // Constructor 
-   public RESTCampusService(
-         // CampusRepository campusRepository,
-         RESTTokenService restTokenService, 
-         ObjectMapper objectMapper
-         ) {
-            // this.campusRepository = campusRepository;
-      this.restTokenService = restTokenService;
-      this.objectMapper = objectMapper;
+   public RESTCampusService(RESTTokenService restTokenService, 
+                           ObjectMapper objectMapper, 
+                           Environment environment) {
+         this.restTokenService = restTokenService;
+         this.objectMapper = objectMapper;
+         this.environment = environment;         
+      }
+
+
+
+   /**
+   * The `list()` function in Java initializes an Echo360Api object, retrieves authentication
+   * credentials, and logs token logStringrmation, handling any Echo360Exception that may occur.
+   */
+   
+   public void list() throws Echo360Exception {
+      try {
+            // Pull Echo 360 client secrets from environment - secrets.properties
+         String clientId = environment.getProperty("env.data.clientId");
+         String clientSecret = environment.getProperty("env.data.clientSecret");
+         String baseUrl = "https://echo360.org.uk";
+          Echo360Api echoSDK = new Echo360Api(baseUrl, clientId, clientSecret, (com.echo360.sdk.util.Logger) log);
+          AuthRequest authReturn = echoSDK.getCurrentCredentials();
+
+          log.logString("=========================================");
+          log.logString("Token Type: " + authReturn.token_type);
+          log.logString("Access Token: " + authReturn.access_token);
+          log.logString("Refresh Token: " + authReturn.refresh_token);
+          log.logString("Token Expires: " + authReturn.expires_in);
+       
+      }catch (Echo360Exception e){
+          log.logString("[" + e.getErrorType() + "] Error Message: " + e.getMessage());
+      }
+      
    }
 
    /**
@@ -45,7 +75,7 @@ public class RESTCampusService {
    * @return the list of entities
    */
    public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
-      log.info("getCampusRequest called...");
+      log.logString("getCampusRequest called...");
       String access_token = restTokenService.tokenMiddleware();
       String base = "https://echo360.org.uk";
       String query = "?access_token=";
@@ -56,7 +86,7 @@ public class RESTCampusService {
       // Request Campuses from echo 360 and return as String.class
       RestTemplate restTemplate = new RestTemplate(); 
       String responseEntity = restTemplate.getForObject(uri, String.class);
-      log.info("ResponseEntity is successfully found. ");
+      log.logString("ResponseEntity is successfully found. ");
       
       // Convert string response to Campuses.class
       Campuses campuses = objectMapper.readValue(responseEntity, Campuses.class); 
@@ -72,14 +102,14 @@ public class RESTCampusService {
    */
    public Optional<Campus> getCampusById(String id) {
       // Request access token from redis cache via middleware
-      log.info("getCampusById called...");
+      log.logString("getCampusById called...");
       String access_token = restTokenService.tokenMiddleware();
       String uri = "https://echo360.org.uk/public/api/v1/campuses/" + id + "?access_token=" + access_token;
 
       // Request campus from echo 360 and return as campus
       RestTemplate restTemplate = new RestTemplate(); 
       Campus responseEntity = restTemplate.getForObject(uri, Campus.class);
-      log.info("ResponseEntity is successfully found. ");
+      log.logString("ResponseEntity is successfully found. ");
       Optional<Campus> campus = Optional.ofNullable(responseEntity);
 
       return campus;
