@@ -26,8 +26,11 @@ public class RESTTokenService {
    public String tokenMiddleware() {
       
       log.info("tokenMiddleware called.");
-
-      log.info(String.valueOf(tokenInRedis()));
+      try {
+         log.info(String.valueOf(tokenInRedis()));
+      } catch (Exception e) {
+         log.info("Token not in cache " + e);
+      }
       
       while (tokenInRedis() == false) {
          log.info("No token found in Redis Account. Attempting to resolve.");

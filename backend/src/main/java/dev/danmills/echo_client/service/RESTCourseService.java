@@ -1,25 +1,24 @@
 package dev.danmills.echo_client.service;
 
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.danmills.echo_client.api.controller.CampusController;
 import dev.danmills.echo_client.persistence.entity.Course;
-import dev.danmills.echo_client.persistence.entity.Courses;
+import dev.danmills.echo_client.persistence.entity.RESTResponse;
 
 @Service
 public class RESTCourseService {
 
-   // declare Token Service for calls to echo 360 API
-   private final RESTTokenService restTokenService;
+   private RESTTokenService restTokenService = new RESTTokenService();
    private static final Logger log = LoggerFactory.getLogger(CampusController.class);
    private final ObjectMapper objectMapper;
 
@@ -29,26 +28,71 @@ public class RESTCourseService {
       this.objectMapper = objectMapper;
    }
 
+
+
+   
+   String base = "https://echo360.org.uk";
+   RestTemplate restTemplate = new RestTemplate();
    /**
    * Method to call echo 360 Api for courses.
    * Uses restTokenService middleware to collect access token
    *
    * @return the list of entities
-   * @throws JsonProcessingException 
-   * @throws JsonMappingException 
    */
-   public Courses getCourses() throws JsonMappingException, JsonProcessingException {
+   public RESTResponse<Course> getCourses() {
       log.info("getCourses called...");
-      String access_token = restTokenService.tokenMiddleware();
-      String uri = "https://echo360.org.uk/public/api/v1/courses?access_token=" + access_token;
+      String accessToken = restTokenService.tokenMiddleware();
+      String query = "?access_token=";
+      String endpoint = "/public/api/v1/courses";
+      String uri = base + endpoint + query + accessToken;
 
-      // Request Campuses from echo 360 and return as String.class
+
       RestTemplate restTemplate = new RestTemplate(); 
-      String responseEntity = restTemplate.getForObject(uri, String.class);
+      @SuppressWarnings("unchecked")
+      RESTResponse<Course> responseEntity = restTemplate.getForObject(uri, RESTResponse.class);
       log.info("ResponseEntity is successfully found. ");
       
-      // Convert string response to Courses.class
-      Courses courses = objectMapper.readValue(responseEntity, Courses.class); 
+      return responseEntity;
+   }
+
+   @SuppressWarnings("null")
+   public ArrayList<Course> getPaginated(String requestURI) {
+      log.info("Calling Request URI: ");
+      log.info(requestURI);
+      ArrayList<Course> courses = new ArrayList<>();
+      String accessToken = restTokenService.tokenMiddleware();
+      
+      @SuppressWarnings("unchecked")
+      RESTResponse<Course> responseEntity = restTemplate.getForObject(requestURI, RESTResponse.class);
+      courses.addAll(responseEntity.getData());
+      // log.info(courses.toString());
+
+      String hasMorePages = Boolean.toString(responseEntity.hasMore());
+      log.info("Has more pages is: " + hasMorePages);
+
+         if (responseEntity.hasMore()) {
+            String offset = responseEntity.getNext();
+            log.info("Offset is: " + offset);
+            String newUri  = base + offset + "&access_token=" + accessToken;
+            try {
+               getPaginated(newUri);
+            } catch (Exception e) {
+               log.info("Tried to call next page " + e);
+            }
+            return courses;
+         } else {
+            return courses;
+         }
+   }
+
+   public ArrayList<Course> getPaginatedCourses() {
+      log.info("Collecting Courses using paginated response");
+      String accessToken = restTokenService.tokenMiddleware();
+      String query = "&access_token=";
+      String endpoint = "/public/api/v1/courses?limit=10";
+      String uri = base + endpoint + query + accessToken;
+
+      ArrayList<Course> courses = getPaginated(uri);
 
       return courses;
    }

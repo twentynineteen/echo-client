@@ -1,5 +1,6 @@
 package dev.danmills.echo_client.api.controller;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -9,12 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import dev.danmills.echo_client.persistence.entity.Campus;
 import dev.danmills.echo_client.persistence.entity.Course;
-import dev.danmills.echo_client.persistence.entity.Courses;
 import dev.danmills.echo_client.service.RESTCourseService;
 
 @RestController
@@ -31,14 +27,12 @@ public class CourseController {
    * Get all of the courses.
    *
    * @return the list of entities
-   * @throws JsonProcessingException 
-   * @throws JsonMappingException 
    */
   @GetMapping("/courses")
   @ResponseBody
-  public Courses getCourses() throws JsonMappingException, JsonProcessingException {
+  public ArrayList<Course> getCourses() {
    log.info("Attempting to get courses");
-   return restCourseService.getCourses();
+   return restCourseService.getPaginatedCourses();
   }
 
    /**

@@ -1,11 +1,13 @@
 package dev.danmills.echo_client.service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+<<<<<<< HEAD
 import com.echo360.sdk.Echo360Api;
 import com.echo360.sdk.model.objects.Campus;
 import com.echo360.sdk.model.requests.AuthRequest;
@@ -16,6 +18,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.danmills.echo_client.persistence.entity.Campuses;
+=======
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dev.danmills.echo_client.api.controller.CampusController;
+import dev.danmills.echo_client.persistence.entity.Campus;
+
+import dev.danmills.echo_client.persistence.entity.RESTResponse;
+>>>>>>> 9d4211069a4e90ea38fb6d6b7698dc4a49876788
 
 @Service
 public class RESTCampusService {
@@ -74,8 +84,13 @@ public class RESTCampusService {
    *
    * @return the list of entities
    */
+<<<<<<< HEAD
    public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
       log.logString("getCampusRequest called...");
+=======
+   public RESTResponse<Campus> getCampuses() {
+      log.info("getCampusRequest called...");
+>>>>>>> 9d4211069a4e90ea38fb6d6b7698dc4a49876788
       String access_token = restTokenService.tokenMiddleware();
       String base = "https://echo360.org.uk";
       String query = "?access_token=";
@@ -83,13 +98,49 @@ public class RESTCampusService {
       String uri = base + endpoint + query + access_token;
       // TODO: A Recursive REST Client / Handler class that collects API paginated responses.
 
-      // Request Campuses from echo 360 and return as String.class
       RestTemplate restTemplate = new RestTemplate(); 
+<<<<<<< HEAD
       String responseEntity = restTemplate.getForObject(uri, String.class);
       log.logString("ResponseEntity is successfully found. ");
+=======
+      @SuppressWarnings("unchecked")
+      RESTResponse<Campus> responseEntity = restTemplate.getForObject(uri, RESTResponse.class);
+      log.info("ResponseEntity is successfully found. ");   
+
+      return responseEntity;
+   }
+
+   @SuppressWarnings("null")
+   public ArrayList<Campus> getPaginated(String uri) {
+      String accessToken = restTokenService.tokenMiddleware();
+      String base = "https://echo360.org.uk";
+      String query = "&access_token=";
+
+      ArrayList<Campus> campus = new ArrayList<>();
+      RestTemplate restTemplate = new RestTemplate();
+>>>>>>> 9d4211069a4e90ea38fb6d6b7698dc4a49876788
       
-      // Convert string response to Campuses.class
-      Campuses campuses = objectMapper.readValue(responseEntity, Campuses.class); 
+      @SuppressWarnings("unchecked")
+      RESTResponse<Campus> responseEntity = restTemplate.getForObject(uri, RESTResponse.class);
+      campus.addAll(responseEntity.getData());
+         if (responseEntity.isHasMore()) {
+            String newUri  = base + responseEntity.getNext() + query + accessToken;
+            return getPaginated(newUri);
+         } else {
+            return campus;
+         }
+   }
+
+   public ArrayList<Campus> getPaginatedCampuses() {
+      log.info("Collecting Campuses using paginated response");
+      String accessToken = restTokenService.tokenMiddleware();
+      String base = "https://echo360.org.uk";
+      String query = "&access_token=";
+      String endpoint = "/public/api/v1/campuses?limit=100";
+      String uri = base + endpoint + query + accessToken;
+
+      ArrayList<Campus> campuses = getPaginated(uri);
+
 
       return campuses;
    }
@@ -100,6 +151,7 @@ public class RESTCampusService {
    *
    * @return the single campus entity
    */
+   @SuppressWarnings("null")
    public Optional<Campus> getCampusById(String id) {
       // Request access token from redis cache via middleware
       log.logString("getCampusById called...");
@@ -109,7 +161,15 @@ public class RESTCampusService {
       // Request campus from echo 360 and return as campus
       RestTemplate restTemplate = new RestTemplate(); 
       Campus responseEntity = restTemplate.getForObject(uri, Campus.class);
+<<<<<<< HEAD
       log.logString("ResponseEntity is successfully found. ");
+=======
+      try {
+         log.info("ResponseEntity is successfully found: " + responseEntity.getName());
+      } catch (Exception e) {
+         log.info("Could not find a valid response: " + e);
+      }
+>>>>>>> 9d4211069a4e90ea38fb6d6b7698dc4a49876788
       Optional<Campus> campus = Optional.ofNullable(responseEntity);
 
       return campus;
