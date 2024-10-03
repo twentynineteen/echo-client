@@ -1,7 +1,5 @@
 package dev.danmills.echo_client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.convert.RedisConverter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
+import dev.danmills.echo_client.persistence.entity.EchoLogger;
 import dev.danmills.echo_client.service.RESTTokenService;
 
 @SpringBootApplication
@@ -28,9 +27,11 @@ public class EchoClientApplication {
 	@Autowired
 	private RESTTokenService restTokenService;
 
-	private static final Logger log = LoggerFactory.getLogger(EchoClientApplication.class);
+	// private static final Logger log = LoggerFactory.getLogger(EchoClientApplication.class);
+	// private static EchoLogger log = new EchoLogger();
 
 	public static void main(String[] args) {
+		// EchoLogger log = new EchoLogger();
 		SpringApplication.run(EchoClientApplication.class, args);
 	}
 
@@ -38,10 +39,11 @@ public class EchoClientApplication {
 	@Bean
 	public CommandLineRunner run(RESTTokenService restTokenService) throws Exception {
 		return args -> {
-			log.info("Starting Command Line Middleware Service.");
-			restTokenService.postTokenRequest();
-			String quote = restTokenService.tokenMiddleware();
-			log.info("Token stored successfully: " + !quote.isEmpty());
+			EchoLogger log = new EchoLogger();
+			log.logString("Starting Command Line Middleware Service.");
+			// restTokenService.postTokenRequest();
+			// String quote = restTokenService.tokenMiddleware();
+			// log.logString("Token stored successfully: " + !quote.isEmpty());
 		};
 	}
 

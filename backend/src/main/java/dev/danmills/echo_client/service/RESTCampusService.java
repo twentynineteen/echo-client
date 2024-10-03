@@ -10,12 +10,12 @@ import com.echo360.sdk.Echo360Api;
 import com.echo360.sdk.model.objects.Campus;
 import com.echo360.sdk.model.requests.AuthRequest;
 import com.echo360.sdk.util.Echo360Exception;
-import com.echo360.sdk.util.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.danmills.echo_client.persistence.entity.Campuses;
+import dev.danmills.echo_client.persistence.entity.EchoLogger;
 
 @Service
 public class RESTCampusService {
@@ -24,7 +24,8 @@ public class RESTCampusService {
    private final RESTTokenService restTokenService;
 
    // private static final Logger log = LoggerFactory.getLogger(RESTCampusService.class);
-   private static final Logger log = new Logger();
+   
+   // private static final Logger log = new Logger();
    
    private final ObjectMapper objectMapper;
 
@@ -48,12 +49,14 @@ public class RESTCampusService {
    */
    
    public void list() throws Echo360Exception {
+      EchoLogger log = new EchoLogger();
       try {
+         
             // Pull Echo 360 client secrets from environment - secrets.properties
          String clientId = environment.getProperty("env.data.clientId");
          String clientSecret = environment.getProperty("env.data.clientSecret");
          String baseUrl = "https://echo360.org.uk";
-          Echo360Api echoSDK = new Echo360Api(baseUrl, clientId, clientSecret, (com.echo360.sdk.util.Logger) log);
+          Echo360Api echoSDK = new Echo360Api(baseUrl, clientId, clientSecret, log);
           AuthRequest authReturn = echoSDK.getCurrentCredentials();
 
           log.logString("=========================================");
@@ -75,6 +78,7 @@ public class RESTCampusService {
    * @return the list of entities
    */
    public Campuses getCampuses() throws JsonMappingException, JsonProcessingException {
+      EchoLogger log = new EchoLogger();
       log.logString("getCampusRequest called...");
       String access_token = restTokenService.tokenMiddleware();
       String base = "https://echo360.org.uk";
@@ -102,6 +106,7 @@ public class RESTCampusService {
    */
    public Optional<Campus> getCampusById(String id) {
       // Request access token from redis cache via middleware
+      EchoLogger log = new EchoLogger();
       log.logString("getCampusById called...");
       String access_token = restTokenService.tokenMiddleware();
       String uri = "https://echo360.org.uk/public/api/v1/campuses/" + id + "?access_token=" + access_token;
