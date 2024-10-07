@@ -1,17 +1,17 @@
 package dev.danmills.echo_client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.core.convert.RedisConverter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
-import dev.danmills.echo_client.service.RESTTokenService;
+import com.echo360.sdk.util.Logger;
+
+import dev.danmills.echo_client.service.SDKTokenService;
 
 @SpringBootApplication
 @EnableRedisRepositories
@@ -22,13 +22,7 @@ public class EchoClientApplication {
 	@Autowired
    private Environment env;
 
-	@Autowired
-   private RedisConverter redisConverter;
-
-	@Autowired
-	private RESTTokenService restTokenService;
-
-	private static final Logger log = LoggerFactory.getLogger(EchoClientApplication.class);
+	private static final Logger log = new Logger();
 
 	public static void main(String[] args) {
 		SpringApplication.run(EchoClientApplication.class, args);
@@ -36,12 +30,12 @@ public class EchoClientApplication {
 
 	// This middleware call ensures that the Echo 360 token is available and valid on startup.
 	@Bean
-	public CommandLineRunner run(RESTTokenService restTokenService) throws Exception {
+	public CommandLineRunner run(SDKTokenService sdkTokenService) throws Exception {
 		return args -> {
-			log.info("Starting Command Line Middleware Service.");
-			restTokenService.postTokenRequest();
-			String quote = restTokenService.tokenMiddleware();
-			log.info("Token stored successfully: " + !quote.isEmpty());
+			log.logString("Starting Command Line Middleware Service.");
+			String token = sdkTokenService.returnTokenString();
+			log.logString(token);
+
 		};
 	}
 
