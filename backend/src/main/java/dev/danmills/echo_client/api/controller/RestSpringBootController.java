@@ -1,21 +1,23 @@
 package dev.danmills.echo_client.api.controller;
 
-import dev.danmills.echo_client.service.RESTTokenService;
-import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.echo360.sdk.util.Echo360Exception;
+
+import dev.danmills.echo_client.service.SDKTokenService;
 
 @RestController
 public class RestSpringBootController {
 
    // Declare rest services for methods
-   private RESTTokenService restTokenService;   
+   private SDKTokenService sdkTokenService;   
 
-   public RestSpringBootController (RESTTokenService restTokenService) {
-      this.restTokenService = restTokenService;
+   public RestSpringBootController (SDKTokenService sdkTokenService) {
+      this.sdkTokenService = sdkTokenService;
    }
 
    @RequestMapping("/")
@@ -27,10 +29,10 @@ public class RestSpringBootController {
    @GetMapping("/token")
    @ResponseBody
    @Async
-   public String getToken() {
+   public String getToken() throws Echo360Exception {
 
       // request new String access_token
-      String newToken = restTokenService.getAccessTokenStringFromRedis();
+      String newToken = sdkTokenService.returnTokenString();
       String result = "Token is: " + newToken;
 
       return result;
