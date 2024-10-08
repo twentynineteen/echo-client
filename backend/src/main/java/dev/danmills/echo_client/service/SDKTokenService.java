@@ -45,24 +45,20 @@ public class SDKTokenService {
 
    }
 
-   public String returnTokenString() throws Echo360Exception {
-      try {
-          // Pull Echo 360 client secrets from environment - secrets.properties
-          log.logString("=========================");
-          log.logString("Client ID = " + clientId);
-          Echo360Api echoSDK = new Echo360Api(base, clientId, clientSecret, log);
-          AuthRequest authReturn = echoSDK.getCurrentCredentials();
-          String tokenString = authReturn.access_token;
-          log.logString("=========================");
-          log.logString(tokenString);
+   public AuthRequest returnTokenString() throws Echo360Exception {
 
-          return tokenString;
-      } catch (Echo360Exception e) {
-         String messageString = "[" + e.getErrorType() + "] Error Message: " + e.getMessage();
-         log.logString(messageString);
-         return messageString;
-      }
-      
+      // Pull Echo 360 client secrets from environment - secrets.properties
+      log.logString("=========================");
+      log.logString("Client ID = " + clientId);
+      Echo360Api echoSDK = new Echo360Api(base, clientId, clientSecret, log);
+      AuthRequest authReturn = echoSDK.getCurrentCredentials();
+      String tokenString = authReturn.access_token;
+      log.logString("=========================");
+      log.logString(tokenString);
+
+         
+
+      return authReturn;
    }
 
 

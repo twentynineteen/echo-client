@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.echo360.sdk.model.requests.AuthRequest;
 import com.echo360.sdk.util.Echo360Exception;
 
 import dev.danmills.echo_client.service.SDKTokenService;
@@ -29,13 +30,13 @@ public class RestSpringBootController {
    @GetMapping("/token")
    @ResponseBody
    @Async
-   public String getToken() throws Echo360Exception {
+   public AuthRequest getToken() throws Echo360Exception {
 
       // request new String access_token
-      String newToken = sdkTokenService.returnTokenString();
-      String result = "Token is: " + newToken;
+      AuthRequest newToken = sdkTokenService.returnTokenString();
+      // String result = "Token is: " + newToken;
 
-      return result;
+      return newToken;
    }
    
 }
