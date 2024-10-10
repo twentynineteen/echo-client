@@ -1,77 +1,79 @@
 package dev.danmills.echo_client.service;
 
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.echo360.sdk.model.objects.Course;
+import com.echo360.sdk.model.requests.ListRequest;
+import com.echo360.sdk.services.CourseService;
+import com.echo360.sdk.util.Echo360Exception;
+import com.echo360.sdk.util.Logger;
 
-import dev.danmills.echo_client.api.controller.CampusController;
-import dev.danmills.echo_client.persistence.entity.Course;
-import dev.danmills.echo_client.persistence.entity.Courses;
+
 
 @Service
 public class RESTCourseService {
 
    // declare Token Service for calls to echo 360 API
-   private final RESTTokenService restTokenService;
-   private static final Logger log = LoggerFactory.getLogger(CampusController.class);
-   private final ObjectMapper objectMapper;
+   private Echo360ApiService echo360ApiService;
+   private static final Logger log = new Logger();
+
 
    // Constructor 
-   public RESTCourseService(RESTTokenService restTokenService, ObjectMapper objectMapper) {
-      this.restTokenService = restTokenService;
-      this.objectMapper = objectMapper;
+   public RESTCourseService() {
    }
 
-   /**
-   * Method to call echo 360 Api for courses.
-   * Uses restTokenService middleware to collect access token
-   *
-   * @return the list of entities
-   * @throws JsonProcessingException 
-   * @throws JsonMappingException 
-   */
-   public Courses getCourses() throws JsonMappingException, JsonProcessingException {
-      log.info("getCourses called...");
-      String access_token = restTokenService.tokenMiddleware();
-      String uri = "https://echo360.org.uk/public/api/v1/courses?access_token=" + access_token;
+   public ListRequest<Course> getCourses() throws Echo360Exception {
+      log.logString("getCourses called... ");
+      CourseService courseService = new CourseService(echo360ApiService.echo360Api());
+      int limit = 0;
+      String offset = "0";
+      return courseService.list(limit, offset);
+   }
+   
 
-      // Request Campuses from echo 360 and return as String.class
-      RestTemplate restTemplate = new RestTemplate(); 
-      String responseEntity = restTemplate.getForObject(uri, String.class);
-      log.info("ResponseEntity is successfully found. ");
+   // /**
+   // * Method to call echo 360 Api for courses.
+   // * Uses restTokenService middleware to collect access token
+   // *
+   // * @return the list of entities
+   // * @throws JsonProcessingException 
+   // * @throws JsonMappingException 
+   // */
+   // public Courses getCourses() throws JsonMappingException, JsonProcessingException {
+   //    log.info("getCourses called...");
+   //    String access_token = restTokenService.tokenMiddleware();
+   //    String uri = "https://echo360.org.uk/public/api/v1/courses?access_token=" + access_token;
+
+   //    // Request Campuses from echo 360 and return as String.class
+   //    RestTemplate restTemplate = new RestTemplate(); 
+   //    String responseEntity = restTemplate.getForObject(uri, String.class);
+   //    log.info("ResponseEntity is successfully found. ");
       
-      // Convert string response to Courses.class
-      Courses courses = objectMapper.readValue(responseEntity, Courses.class); 
+   //    // Convert string response to Courses.class
+   //    Courses courses = objectMapper.readValue(responseEntity, Courses.class); 
 
-      return courses;
-   }
+   //    return courses;
+   // }
 
-   /**
-   * Method to call echo 360 Api for campus by ID.
-   * Uses restTokenService middleware to collect access token
-   *
-   * @return the single campus entity
-   */
-   public Optional<Course> getCourseById(String id) {
-      // Request access token from redis cache via middleware
-      log.info("getCourseById called...");
-      String access_token = restTokenService.tokenMiddleware();
-      String uri = "https://echo360.org.uk/public/api/v1/courses/" + id + "?access_token=" + access_token;
+   // /**
+   // * Method to call echo 360 Api for campus by ID.
+   // * Uses restTokenService middleware to collect access token
+   // *
+   // * @return the single campus entity
+   // */
+   // public Optional<Course> getCourseById(String id) {
+   //    // Request access token from redis cache via middleware
+   //    log.info("getCourseById called...");
+   //    String access_token = restTokenService.tokenMiddleware();
+   //    String uri = "https://echo360.org.uk/public/api/v1/courses/" + id + "?access_token=" + access_token;
 
-      // Request campus from echo 360 and return as campus
-      RestTemplate restTemplate = new RestTemplate(); 
-      Course responseEntity = restTemplate.getForObject(uri, Course.class);
-      log.info("ResponseEntity is successfully found. ");
-      Optional<Course> course = Optional.ofNullable(responseEntity);
+   //    // Request campus from echo 360 and return as campus
+   //    RestTemplate restTemplate = new RestTemplate(); 
+   //    Course responseEntity = restTemplate.getForObject(uri, Course.class);
+   //    log.info("ResponseEntity is successfully found. ");
+   //    Optional<Course> course = Optional.ofNullable(responseEntity);
 
-      return course;
-   }
+   //    return course;
+   // }
 
 }

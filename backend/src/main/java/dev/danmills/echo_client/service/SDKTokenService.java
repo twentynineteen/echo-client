@@ -1,7 +1,6 @@
 package dev.danmills.echo_client.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+
 import org.springframework.stereotype.Service;
 
 import com.echo360.sdk.Echo360Api;
@@ -12,26 +11,17 @@ import com.echo360.sdk.util.Logger;
 @Service
 public class SDKTokenService {
 
-   @Autowired
-   private Environment environment;
+  private static Echo360ApiService echo360ApiService;
 
-   private static String clientSecret;
-   private static String clientId;
-  
-   public SDKTokenService(Environment environment) {
-      this.environment = environment;
-      SDKTokenService.clientId = environment.getProperty("env.data.clientId");
-      SDKTokenService.clientSecret = environment.getProperty("env.data.clientSecret");
+   public SDKTokenService() {
+
    }
    
    private static final Logger log = new Logger();
    
-   static String base = "https://echo360.org.uk";
-   // Pull Echo 360 client secrets from environment - secrets.properties
-   
    public static void list() throws Echo360Exception {
       try {
-         Echo360Api echoSDK = new Echo360Api(base, clientId, clientSecret, log);
+         Echo360Api echoSDK = echo360ApiService.echo360Api();
          AuthRequest authReturn = echoSDK.getCurrentCredentials();
          log.logString("=========================");
          log.logString("Token Type: " + authReturn.token_type);
@@ -49,8 +39,7 @@ public class SDKTokenService {
 
       // Pull Echo 360 client secrets from environment - secrets.properties
       log.logString("=========================");
-      log.logString("Client ID = " + clientId);
-      Echo360Api echoSDK = new Echo360Api(base, clientId, clientSecret, log);
+      Echo360Api echoSDK = echo360ApiService.echo360Api();
       AuthRequest authReturn = echoSDK.getCurrentCredentials();
       String tokenString = authReturn.access_token;
       log.logString("=========================");
