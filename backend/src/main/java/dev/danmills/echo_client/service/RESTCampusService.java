@@ -42,7 +42,6 @@ public class RESTCampusService {
    * @return the single campus entity
    */
    public Campus getCampusById(String id) throws Echo360Exception {
-      // Request access token from redis cache via middleware
       EchoLogger log = new EchoLogger();
       log.logString("getCampusById called...");
 
