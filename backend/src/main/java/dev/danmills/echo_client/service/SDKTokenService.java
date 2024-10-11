@@ -11,18 +11,18 @@ import com.echo360.sdk.util.Logger;
 @Service
 public class SDKTokenService {
 
-  private static Echo360ApiService echo360ApiService;
+  Echo360ApiService echo360ApiService;
 
-   public SDKTokenService() {
-
+   public SDKTokenService(Echo360ApiService echo360ApiService) {
+      this.echo360ApiService = echo360ApiService;
    }
    
    private static final Logger log = new Logger();
    
-   public static void list() throws Echo360Exception {
+   public void list() throws Echo360Exception {
       try {
-         Echo360Api echoSDK = echo360ApiService.echo360Api();
-         AuthRequest authReturn = echoSDK.getCurrentCredentials();
+         Echo360Api echo360Api = echo360ApiService.echo360Api();
+         AuthRequest authReturn = echo360Api.getCurrentCredentials();
          log.logString("=========================");
          log.logString("Token Type: " + authReturn.token_type);
          log.logString("Access Token: " + authReturn.access_token);
@@ -35,15 +35,14 @@ public class SDKTokenService {
 
    }
 
-   public AuthRequest returnTokenString() throws Echo360Exception {
+   public AuthRequest returnToken() throws Echo360Exception {
 
-      // Pull Echo 360 client secrets from environment - secrets.properties
       log.logString("=========================");
-      Echo360Api echoSDK = echo360ApiService.echo360Api();
-      AuthRequest authReturn = echoSDK.getCurrentCredentials();
+      Echo360Api echo360Api = echo360ApiService.echo360Api();
+      AuthRequest authReturn = echo360Api.getCurrentCredentials();
       String tokenString = authReturn.access_token;
       log.logString("=========================");
-      log.logString(tokenString);
+      log.logString("Token is " + tokenString);
 
          
 

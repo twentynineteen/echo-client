@@ -12,7 +12,7 @@ import com.echo360.sdk.util.Logger;
 public class Echo360ApiService {
 
    @Autowired
-   private Environment environment;
+   private final Environment environment;
    
    private static final Logger log = new Logger();
    
@@ -25,6 +25,9 @@ public class Echo360ApiService {
       final String base = "https://echo360.org.uk";
       final String clientId = environment.getProperty("env.data.clientId");
       final String clientSecret = environment.getProperty("env.data.clientSecret");
+      log.logString("=========================");
+      log.logString("Client - " + clientId);
+      log.logString("=========================");
       Echo360Api echoSDK = new Echo360Api(base, clientId, clientSecret, log);
       return echoSDK;
    }

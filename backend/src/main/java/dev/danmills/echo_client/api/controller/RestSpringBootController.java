@@ -15,7 +15,7 @@ import dev.danmills.echo_client.service.SDKTokenService;
 public class RestSpringBootController {
 
    // Declare rest services for methods
-   private SDKTokenService sdkTokenService;   
+   private final SDKTokenService sdkTokenService;   
 
    public RestSpringBootController (SDKTokenService sdkTokenService) {
       this.sdkTokenService = sdkTokenService;
@@ -33,7 +33,7 @@ public class RestSpringBootController {
    public AuthRequest getToken() throws Echo360Exception {
 
       // request new String access_token
-      AuthRequest newToken = sdkTokenService.returnTokenString();
+      AuthRequest newToken = sdkTokenService.returnToken();
       // String result = "Token is: " + newToken;
 
       return newToken;
