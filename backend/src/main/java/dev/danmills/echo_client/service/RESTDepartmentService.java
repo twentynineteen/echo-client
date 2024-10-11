@@ -61,8 +61,8 @@ public class RESTDepartmentService {
          log.logString("GetDepartmentById called...");
    
          DepartmentService departmentService = new DepartmentService(echo360ApiService.echo360Api());
-         Department departmentList = departmentService.get(departmentId);
+         Department department = departmentService.get(departmentId);
 
-         return departmentList;
+         return department;
       }   
    }

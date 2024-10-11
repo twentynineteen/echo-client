@@ -25,17 +25,13 @@ public class RestSpringBootController {
    public String hello() {
        return "Hello, World!";
    }
-   
-   // This needs to be removed and built into a method that is only called in the event of a missing or invalid token
+
+
    @GetMapping("/token")
    @ResponseBody
    @Async
    public AuthRequest getToken() throws Echo360Exception {
-
-      // request new String access_token
       AuthRequest newToken = sdkTokenService.returnToken();
-      // String result = "Token is: " + newToken;
-
       return newToken;
    }
    
