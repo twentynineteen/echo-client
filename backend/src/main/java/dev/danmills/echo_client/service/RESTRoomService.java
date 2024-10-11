@@ -51,7 +51,7 @@ public class RESTRoomService {
    }
 
    /**
-   * This function retrieves a room specified by it's ID.
+   * This function retrieves a room specified by its ID.
    * 
    * @return The `getRoomById` method returns a `Room` object
    */

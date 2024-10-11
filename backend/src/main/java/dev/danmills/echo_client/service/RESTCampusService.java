@@ -13,6 +13,7 @@ import dev.danmills.echo_client.persistence.entity.EchoLogger;
 public class RESTCampusService {
    
    private final Echo360ApiService echo360ApiService;
+   private static final EchoLogger log = new EchoLogger();
   
    // Constructor 
    public RESTCampusService(Echo360ApiService echo360ApiService) {
@@ -26,7 +27,7 @@ public class RESTCampusService {
    * @return the list of entities
    */
    public ListRequest<Campus> getCampuses() throws Echo360Exception {
-      EchoLogger log = new EchoLogger();
+
       log.logString("getCampusRequest called...");
       
       CampusService campusService = new CampusService(echo360ApiService.echo360Api());
@@ -42,7 +43,7 @@ public class RESTCampusService {
    * @return the single campus entity
    */
    public Campus getCampusById(String id) throws Echo360Exception {
-      EchoLogger log = new EchoLogger();
+
       log.logString("getCampusById called...");
 
       CampusService campusService = new CampusService(echo360ApiService.echo360Api());
