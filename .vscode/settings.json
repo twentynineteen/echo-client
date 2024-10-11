@@ -1,0 +1,8 @@
+{
+   "java.project.referencedLibraries": [
+      "lib/**/*.jar",
+      "$HOME/Documents/VSCODE/JAVA/EchoSDK/Echo360-JAVA_SDK-1.0.28/Echo360-SDK-1.0.28.jar"
+   ],
+   "java.compile.nullAnalysis.mode": "automatic",
+   "java.configuration.updateBuildConfiguration": "interactive"
+}
