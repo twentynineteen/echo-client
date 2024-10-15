@@ -1,8 +1,8 @@
 import { DatePicker } from "@/components/DatePicker/DatePicker";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import * as React from 'react';
 import AvailabilityDropdown from "../AvailabilityDropdown/AvailabilityDropdown";
+import Footer from "../Footer/Footer";
 import GroupDropdown from '../GroupDropdown/GroupDropdown';
 import InputDropdown from "../InputDropdown/InputDropdown";
 import LiveStreamDropdown from "../LiveStreamDropdown/LiveStreamDropdown";
@@ -46,7 +46,7 @@ function Schedule() {
                      <div className="start-date text-center py-3">Start Date</div>
                      <div className="grid grid-cols-2 gap-4 content-center">
                         <div className="left my-2 text-center">
-                           <DatePicker className="bg-inherit"/>
+                           <DatePicker className="bg-inherit "/>
                         </div>
                         <div className="right text-center content-center">
                            <div className="start ">
@@ -86,6 +86,12 @@ function Schedule() {
                      </div>
                      <div className="occasion col-start-2 mx-auto">
                         <DatePicker className="bg-inherit" />
+                        {/* <Calendar 
+                           mode="single"
+                           selected={date}
+                           onSelect={setDate}
+                           className="rounded-md border"
+                        /> */}
                      </div>
                   </div>
 
@@ -108,11 +114,8 @@ function Schedule() {
                </div>
 
             </div>
-            <div className="grid grid-cols-2 gap-4 schedule-container-r col-start-2">
-               footer
-            </div>
+            <Footer />
          </div>
-
       </div>
    </div>
   )
