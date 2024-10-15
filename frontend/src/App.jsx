@@ -8,6 +8,7 @@ import {
 import './App.css';
 import Navbar from "./components/Navbar";
 import Rooms from "./components/Rooms/Rooms";
+import Schedule from "./components/Schedule/Schedule";
 
 function Home() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="*" element={<NoMatch />} />
             <Route path="/rooms" element={<Rooms />} />
+            <Route path="/schedule" element={<Schedule />} />
           </Route>
         </Routes> 
       </ThemeProvider>
