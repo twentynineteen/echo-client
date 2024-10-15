@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 import Navbar from "./components/Navbar";
+import Rooms from "./components/Rooms/Rooms";
 
 function Home() {
   return (
@@ -16,19 +17,16 @@ function Home() {
   );
 }
 
-
 function App() {
 
   return     (
     <div>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      {/* Routes nest inside one another. Nested route paths build upon
-            parent route paths, and nested route elements render inside
-            parent route elements. See the note about <Outlet> below. */}
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="*" element={<NoMatch />} />
+            <Route path="/rooms" element={<Rooms />} />
           </Route>
         </Routes> 
       </ThemeProvider>

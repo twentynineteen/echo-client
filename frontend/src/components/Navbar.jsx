@@ -3,11 +3,11 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ModeToggle } from "./mode-toggle"
 
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Schedule a Recording', href: '#', current: false },
-  { name: 'My Recordings', href: '#', current: false },
-  { name: 'Rooms', href: '#', current: false },
-  { name: 'Sections', href: '#', current: false },
+  { name: 'Dashboard', href: '/home', current: true },
+  { name: 'Schedule a Recording', href: '/schedule', current: false },
+  { name: 'My Recordings', href: '/recordings', current: false },
+  { name: 'Rooms', href: '/rooms', current: false },
+  { name: 'Sections', href: '/sections', current: false },
 ]
 
 function classNames(...classes) {
