@@ -5,7 +5,7 @@ import { ModeToggle } from "./mode-toggle"
 const navigation = [
   { name: 'Dashboard', href: '/', current: true },
   { name: 'Schedule a Recording', href: '/schedule', current: false },
-  { name: 'My Recordings', href: '/recordings', current: false },
+  { name: 'My Recordings', href: '/myrecordings', current: false },
   { name: 'Rooms', href: '/rooms', current: false },
   { name: 'Modules', href: '/modules', current: false },
   { name: 'Presenters', href: '/presenters', current: false },

@@ -8,7 +8,9 @@ import {
 import './App.css';
 import Footer from "./components/Footer/Footer";
 import Modules from "./components/Modules/Modules";
+import MyRecordings from "./components/MyRecordings/MyRecordings";
 import Navbar from "./components/Navbar";
+import Presenters from "./components/Presenters/Presenters";
 import Rooms from "./components/Rooms/Rooms";
 import Schedule from "./components/Schedule/Schedule";
 
@@ -32,6 +34,8 @@ function App() {
             <Route path="/rooms" element={<Rooms />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/modules" element={<Modules />} />
+            <Route path="/presenters" element={<Presenters />} />
+            <Route path="/myrecordings" element={<MyRecordings />} />
           </Route>       
         </Routes> 
         {/* <Footer /> */}
