@@ -17,18 +17,23 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-const groups = [
+const years = [
    {
-      value: "BehaviouralPG",
-      label: "BehaviouralPG",
+      value: "2023/24",
+      label: "2023/24",
    },
    {
-      value: "FinancePG",
-      label: "FinancePG",
+      value: "2024/25",
+      label: "2024/25",
    },
+   {
+      value: "2025/26",
+      label: "2025/26",
+   },
+
 ];
 
-function GroupDropdown() {
+function YearDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("")
   return (
@@ -43,21 +48,21 @@ function GroupDropdown() {
          className="w-full justify-between"
       >
          {value
-            ? groups.find((group) => group.value === value)?.label
-            : "Select group..."}
+            ? years.find((year) => year.value === value)?.label
+            : "Select year..."}
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
       <Command>
-         <CommandInput placeholder="Search group..." />
+         <CommandInput placeholder="Search year..." />
          <CommandList>
-            <CommandEmpty>No group found.</CommandEmpty>
+            <CommandEmpty>No year found.</CommandEmpty>
             <CommandGroup>
-            {groups.map((group) => (
+            {years.map((year) => (
                <CommandItem
-                  key={group.value}
-                  value={group.value}
+                  key={year.value}
+                  value={year.value}
                   onSelect={(currentValue) => {
                   setValue(currentValue === value ? "" : currentValue)
                   setOpen(false)
@@ -66,10 +71,10 @@ function GroupDropdown() {
                   <Check
                   className={cn(
                      "mr-2 h-4 w-4",
-                     value === group.value ? "opacity-100" : "opacity-0"
+                     value === year.value ? "opacity-100" : "opacity-0"
                   )}
                   />
-                  {group.label}
+                  {year.label}
                </CommandItem>
             ))}
             </CommandGroup>
@@ -82,4 +87,4 @@ function GroupDropdown() {
   )
 }
 
-export default GroupDropdown
+export default YearDropdown

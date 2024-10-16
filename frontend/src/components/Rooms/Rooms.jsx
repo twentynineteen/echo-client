@@ -1368,12 +1368,12 @@ function Rooms() {
    // setRooms(getRooms);
 
   return (
-   <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 relative flex flex-1 items-center justify-left">
+   <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 flex flex-1 items-center pb-20">
       <div className="grid grid-cols-1 gap-4">
          <div className="">
             <p className="text-3xl">Rooms</p>
          </div>
-         <div className="mx-auto max-w-5xl grid grid-cols-5 gap-4 bg-zinc-900 rounded-md p-3 m-3">
+         <div className="mx-auto max-w-7xl grid grid-cols-5 gap-4 bg-zinc-900 rounded-md p-3 m-3">
             {rooms.data.map((room) => (<>
             <span><h3 className='text-lg font-bold'>{room.name}</h3> <p className='text-xs'>{room.buildingId}</p></span>
             </>))}

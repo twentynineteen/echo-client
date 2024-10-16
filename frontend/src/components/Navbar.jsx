@@ -3,18 +3,19 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ModeToggle } from "./mode-toggle"
 
 const navigation = [
-  { name: 'Dashboard', href: '/home', current: true },
+  { name: 'Dashboard', href: '/', current: true },
   { name: 'Schedule a Recording', href: '/schedule', current: false },
   { name: 'My Recordings', href: '/recordings', current: false },
   { name: 'Rooms', href: '/rooms', current: false },
-  { name: 'Sections', href: '/sections', current: false },
+  { name: 'Modules', href: '/modules', current: false },
+  { name: 'Presenters', href: '/presenters', current: false },
 ]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
+export default function NavBar() {
   return (
     <Disclosure as="nav">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -30,11 +31,13 @@ export default function Example() {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex flex-shrink-0 items-center">
+              <a href="/">
               <img
                 alt="Lectures"
                 src="/src/assets/wbsLecturesIconBlack.svg"
                 className="h-8 w-auto"
-              />
+                />
+              </a>
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">

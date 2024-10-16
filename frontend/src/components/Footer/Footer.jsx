@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Footer() {
   return (
-    <div className="bg-white mx-auto h-48 place-items-end">
+    <div className="bg-white mx-auto h-48 max-w-7xl">
       <div className="grid grid-cols-5">
          <div className="col-start-1">
             <div className="mt-6 mx-3">
@@ -18,7 +18,7 @@ export default function Footer() {
             <p className="text-black mt-4 text-xs">Help</p>
             <p className="text-black mt-2 text-xs">Lecture Capture Policy</p>
             <p className="text-black mt-2 text-xs">Lecture Capture Handbook</p>
-            </div>
+          </div>
       </div>
     </div>
   )

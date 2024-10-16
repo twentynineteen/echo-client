@@ -9,6 +9,26 @@
   text-align: center;
 } */
 
+body, html {
+  height: 100%;
+}
+
+.spa-container {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+}
+
+.content-container {
+  min-height: calc(100vh - 192px);
+}
+
+.footer--pin {
+  position: relative;
+  left: 0;
+  bottom: 0;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

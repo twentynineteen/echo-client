@@ -44,7 +44,7 @@ function StreamQualityDropdown() {
          variant="outline"
          role="combobox"
          aria-expanded={open}
-         className="w-[200px] justify-between"
+         className="w-full justify-between"
       >
          {value
             ? options.find((quality) => quality.value === value)?.label

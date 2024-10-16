@@ -6,6 +6,7 @@ import {
   Routes,
 } from "react-router-dom";
 import './App.css';
+import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar";
 import Rooms from "./components/Rooms/Rooms";
 import Schedule from "./components/Schedule/Schedule";
@@ -21,7 +22,7 @@ function Home() {
 function App() {
 
   return     (
-    <div>
+    <div className="spa-container">
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -29,8 +30,9 @@ function App() {
             <Route path="*" element={<NoMatch />} />
             <Route path="/rooms" element={<Rooms />} />
             <Route path="/schedule" element={<Schedule />} />
-          </Route>
+          </Route>       
         </Routes> 
+        {/* <Footer /> */}
       </ThemeProvider>
     </div>
   )
@@ -42,16 +44,21 @@ export default App
 function Layout() {
   return (
     <div>
-      <Navbar/>
-      <Outlet />
+      <div className="content-container">
+        <Navbar/>
+        <Outlet />
+      </div>
+      <div className="footer--pin">
+        <Footer />
+      </div>
     </div>
   )
 }
 
 function NoMatch() {
   return (
-    <div>
-      <h2>Nothing to see here!</h2>
+    <div className="max-w-7xl mx-auto pt-3 h-[240px]">
+      <h2>Nothing to see here yet!</h2>
       <p>
         <Link to="/">Go to the home page</Link>
       </p>
