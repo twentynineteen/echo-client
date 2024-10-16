@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 import Footer from "./components/Footer/Footer";
+import Modules from "./components/Modules/Modules";
 import Navbar from "./components/Navbar";
 import Rooms from "./components/Rooms/Rooms";
 import Schedule from "./components/Schedule/Schedule";
@@ -30,6 +31,7 @@ function App() {
             <Route path="*" element={<NoMatch />} />
             <Route path="/rooms" element={<Rooms />} />
             <Route path="/schedule" element={<Schedule />} />
+            <Route path="/modules" element={<Modules />} />
           </Route>       
         </Routes> 
         {/* <Footer /> */}
