@@ -49,7 +49,7 @@ function ModuleDropdown() {
                      </Button>
                      </PopoverTrigger>
                      <PopoverContent className="w-full p-0 bg-background">
-                     <Command>
+                     <Command className="grid grid-cols- p-3">
                         <CommandInput className="bg-background" placeholder="Search module..." />
                         <CommandList>
                            <CommandEmpty>No module found.</CommandEmpty>

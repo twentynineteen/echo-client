@@ -48,7 +48,6 @@ function Schedule() {
                      <Input placeholder="Enter title here" className="bg-inherit h-9"/>
                   </div>
                   <div className="my-2 gap-3 mr-3 ml-3">
-                     {/* <div className="start-date text-center py-3">Date of Recording</div> */}
                      <div className="grid grid-cols-2 gap-4 content-center">
                         <div className="left text-center">
                            <p className="pb-3">Recording Date</p>
