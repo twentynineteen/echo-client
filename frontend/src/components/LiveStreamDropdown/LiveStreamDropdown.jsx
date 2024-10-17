@@ -48,9 +48,9 @@ function LiveStreamDropdown() {
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 bg-background">
+      <PopoverContent className="w-full p-3 bg-background">
       <Command>
-         <CommandInput className="bg-background" placeholder="Search stream..." />
+         {/* <CommandInput className="bg-background" placeholder="Search stream..." /> */}
          <CommandList>
             <CommandEmpty>No stream found.</CommandEmpty>
             <CommandGroup>

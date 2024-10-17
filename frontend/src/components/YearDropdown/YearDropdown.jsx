@@ -45,9 +45,9 @@ function YearDropdown() {
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0  bg-background">
+      <PopoverContent className="w-full p-3  bg-background">
       <Command>
-         <CommandInput className="bg-background" placeholder="Search year..." />
+         {/* <CommandInput className="bg-background" placeholder="Search year..." /> */}
          <CommandList>
             <CommandEmpty>No year found.</CommandEmpty>
             <CommandGroup className="max-h-60 overflow-y-auto p-3 ">

@@ -1,4 +1,5 @@
 import { DatePicker } from "@/components/DatePicker/DatePicker";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import * as React from 'react';
 import AvailabilityDropdown from "../AvailabilityDropdown/AvailabilityDropdown";
@@ -35,7 +36,7 @@ function Schedule() {
                      </div>
                   </div>
                   <div className="gap-3 mr-3 ml-3">
-                     <div className="module my-2">Module</div>
+                     <div className="module my-2">Module / Section</div>
                      <ModuleDropdown />
                   </div>
                   <div className="gap-3 mr-3 ml-3">
@@ -55,11 +56,11 @@ function Schedule() {
                         </div>
                         <div className="right text-center content-center">
                            <div className="start ">
-                              <p>Start time</p>
-                              <Input type="time" placeholder="00:00" className="my-3 bg-inherit"/>
+                              <p>Start time (24 hr clock)</p>
+                              <Input type="Time" placeholder="00:00" className="my-3 bg-inherit"/>
                            </div>
                            <div className="end my-3">
-                              <p>End time</p>
+                              <p>End time (24 hr clock)</p>
                               <Input type="time" placeholder="00:00" className="my-3 bg-inherit"/>
                            </div>
                         </div>
@@ -118,9 +119,9 @@ function Schedule() {
                      <p className="mb-3" >Requested by</p>
                      <Input className="bg-inherit h-9" placeholder="Input name here"/>
                   </div>
-                  <div className="my-2 grid grid-cols-2 gap-3 mr-3 ml-3">
-                     <div className="mx-auto text-center ">submit</div>
-                     <div className="mx-auto">clear</div>
+                  <div className="my-2 grid grid-cols-2 gap-3">
+                     <div className="mx-auto text-center "><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600">Submit</Button></div>
+                     <div className="mx-auto"><Button variant="outline" className="w-[250px] hover:bg-muted">Clear</Button></div>
                   </div>
                </div>
 

@@ -19,12 +19,68 @@ import { cn } from "@/lib/utils";
 
 const groups = [
    {
-      value: "BehaviouralPG",
-      label: "BehaviouralPG",
+      value: "Behavioural PG",
+      label: "Behavioural PG",
    },
    {
-      value: "FinancePG",
-      label: "FinancePG",
+      value: "Business PG",
+      label: "Business PG",
+   },
+   {
+      value: "Central Banking",
+      label: "Central Banking",
+   },
+   {
+      value: "DBA Office",
+      label: "DBA Office",
+   },
+   {
+      value: "Exec Ed",
+      label: "Exec Ed",
+   },
+   {
+      value: "Exec MBA",
+      label: "Exec MBA",
+   },
+   {
+      value: "Finance PG",
+      label: "Finance PG",
+   },
+   {
+      value: "FTMBA",
+      label: "FTMBA",
+   },
+   {
+      value: "GLOMBA",
+      label: "GLOMBA",
+   },
+   {
+      value: "Management PG",
+      label: "Management PG",
+   },
+   {
+      value: "Marketing PG",
+      label: "Marketing PG",
+   },
+   {
+      value: "MIM",
+      label: "MIM",
+   },
+   {
+      value: "MINT",
+      label: "MINT",
+   },
+   {
+      value: "SHARD",
+      label: "SHARD",
+   },
+   {
+      value: "UG Student Experience",
+      label: "UG Student Experience",
+   },
+   {
+      value: "UG",
+      label: "UG",
    },
 ];
 
@@ -48,9 +104,9 @@ function GroupDropdown() {
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 bg-background">
+      <PopoverContent className="w-full p-3 bg-background">
       <Command>
-         <CommandInput className="bg-background" placeholder="Search group..." />
+         {/* <CommandInput className="bg-background" placeholder="Search group..." /> */}
          <CommandList>
             <CommandEmpty>No group found.</CommandEmpty>
             <CommandGroup>
