@@ -40,7 +40,7 @@ function LiveStreamDropdown() {
          variant="outline"
          role="combobox"
          aria-expanded={open}
-         className="w-full justify-between"
+         className="w-full justify-between p-3"
       >
          {value
             ? streams.find((stream) => stream.value === value)?.label
@@ -48,9 +48,9 @@ function LiveStreamDropdown() {
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[200px] p-0 bg-background">
       <Command>
-         <CommandInput placeholder="Search stream..." />
+         <CommandInput className="bg-background" placeholder="Search stream..." />
          <CommandList>
             <CommandEmpty>No stream found.</CommandEmpty>
             <CommandGroup>

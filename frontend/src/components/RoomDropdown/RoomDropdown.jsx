@@ -16,17 +16,14 @@ import {
    PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import rooms from '../../assets/rooms.json';
 
-const rooms = [
-   {
-      value: "28eb8977-f1ef-433b-b34d-acd3df15c2c3",
-      label: "0.006",
-   },
-   {
-      value: "2b95913f-f2f5-478c-9ace-4aa61efca6f3",
-      label: "0.013",
-   },
-];
+const roomList = rooms.data.map((room) => {
+   return {
+      value: room.id,
+      label: room.name,
+   }
+})
 
 function RoomDropdown() {
    const [open, setOpen] = React.useState(false)
@@ -40,21 +37,21 @@ function RoomDropdown() {
          variant="outline"
          role="combobox"
          aria-expanded={open}
-         className="w-full justify-between"
+         className="w-full justify-between p-3"
       >
          {value
-            ? rooms.find((room) => room.value === value)?.label
+            ? roomList.find((room) => room.value === value)?.label
             : "Select room..."}
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-full p-0 bg-background">
       <Command>
-         <CommandInput placeholder="Search room..." />
+         <CommandInput className="bg-background" placeholder="Search room..." />
          <CommandList>
             <CommandEmpty>No room found.</CommandEmpty>
-            <CommandGroup>
-            {rooms.map((room) => (
+            <CommandGroup className="max-h-60 overflow-y-auto p-3">
+            {roomList.map((room) => (
                <CommandItem
                   key={room.value}
                   value={room.value}

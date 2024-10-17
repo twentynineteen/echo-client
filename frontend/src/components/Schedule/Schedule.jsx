@@ -2,7 +2,6 @@ import { DatePicker } from "@/components/DatePicker/DatePicker";
 import { Input } from "@/components/ui/input";
 import * as React from 'react';
 import AvailabilityDropdown from "../AvailabilityDropdown/AvailabilityDropdown";
-import Footer from "../Footer/Footer";
 import GroupDropdown from '../GroupDropdown/GroupDropdown';
 import InputDropdown from "../InputDropdown/InputDropdown";
 import LiveStreamDropdown from "../LiveStreamDropdown/LiveStreamDropdown";

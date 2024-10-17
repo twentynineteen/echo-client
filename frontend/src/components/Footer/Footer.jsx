@@ -17,7 +17,7 @@ export default function Footer() {
             <p className="text-black mt-6 text-m font-bold">Lectures</p>
             <p className="text-black mt-4 text-xs">Help</p>
             <p className="text-black mt-2 text-xs">Lecture Capture Policy</p>
-            <p className="text-black mt-2 text-xs">Lecture Capture Handbook</p>
+            <p className="text-black mt-2 text-xs"><a href="https://my.wbs.ac.uk/-/community/224/resources/in/1537971/">Lecture Capture Handbook</a></p>
           </div>
       </div>
     </div>

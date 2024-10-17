@@ -16,17 +16,14 @@ import {
    PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import users from "../../assets/users.json";
 
-const presenters = [
-   {
-      value: "p.morley@warwick.ac.uk",
-      label: "Phillip Morley",
-   },
-   {
-      value: "daniel.mills@wbs.ac.uk",
-      label: "Daniel Mills",
-   },
-];
+const presenters = users.data.map((user) => {
+   return {
+      value: user.email,
+      label: user.firstName + " " + user.lastName,
+   }
+})
 
 function PresenterDropdown() {
    const [open, setOpen] = React.useState(false)
@@ -40,7 +37,7 @@ function PresenterDropdown() {
          variant="outline"
          role="combobox"
          aria-expanded={open}
-         className="w-full justify-between"
+         className="w-full justify-between p-3"
       >
          {value
             ? presenters.find((presenter) => presenter.value === value)?.label
@@ -48,12 +45,12 @@ function PresenterDropdown() {
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-full p-0 bg-background">
       <Command>
-         <CommandInput placeholder="Search presenter..." />
+         <CommandInput className="bg-background" placeholder="Search presenter..." />
          <CommandList>
             <CommandEmpty>No presenter found.</CommandEmpty>
-            <CommandGroup>
+            <CommandGroup className="max-h-60 overflow-y-auto p-3">
             {presenters.map((presenter) => (
                <CommandItem
                   key={presenter.value}

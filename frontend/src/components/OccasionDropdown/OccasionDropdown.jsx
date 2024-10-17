@@ -26,6 +26,34 @@ const occasions = [
       value: "2",
       label: "2",
    },
+   {
+      value: "3",
+      label: "3",
+   },
+   {
+      value: "4",
+      label: "4",
+   },
+   {
+      value: "5",
+      label: "5",
+   },
+   {
+      value: "6",
+      label: "6",
+   },
+   {
+      value: "7",
+      label: "7",
+   },
+   {
+      value: "8",
+      label: "8",
+   },
+   {
+      value: "9",
+      label: "9",
+   },
 ];
 
 
@@ -42,7 +70,7 @@ function OccasionDropdown() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between"
+                        className="w-full justify-between p-3"
                      >
                         {value
                            ? occasions.find((occasion) => occasion.value === value)?.label
@@ -50,9 +78,9 @@ function OccasionDropdown() {
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                      </Button>
                      </PopoverTrigger>
-                     <PopoverContent className="w-[200px] p-0">
+                     <PopoverContent className="w-[200px] p-0 bg-background">
                      <Command>
-                        <CommandInput placeholder="Search occasion..." />
+                        <CommandInput className="bg-background" placeholder="Search occasion..." />
                         <CommandList>
                            <CommandEmpty>No occasion found.</CommandEmpty>
                            <CommandGroup>

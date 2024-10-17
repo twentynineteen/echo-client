@@ -16,17 +16,17 @@ import {
    PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import sections from '../../assets/sections.json';
 
-const modules = [
-   {
-      value: "IB123",
-      label: "IB1230",
-   },
-   {
-      value: "IBtest",
-      label: "IBtest",
-   },
-];
+// Module dropdown uses 'sections' data from echo360 SDK
+const sectionList = sections.data.map((section) => {
+   return {
+      value: section.id,
+      label: section.sectionNumber,
+   }
+})
+
+
 function ModuleDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("")
@@ -40,21 +40,21 @@ function ModuleDropdown() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between"
+                        className="w-full justify-between p-3"
                      >
                         {value
-                           ? modules.find((module) => module.value === value)?.label
+                           ? sectionList.find((module) => module.value === value)?.label
                            : "Select module..."}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                      </Button>
                      </PopoverTrigger>
-                     <PopoverContent className="w-[200px] p-0">
+                     <PopoverContent className="w-full p-0 bg-background">
                      <Command>
-                        <CommandInput placeholder="Search module..." />
+                        <CommandInput className="bg-background" placeholder="Search module..." />
                         <CommandList>
                            <CommandEmpty>No module found.</CommandEmpty>
-                           <CommandGroup>
-                           {modules.map((module) => (
+                           <CommandGroup className="max-h-60 overflow-y-auto p-3">
+                           {sectionList.map((module) => (
                               <CommandItem
                                  key={module.value}
                                  value={module.value}

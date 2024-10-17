@@ -16,22 +16,14 @@ import {
    PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import terms from '../../assets/terms.json';
 
-const years = [
-   {
-      value: "2023/24",
-      label: "2023/24",
-   },
-   {
-      value: "2024/25",
-      label: "2024/25",
-   },
-   {
-      value: "2025/26",
-      label: "2025/26",
-   },
-
-];
+const years = terms.data.map((term) => {
+   return {
+      value: term.id,
+      label: term.name,
+   }
+})
 
 function YearDropdown() {
    const [open, setOpen] = React.useState(false)
@@ -45,7 +37,7 @@ function YearDropdown() {
          variant="outline"
          role="combobox"
          aria-expanded={open}
-         className="w-full justify-between"
+         className="w-full justify-between p-3"
       >
          {value
             ? years.find((year) => year.value === value)?.label
@@ -53,12 +45,12 @@ function YearDropdown() {
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-full p-0  bg-background">
       <Command>
-         <CommandInput placeholder="Search year..." />
+         <CommandInput className="bg-background" placeholder="Search year..." />
          <CommandList>
             <CommandEmpty>No year found.</CommandEmpty>
-            <CommandGroup>
+            <CommandGroup className="max-h-60 overflow-y-auto p-3 ">
             {years.map((year) => (
                <CommandItem
                   key={year.value}

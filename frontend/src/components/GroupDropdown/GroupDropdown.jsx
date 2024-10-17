@@ -40,7 +40,7 @@ function GroupDropdown() {
          variant="outline"
          role="combobox"
          aria-expanded={open}
-         className="w-full justify-between"
+         className="w-full justify-between p-3"
       >
          {value
             ? groups.find((group) => group.value === value)?.label
@@ -48,9 +48,9 @@ function GroupDropdown() {
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[200px] p-0 bg-background">
       <Command>
-         <CommandInput placeholder="Search group..." />
+         <CommandInput className="bg-background" placeholder="Search group..." />
          <CommandList>
             <CommandEmpty>No group found.</CommandEmpty>
             <CommandGroup>

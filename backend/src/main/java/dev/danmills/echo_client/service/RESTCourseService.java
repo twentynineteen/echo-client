@@ -26,7 +26,7 @@ public class RESTCourseService {
       EchoLogger log = new EchoLogger();
       log.logString("getCourses called... ");
       CourseService courseService = new CourseService(echo360ApiService.echo360Api());
-      int limit = 500;
+      int limit = 150; // 150 is the maximum amount of results per call
       String offset = "";
       return courseService.list(limit, offset);
    }
