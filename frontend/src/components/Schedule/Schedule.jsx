@@ -16,6 +16,10 @@ import YearDropdown from "../YearDropdown/YearDropdown";
 function Schedule() {
    const [date, setDate] = React.useState(new Date());
 
+   const submitForm = () => {
+      console.log(date);
+   }
+
   return (
    <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-20">
       <div className="grid grid-cols-1 gap-4 max-w-7xl">
@@ -119,7 +123,7 @@ function Schedule() {
                      <Input className="bg-inherit h-9" placeholder="Input name here"/>
                   </div>
                   <div className="my-2 grid grid-cols-2 gap-3">
-                     <div className="mx-auto text-center "><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600">Submit</Button></div>
+                     <div className="mx-auto text-center "><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600" onClick={submitForm}>Submit</Button></div>
                      <div className="mx-auto"><Button variant="outline" className="w-[250px] hover:bg-muted">Clear</Button></div>
                   </div>
                </div>
