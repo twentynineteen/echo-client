@@ -1,11 +1,13 @@
 import React from 'react';
-import data from "../../assets/schedules.json";
+// import data from "../../assets/schedules.json";
+import RecordingsTablePage from '../RecordingsTable/page';
 
 function MyRecordings() {
 
   return (
-    <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 flex flex-1 items-center pb-20">
-      <table className="border">
+    <div className="mx-auto w-3/4 px-2 sm:px-6 lg:px-8 flex flex-1 justify-center pb-12">
+      <RecordingsTablePage />
+      {/* <table className="border">
          <thead className="text-lg font-bold border">
             <tr >
                <th className="border-2">ID</th>
@@ -50,7 +52,7 @@ function MyRecordings() {
 
             ))}
          </tbody>
-      </table>
+      </table> */}
     </div>
   )
 }
