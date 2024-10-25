@@ -13,6 +13,7 @@ import Navbar from "./components/Navbar";
 import Presenters from "./components/Presenters/Presenters";
 import Rooms from "./components/Rooms/Rooms";
 import Schedule from "./components/Schedule/Schedule";
+import UserOptions from "./components/UserOptions/UserOptions";
 
 function Home() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/modules" element={<Modules />} />
             <Route path="/presenters" element={<Presenters />} />
             <Route path="/myrecordings" element={<MyRecordings />} />
+            <Route path="/options" element={<UserOptions />} />
           </Route>       
         </Routes> 
         {/* <Footer /> */}
