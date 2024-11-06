@@ -14,13 +14,13 @@ import "@/App.css"
 export default function GroupSelect() {
   return (
     <Select>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-[250px]">
         <SelectValue placeholder="Select a group" />
       </SelectTrigger>
-      <SelectContent className="bg-background w-full p-3">
+      <SelectContent className="bg-background  p-3">
         <SelectGroup>
           <SelectLabel className="font-bold text-lg">Postgraduate</SelectLabel>
-          <SelectItem className="p-32" value="behavioural-pg">Behavioural PG</SelectItem>
+          <SelectItem value="behavioural-pg">Behavioural PG</SelectItem>
           <SelectItem value="business-pg">Business PG</SelectItem>
           <SelectItem value="central-banking">Central Banking</SelectItem>
           <SelectItem value="dba-office">DBA Office</SelectItem>
