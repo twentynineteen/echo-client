@@ -46,7 +46,7 @@ function YearDropdown() {
       </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-3  bg-background">
-      <Command>
+      <Command className="bg-background">
          {/* <CommandInput className="bg-background" placeholder="Search year..." /> */}
          <CommandList>
             <CommandEmpty>No year found.</CommandEmpty>

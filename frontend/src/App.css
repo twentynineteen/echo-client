@@ -29,6 +29,10 @@ body, html {
   bottom: 0;
 }
 
+.rounded-full {
+  border-radius: 9999px;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

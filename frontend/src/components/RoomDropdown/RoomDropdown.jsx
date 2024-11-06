@@ -20,9 +20,10 @@ import rooms from '../../assets/rooms.json';
 
 const roomList = rooms.data.map((room) => {
    return {
-      value: room.id,
+      value: room.name,
       label: room.name,
       buildingId: room.buildingId,
+      roomId: room.id,
    }
 })
 
@@ -47,18 +48,18 @@ function RoomDropdown() {
       </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-background">
-      <Command className="grid grid-cols- p-3">
+      <Command className="grid grid-cols- p-3 bg-background">
          <CommandInput className="bg-background p-3" placeholder="Search room..." />
          <CommandList>
             <CommandEmpty>No room found.</CommandEmpty>
-            <CommandGroup className="max-h-60 overflow-y-auto p-3 mt-3">
+            <CommandGroup className="max-h-60 overflow-y-auto">
             {roomList.map((room) => (
                <CommandItem
                   key={room.value}
                   value={room.value}
                   onSelect={(currentValue) => {
-                  setValue(currentValue === value ? "" : currentValue)
-                  setOpen(false)
+                     setValue(currentValue === value ? "" : currentValue)
+                     setOpen(false)
                   }}
                >
                   <Check

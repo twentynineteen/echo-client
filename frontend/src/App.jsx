@@ -5,7 +5,8 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
-import './App.css';
+import './globals.css';
+
 import Footer from "./components/Footer/Footer";
 import Modules from "./components/Modules/Modules";
 import MyRecordings from "./components/MyRecordings/MyRecordings";
@@ -40,6 +41,8 @@ function App() {
             <Route path="/options" element={<UserOptions />} />
           </Route>       
         </Routes> 
+
+
         {/* <Footer /> */}
       </ThemeProvider>
     </div>

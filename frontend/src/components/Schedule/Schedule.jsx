@@ -3,9 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import * as React from 'react';
 import AvailabilityDropdown from "../AvailabilityDropdown/AvailabilityDropdown";
+import CaptureRadio from "../CaptureRadio/CaptureRadio";
+import DateCard from "../DateCard/DateCard";
 import GroupDropdown from '../GroupDropdown/GroupDropdown';
+import GroupSelect from '../GroupSelect/GroupSelect';
 import InputDropdown from "../InputDropdown/InputDropdown";
+import InputRadio from "../InputRadio/InputRadio";
 import LiveStreamDropdown from "../LiveStreamDropdown/LiveStreamDropdown";
+import LiveStreamSwitch from "../LiveStreamSwitch/LiveStreamSwitch";
 import ModuleDropdown from '../ModuleDropdown/ModuleDropdown';
 import OccasionDropdown from '../OccasionDropdown/OccasionDropdown';
 import PresenterDropdown from "../PresenterDropdown/PresenterDropdown";
@@ -21,15 +26,16 @@ function Schedule() {
    }
 
   return (
-   <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-20">
+     <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-20">
+      
       <div className="grid grid-cols-1 gap-4 max-w-7xl">
          <div className="justify-left">
             <p className="text-3xl">Schedule a recording</p>
          </div>
          <div className="pt-6">
             <div className="grid grid-cols-2 gap-4 justify-stretch mx-3">
-               <div className="grid grid-cols-1">
-                  <div className="grid grid-cols-2 gap-3 mr-3 ml-3">
+               <div className="grid grid-cols-1 border p-3 rounded-lg">
+                  <div className="grid grid-cols-2 gap-3 mr-3 ml-3 ">
                      <div className="">
                         <div className="group my-2">Academic Year</div>
                         <YearDropdown />
@@ -45,13 +51,15 @@ function Schedule() {
                   </div>
                   <div className="gap-3 mr-3 ml-3">
                      <div className="group my-2">Group</div>
-                     <GroupDropdown />
+                     <GroupSelect />
+                     {/* <GroupDropdown /> */}
                   </div>
-                  <div className="mb-3 gap-3 mr-3 ml-3">
+                  <div className="mb-3 gap-3 mr-3 ml-3 ">
                      <div className="recording-title my-2">Recording Title</div>
                      <Input placeholder="Enter title here" className="bg-inherit h-9"/>
                   </div>
-                  <div className="my-2 gap-3 mr-3 ml-3">
+                  
+                  <div className="my-2 gap-3 mr-3 ml-3 border p-3 rounded-lg">
                      <div className="grid grid-cols-2 gap-4 content-center">
                         <div className="left text-center">
                            <p className="pb-3">Recording Date</p>
@@ -83,8 +91,8 @@ function Schedule() {
                   </div>
                </div>
 
-               <div className="grid col-start-2">
-                  <div className="grid grid-cols-2 mr-3 ml-3 gap-3">
+               <div className="grid col-start-2 border p-3 rounded-lg">
+                  <div className="grid grid-cols-2 mr-3 ml-3 gap-3 ">
                      <div className="availability col-start-1">
                         <div className="">
                            <div className="my-2">Availability</div>
@@ -92,11 +100,13 @@ function Schedule() {
                         </div>
                         <div className="mb-2">
                            <div className="my-2">Live Stream</div>
-                           <LiveStreamDropdown />
+                           {/* <LiveStreamDropdown /> */}
+                           <LiveStreamSwitch />
                         </div>
                         <div className="">
                            <div className="my-2">Stream Quality</div>
-                           <StreamQualityDropdown />
+                           <CaptureRadio />
+                           {/* <StreamQualityDropdown /> */}
                         </div>
                      </div>
                      <div className="occasion col-start-2 pt-10">
@@ -112,18 +122,20 @@ function Schedule() {
 
                   <div className="gap-3 mr-3 ml-3">
                      <p className="my-2">Input</p>
-                     <InputDropdown />
+                     {/* <InputDropdown /> */}
+                     <InputRadio />
                   </div>
                   <div className="gap-3 mr-3 ml-3">
                      <p className="mb-3" >Capture Quality</p>
-                     <StreamQualityDropdown />
+                     {/* <StreamQualityDropdown /> */}
+                     <CaptureRadio />
                      </div>
                   <div className="my-2 gap-3 mr-3 ml-3">
                      <p className="mb-3" >Requested by</p>
                      <Input className="bg-inherit h-9" placeholder="Input name here"/>
                   </div>
                   <div className="my-2 grid grid-cols-2 gap-3">
-                     <div className="mx-auto text-center "><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600" onClick={submitForm}>Submit</Button></div>
+                     <div className="mx-auto text-center"><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600" onClick={submitForm}>Submit</Button></div>
                      <div className="mx-auto"><Button variant="outline" className="w-[250px] hover:bg-muted">Clear</Button></div>
                   </div>
                </div>

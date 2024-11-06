@@ -53,7 +53,7 @@ function AvailabilityDropdown() {
       </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-3 bg-background">
-      <Command>
+      <Command className="bg-background">
          {/* <CommandInput className="bg-background" placeholder="Search availability..." /> */}
          <CommandList>
             <CommandEmpty>No availability found.</CommandEmpty>

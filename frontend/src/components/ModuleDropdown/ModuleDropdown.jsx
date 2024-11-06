@@ -21,7 +21,8 @@ import sections from '../../assets/sections.json';
 // Module dropdown uses 'sections' data from echo360 SDK
 const sectionList = sections.data.map((section) => {
    return {
-      value: section.id,
+      value: section.sectionNumber,
+      id: section.id,
       label: section.sectionNumber,
    }
 })
@@ -49,7 +50,7 @@ function ModuleDropdown() {
                      </Button>
                      </PopoverTrigger>
                      <PopoverContent className="w-full p-0 bg-background">
-                     <Command className="grid grid-cols- p-3">
+                     <Command className="grid grid-cols- p-3 bg-background">
                         <CommandInput className="bg-background" placeholder="Search module..." />
                         <CommandList>
                            <CommandEmpty>No module found.</CommandEmpty>

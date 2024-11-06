@@ -20,7 +20,8 @@ import users from "../../assets/users.json";
 
 const presenters = users.data.map((user) => {
    return {
-      value: user.email,
+      email: user.email,
+      value: user.firstName + " " + user.lastName,
       label: user.firstName + " " + user.lastName,
    }
 })
@@ -46,7 +47,7 @@ function PresenterDropdown() {
       </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-background">
-      <Command className="grid grid-cols- p-3">
+      <Command className="grid grid-cols- p-3 bg-background">
          <CommandInput className="bg-background" placeholder="Search presenter..." />
          <CommandList>
             <CommandEmpty>No presenter found.</CommandEmpty>
