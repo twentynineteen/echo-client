@@ -119,7 +119,7 @@ function Schedule() {
                            />
                         </div>
                         <div className="right text-center content-center ml-6">
-                           <div className="date my-3">
+                           <div className="date my-3 w-[250px]">
                               <p className=" font-bold">Recording Date</p>
                               <Button
                                  variant={"outline"}
@@ -181,7 +181,7 @@ function Schedule() {
                      </div>
                   </div>
 
-                  <div className="flex flex-row my-2 gap-3">
+                  <div className="flex flex-row my-3 gap-3">
                      <div className="mx-auto text-center"><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600" onClick={submitForm}>Submit</Button></div>
                      <div className="mx-auto"><Button variant="outline" className="w-[250px] hover:bg-muted">Clear</Button></div>
                   </div>
