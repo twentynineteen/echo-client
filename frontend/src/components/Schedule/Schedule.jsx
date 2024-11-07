@@ -34,17 +34,17 @@ function Schedule() {
    }
 
   return (
-     <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-12">
+     <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-6 sm:flex-wrap lg:flex-row">
       
       <div className="gap-4 max-w-7xl">
          <div className="">
             <p className="text-3xl">Schedule a recording</p>
          </div>
-         <div className="pt-4 flex flex-row justify-evenly">
-            <div className="flex gap-4 mx-3" >
-               <div className="p-0">
+         <div className="scheduler-wrapper pt-4">
+            <div className="scheduler-container flex flex-col lg:flex-row justify-center gap-4 mx-3 mt-6" >
+               <div className="scheduler-left-side p-0 ">
                   <div className="module-container border p-3 mb-3 rounded-lg">
-                     <div className="flex flex-row justify-around gap-3 mr-3 ml-3 ">
+                     <div className="flex justify-around gap-3 mr-3 ml-3 ">
                         <div className="grow">
                            <div className="my-2 font-bold">Academic Year</div>
                            <YearDropdown />
@@ -75,7 +75,7 @@ function Schedule() {
                         </div>
                      </div>
                      <Separator />
-                     <div className="container-inputs flex flex-row justify-evenly pb-5 px-3">
+                     <div className="container-inputs flex flex-col lg:flex-row justify-evenly pb-5 px-3">
                         <div className="gap-3 mr-3 ml-3">
                            <p className="my-3 font-bold">Input</p>
                            <div className="">
@@ -103,9 +103,9 @@ function Schedule() {
                  
                </div>
 
-               <div className="">
+               <div className="scheduler-right-side">
                <div className="border rounded-lg">
-                     <div className="flex flex-row gap-4 mx-3">
+                     <div className="flex flex-col lg:flex-row gap-4 mx-3">
                         <div className="left text-center">
                            <Calendar 
                               mode="single"
@@ -145,7 +145,7 @@ function Schedule() {
                   </div>
                   
                   <div className="border pb-5 mb-3 mt-3 rounded-lg">
-                     <div className="flex flex-row justify-evenly gap-3 px-3 pt-2 ">
+                     <div className="flex flex-col lg:flex-row justify-evenly gap-3 px-3 pt-2 ">
                         <div className="availability basis-1/2 px-3">
                            <div className="my-2 font-bold">Availability</div>
                            <AvailabilityDropdown />
@@ -156,7 +156,7 @@ function Schedule() {
                      </div>
                   </div>
                   <div className="live-stream border pb-3 mt-3 rounded-lg px-3">
-                     <div className="flex flex-row justify-evenly gap-3 px-3 pt-2 pb-3">
+                     <div className="flex flex-col lg:flex-row justify-evenly gap-3 px-3 pt-2 pb-3">
                         <div className="basis-1/2">
                            <div className="my-2 font-bold">Live Stream</div>
                            {/* <LiveStreamDropdown /> */}
@@ -169,7 +169,7 @@ function Schedule() {
                      </div>
                   </div>
                   <div className="programme-container border pb-3 mt-3 rounded-lg px-3">
-                     <div className="flex flex-row justify-evenly gap-3 px-3 ">
+                     <div className="flex flex-col lg:flex-row justify-evenly gap-3 px-3 ">
                         <div className="">
                            <div className="my-2 font-bold">Group</div>
                            <GroupSelect />   

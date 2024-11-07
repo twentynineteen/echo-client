@@ -59,7 +59,7 @@ const occasions = [
 
 function OccasionDropdown() {
    const [open, setOpen] = React.useState(false)
-   const [value, setValue] = React.useState("")
+   const [value, setValue] = React.useState("1")
 
   return (
       <div className="">
@@ -79,7 +79,7 @@ function OccasionDropdown() {
                      </Button>
                      </PopoverTrigger>
                      <PopoverContent className="w-full p-3 bg-background pr-8">
-                     <Command className="bg-background">
+                     <Command className="bg-background" >
                         {/* <CommandInput className="bg-background" placeholder="Search occasion..." /> */}
                         <CommandList>
                            <CommandEmpty>No occasion found.</CommandEmpty>
