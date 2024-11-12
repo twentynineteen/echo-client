@@ -28,7 +28,7 @@ const sectionList = sections.data.map((section) => {
 })
 
 
-function ModuleDropdown() {
+export default function ModuleDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("")
 
@@ -83,5 +83,3 @@ function ModuleDropdown() {
 
   )
 }
-
-export default ModuleDropdown

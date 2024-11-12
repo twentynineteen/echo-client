@@ -6,7 +6,7 @@ import {
    Command,
    CommandEmpty,
    CommandGroup,
-   CommandInput,
+   // CommandInput,
    CommandItem,
    CommandList,
 } from "@/components/ui/command";
@@ -32,7 +32,7 @@ const options = [
    },
 ];
 
-function AvailabilityDropdown() {
+export default function AvailabilityDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("")
   return (
@@ -86,4 +86,3 @@ function AvailabilityDropdown() {
   )
 }
 
-export default AvailabilityDropdown

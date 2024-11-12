@@ -6,7 +6,7 @@ import {
    Command,
    CommandEmpty,
    CommandGroup,
-   CommandInput,
+   // CommandInput,
    CommandItem,
    CommandList,
 } from "@/components/ui/command";
@@ -57,7 +57,7 @@ const occasions = [
 ];
 
 
-function OccasionDropdown() {
+export default function OccasionDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("1")
 
@@ -112,5 +112,3 @@ function OccasionDropdown() {
 
   )
 }
-
-export default OccasionDropdown
