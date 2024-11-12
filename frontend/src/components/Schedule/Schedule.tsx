@@ -1,32 +1,78 @@
 "use client"
-import { DatePicker } from "@/components/DatePicker/DatePicker";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/DatePicker/DatePicker"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Input } from "@/components/ui/input"
 
-import AvailabilityDropdown from "@/components/AvailabilityDropdown/AvailabilityDropdown";
-import CaptureRadio from "@/components/CaptureRadio/CaptureRadio";
-import GroupSelect from '@/components/GroupSelect/GroupSelect';
-import InputRadio from "@/components/InputRadio/InputRadio";
-import LiveStreamSwitch from "@/components/LiveStreamSwitch/LiveStreamSwitch";
-import ModuleDropdown from '@/components/ModuleDropdown/ModuleDropdown';
-import OccasionDropdown from '@/components/OccasionDropdown/OccasionDropdown';
-import PresenterDropdown from "@/components/PresenterDropdown/PresenterDropdown";
-import RoomDropdown from "@/components/RoomDropdown/RoomDropdown";
-import { Separator } from "@/components/ui/separator";
-import YearDropdown from "@/components/YearDropdown/YearDropdown";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import * as React from 'react';
+import AvailabilityDropdown from "@/components/AvailabilityDropdown/AvailabilityDropdown"
+import CaptureRadio from "@/components/CaptureRadio/CaptureRadio"
+import GroupSelect from '@/components/GroupSelect/GroupSelect'
+import InputRadio from "@/components/InputRadio/InputRadio"
+import LiveStreamSwitch from "@/components/LiveStreamSwitch/LiveStreamSwitch"
+import ModuleDropdown from '@/components/ModuleDropdown/ModuleDropdown'
+import OccasionDropdown from '@/components/OccasionDropdown/OccasionDropdown'
+import PresenterDropdown from "@/components/PresenterDropdown/PresenterDropdown"
+import RoomDropdown from "@/components/RoomDropdown/RoomDropdown"
+import { Separator } from "@/components/ui/separator"
+import YearDropdown from "@/components/YearDropdown/YearDropdown"
+import { cn } from "@/lib/utils"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import * as React from 'react'
+
+import {
+   Form,
+   FormControl,
+   FormDescription,
+   FormField,
+   FormItem,
+   // FormLabel,
+   FormMessage,
+} from "@/@/components/ui/form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
 
 function Schedule() {
    const [date, setDate] = React.useState(new Date());
+   const [year, setYear] = React.useState("");
+
+   const formSchema = z.object({
+         year: z.string().min(2, "Must be more than 2 characters"),
+      })
+
+   const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+         year: "12",
+      }
+   })
+
+   // interface YearObject 
+   // {
+   //    year: string;
+   // }
+
+   function createYearObject(year: string) {
+      return {
+         year: year
+      }
+   }
 
 
-   const submitForm = () => {
-      console.log(date);
+   // tester function to get academic year info from child component
+   // using ts to define response schema before logging to console on submission
+   function pull_data(data: string) {
+      const yearObject = createYearObject(data);
+      console.log("data is " + data);
+      return yearObject;
+   }
+
+
+   function onSubmit(values: z.infer<typeof formSchema>) {
+      // do something with the form values.
+      console.log(pull_data(values.year))
    }
 
   return (
@@ -37,13 +83,34 @@ function Schedule() {
             <p className="text-3xl">Schedule a recording</p>
          </div>
          <div className="scheduler-wrapper pt-4">
+            <Form {...form}>
+               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
+
+
+
             <div className="scheduler-container flex flex-col lg:flex-row justify-center gap-4 mx-3 mt-6" >
                <div className="scheduler-left-side p-0 ">
                   <div className="module-container border p-3 mb-3 rounded-lg">
                      <div className="flex justify-around gap-3 mr-3 ml-3 ">
                         <div className="grow">
                            <div className="my-2 font-bold">Academic Year</div>
-                           <YearDropdown />
+                           <FormField
+                              control={form.control}
+                              name="year"
+                              render={({ field }) => (
+                                 <FormItem>
+                                    {/* <FormLabel className="my-2 font-bold">Academic Year</FormLabel> */}
+                                    <FormControl>
+                                    {/* <Input placeholder="shadcn" {...field} /> */}
+                                    <YearDropdown {...field} func={pull_data} />
+                                    </FormControl>
+                                    <FormDescription className="mt-2">This is the academic year or term</FormDescription>
+                                    <FormMessage />
+                                 </FormItem>
+                              )}
+                           />
+                           {/* <YearDropdown /> */}
                         </div>
                         <div>
                            <div className="my-2 font-bold">Occasion</div>
@@ -180,12 +247,14 @@ function Schedule() {
                   </div>
 
                   <div className="flex flex-row my-3 gap-3">
-                     <div className="mx-auto text-center"><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600" onClick={submitForm}>Submit</Button></div>
+                     <div className="mx-auto text-center"><Button variant="outline" className="w-[250px] bg-muted hover:bg-green-600" >Submit</Button></div>
                      <div className="mx-auto"><Button variant="outline" className="w-[250px] hover:bg-muted">Clear</Button></div>
                   </div>
                </div>
 
             </div>
+            </form>
+            </Form>
          </div>
       </div>
    </div>
