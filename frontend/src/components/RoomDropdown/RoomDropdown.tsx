@@ -27,7 +27,7 @@ const roomList = rooms.data.map((room) => {
    }
 })
 
-function RoomDropdown() {
+export default function RoomDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("")
   return (
@@ -80,5 +80,3 @@ function RoomDropdown() {
          </div>
   )
 }
-
-export default RoomDropdown

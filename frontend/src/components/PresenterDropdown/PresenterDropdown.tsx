@@ -26,7 +26,7 @@ const presenters = users.data.map((user) => {
    }
 })
 
-function PresenterDropdown() {
+export default function PresenterDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("")
   return (
@@ -79,5 +79,3 @@ function PresenterDropdown() {
          </div>
   )
 }
-
-export default PresenterDropdown

@@ -6,7 +6,7 @@ import {
    Command,
    CommandEmpty,
    CommandGroup,
-   CommandInput,
+   // CommandInput,
    CommandItem,
    CommandList,
 } from "@/components/ui/command";
@@ -25,7 +25,7 @@ const years = terms.data.map((term) => {
    }
 })
 
-function YearDropdown() {
+export default function YearDropdown() {
    const [open, setOpen] = React.useState(false)
    const [value, setValue] = React.useState("")
   return (
@@ -78,5 +78,3 @@ function YearDropdown() {
          </div>
   )
 }
-
-export default YearDropdown

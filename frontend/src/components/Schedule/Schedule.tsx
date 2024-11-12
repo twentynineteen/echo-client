@@ -4,25 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 
+import AvailabilityDropdown from "@/components/AvailabilityDropdown/AvailabilityDropdown";
+import CaptureRadio from "@/components/CaptureRadio/CaptureRadio";
+import GroupSelect from '@/components/GroupSelect/GroupSelect';
+import InputRadio from "@/components/InputRadio/InputRadio";
+import LiveStreamSwitch from "@/components/LiveStreamSwitch/LiveStreamSwitch";
+import ModuleDropdown from '@/components/ModuleDropdown/ModuleDropdown';
+import OccasionDropdown from '@/components/OccasionDropdown/OccasionDropdown';
+import PresenterDropdown from "@/components/PresenterDropdown/PresenterDropdown";
+import RoomDropdown from "@/components/RoomDropdown/RoomDropdown";
 import { Separator } from "@/components/ui/separator";
+import YearDropdown from "@/components/YearDropdown/YearDropdown";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from 'react';
-import AvailabilityDropdown from "../AvailabilityDropdown/AvailabilityDropdown";
-import CaptureRadio from "../CaptureRadio/CaptureRadio";
-import DateCard from "../DateCard/DateCard";
-import GroupSelect from '../GroupSelect/GroupSelect';
-import InputDropdown from "../InputDropdown/InputDropdown";
-import InputRadio from "../InputRadio/InputRadio";
-import LiveStreamDropdown from "../LiveStreamDropdown/LiveStreamDropdown";
-import LiveStreamSwitch from "../LiveStreamSwitch/LiveStreamSwitch";
-import ModuleDropdown from '../ModuleDropdown/ModuleDropdown';
-import OccasionDropdown from '../OccasionDropdown/OccasionDropdown';
-import PresenterDropdown from "../PresenterDropdown/PresenterDropdown";
-import RoomDropdown from "../RoomDropdown/RoomDropdown";
-import StreamQualityDropdown from "../StreamQualityDropdown/StreamQualityDropdown";
-import YearDropdown from "../YearDropdown/YearDropdown";
 
 
 function Schedule() {
@@ -151,7 +147,9 @@ function Schedule() {
                            <AvailabilityDropdown />
                         </div>
                         <div className="occasion mt-10 basis-1/2 pr-2">
-                           <DatePicker className="bg-inherit" />
+                           <DatePicker 
+                              // className="bg-inherit" 
+                           />
                         </div>
                      </div>
                   </div>
