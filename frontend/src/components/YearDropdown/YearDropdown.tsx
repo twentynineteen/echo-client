@@ -24,15 +24,13 @@ const years = terms.data.map((term) => {
    }
 })
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>
 
-const YearDropdown = React.forwardRef<HTMLInputElement, InputProps>(
-   ({ className, type, ...props }, ref) => {
+const YearDropdown = () => {
       const [open, setOpen] = React.useState(false)
       const [value, setValue] = React.useState("")
       
 
-      props.func(value)
+
 
      return (
       <div className="">
@@ -53,7 +51,7 @@ const YearDropdown = React.forwardRef<HTMLInputElement, InputProps>(
          </PopoverTrigger>
          <PopoverContent className="w-full p-3  bg-background">
          <Command 
-            className={cn("bg-background", className)}
+            className="bg-background"
             // type={type}
             // ref={ref}
             // {...props}
@@ -91,6 +89,6 @@ const YearDropdown = React.forwardRef<HTMLInputElement, InputProps>(
      )
    }
 
-) 
+
 
 export default  YearDropdown ;

@@ -20,60 +20,10 @@ import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import * as React from 'react'
 
-import {
-   Form,
-   FormControl,
-   FormDescription,
-   FormField,
-   FormItem,
-   // FormLabel,
-   FormMessage,
-} from "@/@/components/ui/form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
 
-
-function Schedule() {
+export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
-   const [year, setYear] = React.useState("");
-
-   const formSchema = z.object({
-         year: z.string().min(2, "Must be more than 2 characters"),
-      })
-
-   const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-         year: "12",
-      }
-   })
-
-   // interface YearObject 
-   // {
-   //    year: string;
-   // }
-
-   function createYearObject(year: string) {
-      return {
-         year: year
-      }
-   }
-
-
-   // tester function to get academic year info from child component
-   // using ts to define response schema before logging to console on submission
-   function pull_data(data: string) {
-      const yearObject = createYearObject(data);
-      console.log("data is " + data);
-      return yearObject;
-   }
-
-
-   function onSubmit(values: z.infer<typeof formSchema>) {
-      // do something with the form values.
-      console.log(pull_data(values.year))
-   }
+   
 
   return (
      <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-6 sm:flex-wrap lg:flex-row">
@@ -83,11 +33,6 @@ function Schedule() {
             <p className="text-3xl">Schedule a recording</p>
          </div>
          <div className="scheduler-wrapper pt-4">
-            <Form {...form}>
-               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
-
-
 
             <div className="scheduler-container flex flex-col lg:flex-row justify-center gap-4 mx-3 mt-6" >
                <div className="scheduler-left-side p-0 ">
@@ -95,22 +40,8 @@ function Schedule() {
                      <div className="flex justify-around gap-3 mr-3 ml-3 ">
                         <div className="grow">
                            <div className="my-2 font-bold">Academic Year</div>
-                           <FormField
-                              control={form.control}
-                              name="year"
-                              render={({ field }) => (
-                                 <FormItem>
-                                    {/* <FormLabel className="my-2 font-bold">Academic Year</FormLabel> */}
-                                    <FormControl>
-                                    {/* <Input placeholder="shadcn" {...field} /> */}
-                                    <YearDropdown {...field} func={pull_data} />
-                                    </FormControl>
-                                    <FormDescription className="mt-2">This is the academic year or term</FormDescription>
-                                    <FormMessage />
-                                 </FormItem>
-                              )}
-                           />
-                           {/* <YearDropdown /> */}
+
+                           <YearDropdown />
                         </div>
                         <div>
                            <div className="my-2 font-bold">Occasion</div>
@@ -253,12 +184,9 @@ function Schedule() {
                </div>
 
             </div>
-            </form>
-            </Form>
          </div>
       </div>
    </div>
   )
 }
 
-export default Schedule
