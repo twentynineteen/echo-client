@@ -21,8 +21,74 @@ import { Calendar as CalendarIcon } from "lucide-react"
 import * as React from 'react'
 
 
+import {
+   Form,
+   FormControl,
+   FormDescription,
+   FormField,
+   FormItem,
+   FormLabel,
+   FormMessage,
+} from "@/@/components/ui/form"
+
+import {
+   Command,
+   CommandEmpty,
+   CommandGroup,
+   CommandInput,
+   CommandItem,
+   CommandList
+} from "@/components/ui/command"
+import {
+   Popover,
+   PopoverContent,
+   PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+   zodResolver
+} from "@hookform/resolvers/zod"
+import {
+   Check,
+   ChevronsUpDown
+} from "lucide-react"
+import {
+   useForm
+} from "react-hook-form"
+import * as z from "zod"
+
+import terms from '../../assets/terms.json'
+
+
+
+const formSchema = z.object({
+   academic_year: z.string()
+ });
+
+
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
+
+   const years = terms.data.map((term) => {
+      return {
+         value: term.id,
+         label: term.name,
+      }
+   });
+
+   const form = useForm < z.infer < typeof formSchema >> ({
+      resolver: zodResolver(formSchema),
+  
+    });
+
+   function onSubmit(values: z.infer < typeof formSchema > ) {
+      try {
+        console.log(values);
+        
+      } catch (error) {
+        console.error("Form submission error", error);
+        
+      }
+    }
    
 
   return (
@@ -31,6 +97,129 @@ export default function Schedule() {
       <div className="gap-4 max-w-7xl">
          <div className="">
             <p className="text-3xl">Schedule a recording</p>
+         </div>
+         <div className="form-wrapper">
+            <Form {...form}>
+               <form onSubmit={form.handleSubmit(onSubmit)} className="">
+                  <div className="form-container">
+                     <div className="academic-year">
+                        <FormField 
+                           control={form.control}
+                           name="academic_year"
+                           render={({ field }) => (
+                              <FormItem className="flex flex-col">
+                                 <FormLabel>Academic Year</FormLabel>
+                                 <Popover>
+                                    <PopoverTrigger asChild>
+                                       <FormControl>
+                                          <Button 
+                                             variant="outline"
+                                             role="combobox"   
+                                             className="w-full justify-between p-3"
+                                          >
+                                             {field.value ? years.find((year) => year.value === field.value)?.label
+                                             : "Select year..."}
+                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                          </Button>
+                                       </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-full p-3 bg-background">
+                                       <Command className="bg-background">
+                                       <CommandInput placeholder="Search language..." />
+                                          <CommandList>
+                                             <CommandEmpty>No year found.</CommandEmpty>
+                                             <CommandGroup>
+                                                {years.map((year) => (
+                                                <CommandItem
+                                                   key={year.value}
+                                                   value={year.label}
+                                                   onSelect={() => {
+                                                      form.setValue("academic_year", year.value);
+                                                   }}
+                                                >
+                                                   <Check
+                                                      className={cn(
+                                                      "mr-2 h-4 w-4",
+                                                      year.value === field.value
+                                                         ? "opacity-100"
+                                                         : "opacity-0"
+                                                      )}
+                                                   />
+                                                   {year.label}
+                                                </CommandItem>
+                                                ))}
+                                             </CommandGroup>
+                                          </CommandList> 
+                                       </Command>
+                                    </PopoverContent>
+                                 </Popover>
+                                 <FormDescription>This is the term that will be used in the booking.</FormDescription>
+                                 <FormMessage />
+                              </FormItem>
+                           )}
+                           />
+                     </div>
+                     <div className="occasion">
+                        <FormField 
+                           control={form.control}
+                           name="academic_year"
+                           render={({ field }) => (
+                              <FormItem className="flex flex-col">
+                                 <FormLabel>Academic Year</FormLabel>
+                                 <Popover>
+                                    <PopoverTrigger asChild>
+                                       <FormControl>
+                                          <Button 
+                                             variant="outline"
+                                             role="combobox"   
+                                             className="w-full justify-between p-3"
+                                          >
+                                             {field.value ? years.find((year) => year.value === field.value)?.label
+                                             : "Select year..."}
+                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                          </Button>
+                                       </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-full p-3 bg-background">
+                                       <Command className="bg-background">
+                                       <CommandInput placeholder="Search language..." />
+                                          <CommandList>
+                                             <CommandEmpty>No year found.</CommandEmpty>
+                                             <CommandGroup>
+                                                {years.map((year) => (
+                                                <CommandItem
+                                                   key={year.value}
+                                                   value={year.label}
+                                                   onSelect={() => {
+                                                      form.setValue("academic_year", year.value);
+                                                   }}
+                                                >
+                                                   <Check
+                                                      className={cn(
+                                                      "mr-2 h-4 w-4",
+                                                      year.value === field.value
+                                                         ? "opacity-100"
+                                                         : "opacity-0"
+                                                      )}
+                                                   />
+                                                   {year.label}
+                                                </CommandItem>
+                                                ))}
+                                             </CommandGroup>
+                                          </CommandList> 
+                                       </Command>
+                                    </PopoverContent>
+                                 </Popover>
+                                 <FormDescription>This is the term that will be used in the booking.</FormDescription>
+                                 <FormMessage />
+                              </FormItem>
+                           )}
+                           />
+                     </div>
+                  </div>
+                     <Button type="submit">Submit</Button>
+               </form>
+            </Form>
          </div>
          <div className="scheduler-wrapper pt-4">
 
