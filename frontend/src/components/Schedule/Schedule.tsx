@@ -14,11 +14,24 @@ import OccasionDropdown from '@/components/OccasionDropdown/OccasionDropdown'
 import PresenterDropdown from "@/components/PresenterDropdown/PresenterDropdown"
 import RoomDropdown from "@/components/RoomDropdown/RoomDropdown"
 import { Separator } from "@/components/ui/separator"
+import {
+   Switch
+} from "@/components/ui/switch"
 import YearDropdown from "@/components/YearDropdown/YearDropdown"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import * as React from 'react'
+
+import {
+   Select,
+   SelectContent,
+   SelectGroup,
+   SelectItem,
+   SelectLabel,
+   SelectTrigger,
+   SelectValue,
+} from "@/components/ui/select"
 
 import {
    Form,
@@ -99,9 +112,17 @@ const formSchema = z.object({
    room: z.string(),
    input: z.string(),
    capture_quality: z.string(),
+   stream_quality: z.string().optional(),
    presenter: z.string(),
    guest_presenter: z.string().optional(),
    start_date: z.coerce.date(),
+   start_time: z.string(),
+   end_time: z.string(),
+   availability: z.string(),
+   availability_date: z.coerce.date(),
+   live_stream_toggle: z.boolean(),
+   group: z.string().optional(),
+   requested_by: z.string().optional(),
  });
 
 
@@ -151,6 +172,21 @@ export default function Schedule() {
       {
          value: "9",
          label: "9",
+      },
+   ];
+
+   const availability_options = [
+      {
+         value: "Immediately",
+         label: "Immediately",
+      },
+      {
+         value: "Never",
+         label: "Never",
+      },
+      {
+         value: "Manual",
+         label: "Manual",
       },
    ];
 
@@ -653,60 +689,319 @@ export default function Schedule() {
                   <div className="form-container-2">
                      <div className="recording-date">
                         <div className="recording-date-left">
-                        <FormField
-                           control={form.control}
-                           name="start_date"
-                           render={({ field }) => (
-                           <FormItem className="flex flex-col">
-                              <FormLabel>Recording Date</FormLabel>
-                                 <div className="calendar-left">
-                                    <Calendar
-                                       mode="single"
-                                       selected={field.value}
-                                       onSelect={field.onChange}
-                                       autoFocus
-                                    />
-                                 </div>
-                                 <div className="calendar-right">
-                                    <FormControl>
-                                       <Button
-                                          variant={"outline"}
-                                          className={cn(
-                                             "w-[240px] pl-3 text-left font-normal",
-                                             !field.value && "text-muted-foreground"
-                                          )}
-                                       >
-                                          {field.value ? (
-                                             format(field.value, "PPP")
-                                          ) : (
-                                             <span>Pick a date</span>
-                                          )}
-                                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                       </Button>
-                                    </FormControl>
-                                    <FormDescription>Your date of birth is used to calculate your age.</FormDescription>
+                           <FormField
+                              control={form.control}
+                              name="start_date"
+                              render={({ field }) => (
+                                 <FormItem className="flex flex-col">
+                                    <FormLabel>Recording Date</FormLabel>
+                                    <Popover>
+                                       <PopoverTrigger asChild>
+                                          <FormControl>
+                                             <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                   "w-[240px] pl-3 text-left font-normal",
+                                                   !field.value && "text-muted-foreground"
+                                                )}
+                                             >
+                                                {field.value ? (
+                                                   format(field.value, "PPP")
+                                                ) : (
+                                                   <span>Pick a date</span>
+                                                )}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                             </Button>
+                                          </FormControl>
+                                       </PopoverTrigger>
+                                       <PopoverContent className="w-auto p-0" align="start">
+                                          <Calendar
+                                             mode="single"
+                                             selected={field.value}
+                                             onSelect={field.onChange}
+                                             autoFocus
+                                          />
+                                       </PopoverContent>
+                                    </Popover>
+                                    <FormDescription>Select the date of recording from the calendar.</FormDescription>
                                     <FormMessage />
-                                 </div>
-                           </FormItem>
-                           )}
-                        />
+                                 </FormItem>
+                              )}
+                           />
                         </div>
                         <div className="recording-date-right">
-                              {/* Calendar options and time inputs here */}
+                           {/* Calendar options and time inputs here */}
+                           <div className="start ">
+                              <FormField
+                                 control={form.control}
+                                 name="start_time"
+                                 render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Start time (24 hr clock)</FormLabel>
+                                    <FormControl>
+                                       <Input 
+                                       type="Time"
+                                       {...field} />
+                                    </FormControl>
+                                    <FormDescription>Enter the start time of the recording.</FormDescription>
+                                    <FormMessage />
+                                    </FormItem>
+                                 )}
+                              />
+                           </div>
+                           <div className="end_time my-3">
+                              <FormField
+                                    control={form.control}
+                                    name="end_time"
+                                    render={({ field }) => (
+                                       <FormItem>
+                                       <FormLabel>End time (24 hr clock)</FormLabel>
+                                       <FormControl>
+                                          <Input                                         
+                                          type="Time"
+                                          {...field} />
+                                       </FormControl>
+                                       <FormDescription>Enter the end time of the recording.</FormDescription>
+                                       <FormMessage />
+                                       </FormItem>
+                                    )}
+                                 />
+                           </div>
                         </div>
                      </div>
                      <div className="availability">
-                              {/* switch */}
-                              {/* datepicker */}
+                        {/* switch */}                      
+                        <FormField 
+                           control={form.control}
+                           name="availability"
+                           render={({ field }) => (
+                              <FormItem className="flex flex-col">
+                                 <FormLabel>Availability</FormLabel>
+                                 <Popover>
+                                    <PopoverTrigger asChild>
+                                       <FormControl>
+                                          <Button 
+                                             variant="outline"
+                                             role="combobox"   
+                                             className="w-full justify-between p-3"
+                                          >
+                                             {field.value ? availability_options.find((availability) => availability.value === field.value)?.label
+                                             : "Select availability..."}
+                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                          </Button>
+                                       </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-full p-3 bg-background">
+                                       <Command className="bg-background">
+                                       {/* <CommandInput placeholder="Search availability..." /> */}
+                                          <CommandList>
+                                             <CommandEmpty>No availability found.</CommandEmpty>
+                                             <CommandGroup>
+                                                {availability_options.map((availability) => (
+                                                <CommandItem
+                                                   key={availability.value}
+                                                   value={availability.label}
+                                                   onSelect={() => {
+                                                      form.setValue("availability", availability.value);
+                                                   }}
+                                                >
+                                                   <Check
+                                                      className={cn(
+                                                      "mr-2 h-4 w-4",
+                                                      availability.value === field.value
+                                                         ? "opacity-100"
+                                                         : "opacity-0"
+                                                      )}
+                                                   />
+                                                   {availability.label}
+                                                </CommandItem>
+                                                ))}
+                                             </CommandGroup>
+                                          </CommandList> 
+                                       </Command>
+                                    </PopoverContent>
+                                 </Popover>
+                                 <FormDescription>Set when this recording is made available to students (defaults to immediately available after recording).</FormDescription>
+                                 <FormMessage />
+                              </FormItem>
+                           )}
+                           />
+                        {/* datepicker if set to manual */}
+                        <FormField
+                              control={form.control}
+                              name="availability_date"
+                              render={({ field }) => (
+                                 <FormItem className="flex flex-col">
+                                    <FormLabel>Availability Date</FormLabel>
+                                    <Popover>
+                                       <PopoverTrigger asChild>
+                                          <FormControl>
+                                             <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                   "w-[240px] pl-3 text-left font-normal",
+                                                   !field.value && "text-muted-foreground"
+                                                )}
+                                             >
+                                                {field.value ? (
+                                                   format(field.value, "PPP")
+                                                ) : (
+                                                   <span>Pick a date</span>
+                                                )}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                             </Button>
+                                          </FormControl>
+                                       </PopoverTrigger>
+                                       <PopoverContent className="w-auto p-0" align="start">
+                                          <Calendar
+                                             mode="single"
+                                             selected={field.value}
+                                             onSelect={field.onChange}
+                                             autoFocus
+                                          />
+                                       </PopoverContent>
+                                    </Popover>
+                                    <FormDescription>Select the date of release.</FormDescription>
+                                    <FormMessage />
+                                 </FormItem>
+                              )}
+                           />
                      </div>
                      <Separator />
                      <div className="live-stream">
                               {/* switch */}
-                              {/* options */}
+                        <FormField
+                           control={form.control}
+                           name="live_stream_toggle"
+                           render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                 <div className="space-y-0.5">
+                                    <FormLabel>Live Stream</FormLabel>
+                                    <FormDescription>Is this session going to be streamed live?</FormDescription>
+                                 </div>
+                                 <FormControl>
+                                    <Switch
+                                       checked={field.value}
+                                       onCheckedChange={field.onChange}
+                                       // disabled
+                                       aria-readonly
+                                    />
+                                 </FormControl>
+                              </FormItem>
+                           )}
+                        />
+                        {/* Stream quality */}
+                        <div className="stream-quality">
+                           <FormField
+                              control={form.control}
+                              name="stream_quality"
+                              render={({ field }) => (
+                                 <FormItem className="space-y-3">
+                                 <FormLabel>Stream Quality</FormLabel>
+                                 <FormControl>
+                                    <RadioGroup
+                                       onValueChange={field.onChange}
+                                       defaultValue={field.value}
+                                       className="flex flex-col space-y-1"
+                                    >
+                                       <FormItem className="flex items-center space-x-3 space-y-0">
+                                       <FormControl>
+                                          <RadioGroupItem value="Highest Quality" />
+                                       </FormControl>
+                                       <FormLabel className="font-normal">
+                                          Highest Quality
+                                       </FormLabel>
+                                       </FormItem>
+                                       <FormItem className="flex items-center space-x-3 space-y-0">
+                                       <FormControl>
+                                          <RadioGroupItem value="High Quality" />
+                                       </FormControl>
+                                       <FormLabel className="font-normal">
+                                          High Quality
+                                       </FormLabel>
+                                       </FormItem>
+                                       <FormItem className="flex items-center space-x-3 space-y-0">
+                                       <FormControl>
+                                          <RadioGroupItem value="Standard Quality" />
+                                       </FormControl>
+                                       <FormLabel className="font-normal">
+                                       Standard Quality
+                                       </FormLabel>
+                                       </FormItem>
+                                    </RadioGroup>
+                                 </FormControl>
+                                 <FormMessage />
+                                 </FormItem>
+                              )}
+                           />
+                        </div>
                      </div>
                      <div className="optional-fields">
                         {/* group dropdown */}
+                        <FormField
+                           control={form.control}
+                           name="group"
+                           render={({ field }) => (
+                              <FormItem>
+                                 <FormLabel>Group</FormLabel>
+                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                       <SelectTrigger className="w-[250px]">
+                                       <SelectValue placeholder="Select a group" />
+                                       </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="bg-background  p-3">
+                                       <SelectGroup>
+                                          <SelectLabel className="font-bold text-lg">Postgraduate</SelectLabel>
+                                          <SelectItem value="behavioural-pg">Behavioural PG</SelectItem>
+                                          <SelectItem value="business-pg">Business PG</SelectItem>
+                                          <SelectItem value="central-banking">Central Banking</SelectItem>
+                                          <SelectItem value="dba-office">DBA Office</SelectItem>
+                                          <SelectItem value="exec-ed">Executive Education</SelectItem>
+                                          <SelectItem value="exec-mba">Exec MBA</SelectItem>
+                                          <SelectItem value="finance-pg">Finance PG</SelectItem>
+                                          <SelectItem value="ftmba">FTMBA</SelectItem>
+                                          <SelectItem value="glomba">GLOMBA</SelectItem>
+                                          <SelectItem value="management-pg">Management PG</SelectItem>
+                                          <SelectItem value="marketing-pg">Marketing PG</SelectItem>
+                                          <SelectItem value="mim">MIM</SelectItem>
+                                          <SelectItem value="mint">MINT</SelectItem>
+                                          <SelectItem value="shard">SHARD</SelectItem>
+
+                                       </SelectGroup>
+                                       <SelectGroup>
+                                          <SelectLabel className="font-bold text-lg">Undergraduate</SelectLabel>
+                                          <SelectItem value="ug-student-experience">UG Student Experience</SelectItem>
+                                          <SelectItem value="undergraduate">Undergraduate Resource</SelectItem>
+                                       </SelectGroup>
+                                    </SelectContent>
+                                 </Select>
+                                    <FormDescription>Optional - Choose the group who requested this booking</FormDescription>
+                                 <FormMessage />
+                              </FormItem>
+                           )}
+                        />
                         {/* requested by - input */}
+                        <div className="recording-title">
+                           <FormField
+                              control={form.control}
+                              name="requested_by"
+                              render={({ field }) => (
+                                 <FormItem>
+                                    <FormLabel>Requested by</FormLabel>
+                                    <FormControl>
+                                       <Input 
+                                       placeholder="Input name here"
+                                       
+                                       type=""
+                                       {...field} />
+                                    </FormControl>
+                                    <FormDescription>This is the name of the person requesting the booking.</FormDescription>
+                                    <FormMessage />
+                                 </FormItem>
+                              )}
+                           />
+                        </div>
                      </div>
                   </div>
                      <Button type="submit">Submit</Button>
