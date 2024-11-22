@@ -29,4 +29,21 @@ public class RESTSectionService {
       return sectionList;
 
    }
+
+/**
+ * This Java function retrieves a section by its ID using the Echo360 API.
+ * 
+ * @param id The `id` parameter in the `getSectionById` method is used to specify the unique identifier
+ * of the section that you want to retrieve. This identifier is typically used to look up and fetch the
+ * specific section from the system or database.
+ * @return The method `getSectionById` is returning a `Section` object.
+ */
+   public Section getSectionById(String id) throws Echo360Exception {
+      log.logString("getSectionById called... ");
+
+      SectionService sectionService = new SectionService(echo360ApiService.echo360Api());
+      Section section = sectionService.get(id);
+      return section;
+
+   }
 }

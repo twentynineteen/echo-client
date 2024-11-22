@@ -198,6 +198,59 @@ export default function Schedule() {
       }
     });
 
+   function convertFormToSchedule(values: z.infer < typeof formSchema > ) {
+      // A function to convert the form submission into suitable echo 360 submission format
+      // generate an external id using "MODULECODE-DDMMYY-HH:MM-ROOM" format
+      // parse start date to 'dd/mm/yyyy' format
+      // parse start time to 'hh:mm:ss' format
+      // calculate duration by removing start time from end time - end time not required
+      // collect building name and campus name from values.room
+      // get presenter email from id - repeat for guest
+      // get course identifier from ???
+      // format availability if manual
+      // format input options for input 1 and 2
+      // Create a schedule availability object inside schedule section object
+      // parameters for ScheduleAvailability - True, False, concreteTime
+      // ScheduleSection : [ScheduleSection(values.section, ScheduleAvailability())], 
+
+      // Schedule(
+      //    java.lang.String startTime, 
+      //    java.lang.String startDate, 
+      //    java.lang.Integer durationMinutes, 
+      //    ScheduleSection[] sections, 
+      //    java.lang.String name, 
+      //    java.lang.String roomId, 
+      //    java.lang.String instructorId, 
+      //    java.lang.String input1, 
+      //    java.lang.String input2, 
+      //    java.lang.String captureQuality
+      // )
+
+      
+
+      const externalId = "IB9HY0-010524-13:00:00M2";
+      const schedule = {
+         externalId: externalId,
+         name: values.recording_title,
+         startDate: "dd/mm/yyyy",
+         startTime: "13:00:00",
+         durationMinutes: "14:00:00",
+         roomId: values.room,
+         instructorId: values.presenter,
+         guestInstructor: values.guest_presenter,
+         termId: values.academic_year,
+         ScheduleSection : [ScheduleSection(values.section, ScheduleAvailability())],
+         "Availability": "Concrete | 2024-05-10",
+         shouldCaption: "TRUE",
+         shouldStreamLive: values.live_stream_toggle,
+         input1: "",
+         input2: "",
+         captureQuality: values.capture_quality,
+         streamQuality: values.stream_quality,
+      };
+      return schedule;
+   }
+
    function onSubmit(values: z.infer < typeof formSchema > ) {
       try {
         console.log(values);

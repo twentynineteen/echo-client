@@ -1,6 +1,7 @@
 package dev.danmills.echo_client.api.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,4 +32,21 @@ public class SectionController {
    log.logString("Attempting to get Sections");
    return restSectionService.getSections();
   }
+
+/**
+ * This Java function retrieves a section by its ID and logs an attempt to do so.
+ * 
+ * @param id The `id` parameter in the `getSectionById` method is used to specify the unique identifier
+ * of the section that you want to retrieve. This method is a part of a Spring MVC controller that
+ * handles GET requests to "/sections/{id}", where `{id}` is a path variable representing the ID
+ * @return The method is returning a Section object.
+ */
+  @GetMapping("/sections/{id}")
+  @ResponseBody
+  public Section getSectionById(@PathVariable String id) throws Echo360Exception {
+   log.logString("Attempting to get Section - " + id);
+   return restSectionService.getSectionById(id);
+  }
+
+
 }

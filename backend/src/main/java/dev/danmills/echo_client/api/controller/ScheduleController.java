@@ -1,6 +1,8 @@
 package dev.danmills.echo_client.api.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,5 +32,15 @@ public class ScheduleController {
   public ListRequest<Schedule> getSchedules() throws Echo360Exception {
    log.logString("Attempting to get Schedules");
    return restScheduleService.getSchedules();
+  }
+  
+  @PostMapping("/schedules/create")
+  @ResponseBody
+  public Schedule postSchedule(@RequestBody String scheduleObject) throws Echo360Exception {
+   log.logString("Attempting to create a new Schedule");
+   log.logString(scheduleObject);
+   Schedule schedule = new Schedule();
+
+   return restScheduleService.postSchedule(schedule);
   }
 }
