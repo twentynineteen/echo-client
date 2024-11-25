@@ -5,7 +5,7 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
-import './globals.css';
+import './App.css';
 
 import Footer from "./components/Footer/Footer";
 import Modules from "./components/Modules/Modules";
