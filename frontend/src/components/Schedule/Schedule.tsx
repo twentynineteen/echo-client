@@ -1,23 +1,12 @@
 "use client"
-import { DatePicker } from "@/components/DatePicker/DatePicker"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 
-import AvailabilityDropdown from "@/components/AvailabilityDropdown/AvailabilityDropdown"
-import CaptureRadio from "@/components/CaptureRadio/CaptureRadio"
-import GroupSelect from '@/components/GroupSelect/GroupSelect'
-import InputRadio from "@/components/InputRadio/InputRadio"
-import LiveStreamSwitch from "@/components/LiveStreamSwitch/LiveStreamSwitch"
-import ModuleDropdown from '@/components/ModuleDropdown/ModuleDropdown'
-import OccasionDropdown from '@/components/OccasionDropdown/OccasionDropdown'
-import PresenterDropdown from "@/components/PresenterDropdown/PresenterDropdown"
-import RoomDropdown from "@/components/RoomDropdown/RoomDropdown"
 import { Separator } from "@/components/ui/separator"
 import {
    Switch
 } from "@/components/ui/switch"
-import YearDropdown from "@/components/YearDropdown/YearDropdown"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
@@ -199,6 +188,7 @@ export default function Schedule() {
     });
 
    function convertFormToSchedule(values: z.infer < typeof formSchema > ) {
+      // TODO
       // A function to convert the form submission into suitable echo 360 submission format
       // generate an external id using "MODULECODE-DDMMYY-HH:MM-ROOM" format
       // parse start date to 'dd/mm/yyyy' format
@@ -233,8 +223,8 @@ export default function Schedule() {
          externalId: externalId,
          name: values.recording_title,
          startDate: "dd/mm/yyyy",
-         startTime: "13:00:00",
-         durationMinutes: "14:00:00",
+         startTime: "13:00",
+         durationMinutes: "14:00",
          roomId: values.room,
          instructorId: values.presenter,
          guestInstructor: values.guest_presenter,
