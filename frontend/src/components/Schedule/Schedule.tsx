@@ -8,9 +8,12 @@ import {
    Switch
 } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+
+import axios, { AxiosBasicCredentials, AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from 'axios'
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import * as React from 'react'
+import { useEffect, useQuery } from 'react'
 
 import {
    Select,
@@ -58,17 +61,11 @@ import {
 } from "react-hook-form"
 import * as z from "zod"
 
-import sections from '../../assets/sections.json'
+// import sections from '../../assets/sections.json'
+
 import terms from '../../assets/terms.json'
 
-// Module dropdown uses 'sections' data from echo360 SDK
-const sectionList = sections.data.map((section) => {
-   return {
-      value: section.id,
-      id: section.id,
-      label: section.sectionNumber,
-   }
-}) 
+
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import rooms from '../../assets/rooms.json'
@@ -117,6 +114,112 @@ const formSchema = z.object({
 
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
+   const [sections, setSections] = React.useState<section[]>();
+
+   // axios set up
+   const client = axios.create({
+      baseURL: 'http://localhost:8080',
+   });
+   // initialise type required for section list
+   // type foundSection = {
+   //    value: string;
+   //    id: string;
+   //    label: string;
+   // }
+   // initialise type pulled from api for section
+   type section = {
+      id: string;
+      courseId: string;
+      termId: string;
+      scheduleIds: string[];
+      sectionNumber: string;
+      externalId: string;
+      instructorId: string;
+      description: string;
+      lessonCount: number;
+      userCount: string;
+      secondaryInstructorIds: string[];
+      lmsCourseIds: string[];
+      lmsCourses: string[];
+   }
+   // get sections async call to backend api
+   // returns section list ready to be converted for dropdown
+   async function getSections(): Promise<section[]> {
+      const config: AxiosRequestConfig = {
+         headers: {
+            'Accept': 'application/json',
+         } as RawAxiosRequestHeaders,
+         auth: {
+               username: 'user',
+               password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
+         } as AxiosBasicCredentials,
+      };
+      const response: section[] = await client.get(`/sections`, config);
+      // body: JSON.stringify(params),
+      return response;
+    }
+
+   
+    
+   //  const storeSectionResponse = useQuery({
+   //    queryFn: () => 
+   //       getSections(),
+   //  })
+
+   //async call to api for section list
+   // const getSections = async () => {
+   //    const config: AxiosRequestConfig = {
+   //       headers: {
+   //          'Accept': 'application/json',
+   //       } as RawAxiosRequestHeaders,
+   //       auth: {
+   //             username: 'user',
+   //             password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
+   //       } as AxiosBasicCredentials,
+   //    };
+   //    try {
+   //       const searchResponse: AxiosResponse = await client.get('/sections', config);
+   //       const foundSections: section[] = searchResponse.data;
+   //       setSections(foundSections);
+   //       console.log(foundSections);
+         
+
+   //    } catch(err) {
+   //       console.log(err);
+   //    }
+   // };
+
+   // const bigList = getSections();
+
+   // // Function to collect list of sections from backend call
+   // useEffect(() => {
+   //    const config: AxiosRequestConfig = {
+   //             headers: {
+   //                'Accept': 'application/json',
+   //             } as RawAxiosRequestHeaders,
+   //             auth: {
+   //                   username: 'user',
+   //                   password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
+   //             } as AxiosBasicCredentials,
+   //          };
+   //    const fetchSections = async () => {
+   //       const res = await client.get("/sections", config)
+   //       console.log(res.data.data[0]);
+   //       setSections(res.data.data);
+   //    };
+   //    fetchSections();
+   // }, []);
+
+   // Module dropdown uses 'sections' data from echo360 SDK
+   // const sectionList = sections.map((section) => {
+   //    return {
+   //       value: section.id,
+   //       id: section.id,
+   //       label: section.sectionNumber,
+   //    }
+   // }) 
+   
+   
 
    const years = terms.data.map((term) => {
       return {
@@ -183,7 +286,7 @@ export default function Schedule() {
       resolver: zodResolver(formSchema),
       defaultValues: {
          "occasion": "1",
-         "start_date": new Date(),
+         "start_date": date,
       }
     });
 
@@ -259,7 +362,7 @@ export default function Schedule() {
          <div className="page-header">
             <p className="text-3xl">Schedule a recording</p>
          </div>
-         <div className="form-wrapper pt-3">
+         <div className="form-wrapper">
             <Form {...form}>
                <form onSubmit={form.handleSubmit(onSubmit)} className="">
                   <div className="form-container-master flex flex-col lg:flex-row justify-center gap-4 mx-3 mt-6">
@@ -382,7 +485,7 @@ export default function Schedule() {
                               </div>
                            </div>
                            <div className="section gap-3 mr-3 ml-3">
-                              <FormField 
+                              {/* <FormField 
                                  control={form.control}
                                  name="section"
                                  render={({ field }) => (
@@ -396,7 +499,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? sectionList.find((section) => section.value === field.value)?.label
+                                                   {field.value ? sections.find((section) => section.id === field.value)?.sectionNumber
                                                    : "Select section..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -408,23 +511,23 @@ export default function Schedule() {
                                                 <CommandList>
                                                    <CommandEmpty>No section found.</CommandEmpty>
                                                    <CommandGroup>
-                                                      {sectionList.map((section) => (
+                                                      {sections.map((section) => (
                                                       <CommandItem
-                                                         key={section.value}
-                                                         value={section.label}
+                                                         key={section.id}
+                                                         value={section.sectionNumber}
                                                          onSelect={() => {
-                                                            form.setValue("section", section.value);
+                                                            form.setValue("section", section.id);
                                                          }}
                                                       >
                                                          <Check
                                                             className={cn(
                                                             "mr-2 h-4 w-4",
-                                                            section.value === field.value
+                                                            section.id === field.value
                                                                ? "opacity-100"
                                                                : "opacity-0"
                                                             )}
                                                          />
-                                                         {section.label}
+                                                         {section.sectionNumber}
                                                       </CommandItem>
                                                       ))}
                                                    </CommandGroup>
@@ -436,7 +539,10 @@ export default function Schedule() {
                                        <FormMessage />
                                     </FormItem>
                                  )}
-                                 />
+                                 /> */}
+
+                                 <p>{sections ? sections.map((section)=>(section.sectionNumber)) : "no sections found"}
+                                 </p>
                            </div>
                            <div className="recording-title gap-3 mr-3 ml-3">
                               <FormField
@@ -764,7 +870,7 @@ export default function Schedule() {
                                                    </Button>
                                                 </FormControl>
                                              </PopoverTrigger>
-                                             <PopoverContent className="w-auto p-0" align="start">
+                                             <PopoverContent className="w-auto p-0 bg-background" align="start">
                                                 <Calendar
                                                    mode="single"
                                                    selected={field.value}
@@ -907,7 +1013,7 @@ export default function Schedule() {
                                                       </Button>
                                                    </FormControl>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
+                                                <PopoverContent className="w-auto p-0 bg-background" align="start">
                                                    <Calendar
                                                       mode="single"
                                                       selected={field.value}
