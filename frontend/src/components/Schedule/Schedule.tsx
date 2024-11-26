@@ -13,7 +13,7 @@ import axios, { AxiosBasicCredentials, AxiosRequestConfig, AxiosResponse, RawAxi
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import * as React from 'react'
-import { useEffect, useQuery } from 'react'
+
 
 import {
    Select,
@@ -114,7 +114,7 @@ const formSchema = z.object({
 
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
-   const [sections, setSections] = React.useState<section[]>();
+   const [sections, setSections] = React.useState<section[]>([]);
 
    // axios set up
    const client = axios.create({
@@ -144,23 +144,24 @@ export default function Schedule() {
    }
    // get sections async call to backend api
    // returns section list ready to be converted for dropdown
-   async function getSections(): Promise<section[]> {
-      const config: AxiosRequestConfig = {
-         headers: {
-            'Accept': 'application/json',
-         } as RawAxiosRequestHeaders,
-         auth: {
-               username: 'user',
-               password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
-         } as AxiosBasicCredentials,
-      };
-      const response: section[] = await client.get(`/sections`, config);
-      // body: JSON.stringify(params),
-      return response;
-    }
+   // async function getSections(): Promise<section[]> {
+   //    const config: AxiosRequestConfig = {
+   //       headers: {
+   //          'Accept': 'application/json',
+   //          "X-API-KEY": "DwightSchrute",
+   //       } as RawAxiosRequestHeaders,
+   //       // auth: {
+   //       //       username: 'user',
+   //       //       password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
+   //       // } as AxiosBasicCredentials,
+   //    };
+   //    const response: section[] = await client.get(`/sections`, config);
+   //       // .catch((err) => console.error(err));
+   //    // body: JSON.stringify(params),
+   //    return response;
+   //  }
 
-   
-    
+
    //  const storeSectionResponse = useQuery({
    //    queryFn: () => 
    //       getSections(),
@@ -171,11 +172,12 @@ export default function Schedule() {
    //    const config: AxiosRequestConfig = {
    //       headers: {
    //          'Accept': 'application/json',
+   //          'X-API-KEY': 'DwightSchrute'
    //       } as RawAxiosRequestHeaders,
-   //       auth: {
-   //             username: 'user',
-   //             password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
-   //       } as AxiosBasicCredentials,
+   //       // auth: {
+   //       //       username: 'user',
+   //       //       password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
+   //       // } as AxiosBasicCredentials,
    //    };
    //    try {
    //       const searchResponse: AxiosResponse = await client.get('/sections', config);
@@ -189,26 +191,22 @@ export default function Schedule() {
    //    }
    // };
 
-   // const bigList = getSections();
+   // getSections();
+   const ask = async () => {
+      try {
+         const searchResponse: AxiosResponse = await client.get('/sections', {
+            headers: { 'X-API-KEY': 'DwightSchrute' }
+        });
+        const foundSections: section[] = searchResponse.data;
+        console.log(foundSections)
+      } catch(err) {
+         console.log(err);
+      }
+   };
 
-   // // Function to collect list of sections from backend call
-   // useEffect(() => {
-   //    const config: AxiosRequestConfig = {
-   //             headers: {
-   //                'Accept': 'application/json',
-   //             } as RawAxiosRequestHeaders,
-   //             auth: {
-   //                   username: 'user',
-   //                   password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
-   //             } as AxiosBasicCredentials,
-   //          };
-   //    const fetchSections = async () => {
-   //       const res = await client.get("/sections", config)
-   //       console.log(res.data.data[0]);
-   //       setSections(res.data.data);
-   //    };
-   //    fetchSections();
-   // }, []);
+   ask();
+
+
 
    // Module dropdown uses 'sections' data from echo360 SDK
    // const sectionList = sections.map((section) => {
@@ -540,9 +538,6 @@ export default function Schedule() {
                                     </FormItem>
                                  )}
                                  /> */}
-
-                                 <p>{sections ? sections.map((section)=>(section.sectionNumber)) : "no sections found"}
-                                 </p>
                            </div>
                            <div className="recording-title gap-3 mr-3 ml-3">
                               <FormField
