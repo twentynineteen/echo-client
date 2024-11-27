@@ -13,6 +13,7 @@ import axios, { AxiosBasicCredentials, AxiosRequestConfig, AxiosResponse, RawAxi
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import * as React from 'react'
+import { useEffect } from 'react'
 
 
 import {
@@ -114,18 +115,17 @@ const formSchema = z.object({
 
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
-   const [sections, setSections] = React.useState<section[]>([]);
+   const [sections, setSections] = React.useState<sectionItems[]>([]);
 
    // axios set up
    const client = axios.create({
       baseURL: 'http://localhost:8080',
    });
    // initialise type required for section list
-   // type foundSection = {
-   //    value: string;
-   //    id: string;
-   //    label: string;
-   // }
+   type sectionItems = {
+      value: string;
+      label: string;
+   }
    // initialise type pulled from api for section
    type section = {
       id: string;
@@ -143,80 +143,31 @@ export default function Schedule() {
       lmsCourses: string[];
    }
    // get sections async call to backend api
-   // returns section list ready to be converted for dropdown
-   // async function getSections(): Promise<section[]> {
-   //    const config: AxiosRequestConfig = {
-   //       headers: {
-   //          'Accept': 'application/json',
-   //          "X-API-KEY": "DwightSchrute",
-   //       } as RawAxiosRequestHeaders,
-   //       // auth: {
-   //       //       username: 'user',
-   //       //       password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
-   //       // } as AxiosBasicCredentials,
-   //    };
-   //    const response: section[] = await client.get(`/sections`, config);
-   //       // .catch((err) => console.error(err));
-   //    // body: JSON.stringify(params),
-   //    return response;
-   //  }
-
-
-   //  const storeSectionResponse = useQuery({
-   //    queryFn: () => 
-   //       getSections(),
-   //  })
-
-   //async call to api for section list
-   // const getSections = async () => {
-   //    const config: AxiosRequestConfig = {
-   //       headers: {
-   //          'Accept': 'application/json',
-   //          'X-API-KEY': 'DwightSchrute'
-   //       } as RawAxiosRequestHeaders,
-   //       // auth: {
-   //       //       username: 'user',
-   //       //       password: '89da79a4-1a22-4d9f-9927-f69ba4c4a8c8'
-   //       // } as AxiosBasicCredentials,
-   //    };
-   //    try {
-   //       const searchResponse: AxiosResponse = await client.get('/sections', config);
-   //       const foundSections: section[] = searchResponse.data;
-   //       setSections(foundSections);
-   //       console.log(foundSections);
-         
-
-   //    } catch(err) {
-   //       console.log(err);
-   //    }
-   // };
-
-   // getSections();
    const ask = async () => {
       try {
          const searchResponse: AxiosResponse = await client.get('/sections', {
             headers: { 'X-API-KEY': 'DwightSchrute' }
-        });
-        const foundSections: section[] = searchResponse.data;
-        console.log(foundSections)
+         });
+         // convert section array to type sectionItems array from response data object
+         const foundSections: section[] = Object.values(searchResponse.data['data']);
+         // map sections to state for dropdown menu
+         const mapped = foundSections.map((item) => {
+            return {
+               value: item.id,
+               label: item.sectionNumber,
+            }
+         });
+         setSections(mapped);
       } catch(err) {
          console.log(err);
       }
    };
+   // call ask on page load for section dropdown items
+   useEffect(()=>{
+      ask()
+   },[]);
 
-   ask();
-
-
-
-   // Module dropdown uses 'sections' data from echo360 SDK
-   // const sectionList = sections.map((section) => {
-   //    return {
-   //       value: section.id,
-   //       id: section.id,
-   //       label: section.sectionNumber,
-   //    }
-   // }) 
-   
+   // ask();
    
 
    const years = terms.data.map((term) => {
@@ -483,7 +434,7 @@ export default function Schedule() {
                               </div>
                            </div>
                            <div className="section gap-3 mr-3 ml-3">
-                              {/* <FormField 
+                              <FormField 
                                  control={form.control}
                                  name="section"
                                  render={({ field }) => (
@@ -497,7 +448,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? sections.find((section) => section.id === field.value)?.sectionNumber
+                                                   {field.value ? sections.find((section) => section.value === field.value)?.label
                                                    : "Select section..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -511,21 +462,21 @@ export default function Schedule() {
                                                    <CommandGroup>
                                                       {sections.map((section) => (
                                                       <CommandItem
-                                                         key={section.id}
-                                                         value={section.sectionNumber}
+                                                         key={section.value}
+                                                         value={section.label}
                                                          onSelect={() => {
-                                                            form.setValue("section", section.id);
+                                                            form.setValue("section", section.value);
                                                          }}
                                                       >
                                                          <Check
                                                             className={cn(
                                                             "mr-2 h-4 w-4",
-                                                            section.id === field.value
+                                                            section.value === field.value
                                                                ? "opacity-100"
                                                                : "opacity-0"
                                                             )}
                                                          />
-                                                         {section.sectionNumber}
+                                                         {section.label}
                                                       </CommandItem>
                                                       ))}
                                                    </CommandGroup>
@@ -537,7 +488,8 @@ export default function Schedule() {
                                        <FormMessage />
                                     </FormItem>
                                  )}
-                                 /> */}
+                                 />
+                                 {/* <p>{sections ? sections.id : "none found"}</p> */}
                            </div>
                            <div className="recording-title gap-3 mr-3 ml-3">
                               <FormField

@@ -28,7 +28,7 @@ public class SectionController {
    * @return the list of entities
    */
   @GetMapping("/sections")
-  @CrossOrigin(origins = "http://localhost:5174")
+  @CrossOrigin(origins = "http://localhost:5176")
   @ResponseBody
   public ListRequest<Section> getSections() throws Echo360Exception {
    log.logString("Attempting to get Sections");
