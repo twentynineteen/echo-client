@@ -30,6 +30,16 @@ public class RESTSectionService {
 
    }
 
+   public ListRequest<Section> getSectionsByAcademicYearId(String academicYearId) throws Echo360Exception {
+      log.logString("getSectionsByAcademicYearId called...");
+
+      SectionService sectionService = new SectionService(echo360ApiService.echo360Api());
+      int limit = 150;
+      String offset = "";
+      ListRequest<Section> sectionList = sectionService.list(limit, offset, academicYearId);
+      return sectionList;
+   }
+
 /**
  * This Java function retrieves a section by its ID using the Echo360 API.
  * 

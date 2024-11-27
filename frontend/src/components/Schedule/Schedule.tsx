@@ -110,7 +110,7 @@ const formSchema = z.object({
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
    const [sections, setSections] = React.useState<dropdownItems[]>([]);
-   const [academicYear, setAcademicYear] = React.useState<dropdownItems[]>([]);
+   const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
    // Function to toggle disabled states
@@ -144,13 +144,14 @@ export default function Schedule() {
       lmsCourses: string[];
    }
    // get sections async call to backend api
-   const getSections = async () => {
+   const getSections = async (academicYear: string) => {
       try {
-         const searchResponse: AxiosResponse = await client.get('/sections', {
+         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, {
             headers: { 'X-API-KEY': 'DwightSchrute' }
          });
          // convert section array to type dropdownItems array from response data object
          const foundSections: section[] = Object.values(searchResponse.data['data']);
+
          // map sections to state for dropdown menu
          const mapped: dropdownItems[] = foundSections.map((item) => {
             return {
@@ -164,11 +165,6 @@ export default function Schedule() {
       }
    };
 
-   // call getSections on page load for section dropdown items
-   React.useEffect(()=>{
-      getSections()
-   },[]);
-   
 
    const years = terms.data.map((term) => {
       return {
@@ -352,6 +348,8 @@ export default function Schedule() {
                                                             onSelect={() => {
                                                                form.setValue("academic_year", year.value);
                                                                toggleDisabled();
+                                                               setSelectedAcademicYear(year.value)
+                                                               getSections(year.value);
                                                             }}
                                                          >
                                                             <Check

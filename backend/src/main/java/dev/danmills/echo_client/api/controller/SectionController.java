@@ -50,5 +50,12 @@ public class SectionController {
    return restSectionService.getSectionById(id);
   }
 
+  @GetMapping("/sections/year/{id}")
+  @ResponseBody
+  public ListRequest<Section> getSectionsByAcademicYearId(@PathVariable String id) throws Echo360Exception {
+   log.logString("Attempting to get Sections from  - " + id);
+   return restSectionService.getSectionsByAcademicYearId(id);
+  }
+
 
 }
