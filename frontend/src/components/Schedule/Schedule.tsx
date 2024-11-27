@@ -114,6 +114,7 @@ export default function Schedule() {
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
    // Function to toggle disabled states
+   // TODO - only toggle when academic year is NOT selected
    const toggleDisabled = () => {
       setSectionDisabled((prevDisabled) => !prevDisabled);
    }
@@ -232,6 +233,10 @@ export default function Schedule() {
       defaultValues: {
          "occasion": "1",
          "start_date": date,
+         "live_stream_toggle": false,
+         "input": "[ADD] Audio/Display-1/Display-2",
+         "capture_quality": "Highest Quality",
+         "availability": "Immediately",
       }
     });
 
@@ -425,7 +430,7 @@ export default function Schedule() {
                                                 </Command>
                                              </PopoverContent>
                                           </Popover>
-                                          <FormDescription className="pb-3">This is the term that will be used in the booking.</FormDescription>
+                                          <FormDescription className="pb-3">This is for modules with more than one occasion at WBS.</FormDescription>
                                           <FormMessage />
                                        </FormItem>
                                     )}
