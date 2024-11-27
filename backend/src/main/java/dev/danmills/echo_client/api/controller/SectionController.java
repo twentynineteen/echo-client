@@ -14,6 +14,7 @@ import dev.danmills.echo_client.persistence.entity.EchoLogger;
 import dev.danmills.echo_client.service.RESTSectionService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5176")
 public class SectionController {
    private final RESTSectionService restSectionService;
    private static final EchoLogger log = new EchoLogger();
@@ -28,7 +29,6 @@ public class SectionController {
    * @return the list of entities
    */
   @GetMapping("/sections")
-  @CrossOrigin(origins = "http://localhost:5176")
   @ResponseBody
   public ListRequest<Section> getSections() throws Echo360Exception {
    log.logString("Attempting to get Sections");

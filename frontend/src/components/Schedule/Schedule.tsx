@@ -9,12 +9,10 @@ import {
 } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 
-import axios, { AxiosBasicCredentials, AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import * as React from 'react'
-import { useEffect } from 'react'
-
 
 import {
    Select,
@@ -62,11 +60,7 @@ import {
 } from "react-hook-form"
 import * as z from "zod"
 
-// import sections from '../../assets/sections.json'
-
 import terms from '../../assets/terms.json'
-
-
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import rooms from '../../assets/rooms.json'
@@ -115,14 +109,21 @@ const formSchema = z.object({
 
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
-   const [sections, setSections] = React.useState<sectionItems[]>([]);
+   const [sections, setSections] = React.useState<dropdownItems[]>([]);
+   const [academicYear, setAcademicYear] = React.useState<dropdownItems[]>([]);
+   const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
+
+   // Function to toggle disabled states
+   const toggleDisabled = () => {
+      setSectionDisabled((prevDisabled) => !prevDisabled);
+   }
 
    // axios set up
    const client = axios.create({
       baseURL: 'http://localhost:8080',
    });
    // initialise type required for section list
-   type sectionItems = {
+   type dropdownItems = {
       value: string;
       label: string;
    }
@@ -143,15 +144,15 @@ export default function Schedule() {
       lmsCourses: string[];
    }
    // get sections async call to backend api
-   const ask = async () => {
+   const getSections = async () => {
       try {
          const searchResponse: AxiosResponse = await client.get('/sections', {
             headers: { 'X-API-KEY': 'DwightSchrute' }
          });
-         // convert section array to type sectionItems array from response data object
+         // convert section array to type dropdownItems array from response data object
          const foundSections: section[] = Object.values(searchResponse.data['data']);
          // map sections to state for dropdown menu
-         const mapped = foundSections.map((item) => {
+         const mapped: dropdownItems[] = foundSections.map((item) => {
             return {
                value: item.id,
                label: item.sectionNumber,
@@ -162,12 +163,11 @@ export default function Schedule() {
          console.log(err);
       }
    };
-   // call ask on page load for section dropdown items
-   useEffect(()=>{
-      ask()
-   },[]);
 
-   // ask();
+   // call getSections on page load for section dropdown items
+   React.useEffect(()=>{
+      getSections()
+   },[]);
    
 
    const years = terms.data.map((term) => {
@@ -351,6 +351,7 @@ export default function Schedule() {
                                                             value={year.label}
                                                             onSelect={() => {
                                                                form.setValue("academic_year", year.value);
+                                                               toggleDisabled();
                                                             }}
                                                          >
                                                             <Check
@@ -433,7 +434,7 @@ export default function Schedule() {
                                     />
                               </div>
                            </div>
-                           <div className="section gap-3 mr-3 ml-3">
+                           <div className="section gap-3 mr-3 ml-3 ">
                               <FormField 
                                  control={form.control}
                                  name="section"
@@ -447,6 +448,7 @@ export default function Schedule() {
                                                    variant="outline"
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
+                                                   disabled={!sectionDisabled}
                                                 >
                                                    {field.value ? sections.find((section) => section.value === field.value)?.label
                                                    : "Select section..."}
@@ -484,7 +486,7 @@ export default function Schedule() {
                                              </Command>
                                           </PopoverContent>
                                        </Popover>
-                                       <FormDescription className="pb-3">This is the section where the recording will be kept.</FormDescription>
+                                       <FormDescription className="pb-3">{!sectionDisabled ? "This is disabled until you have selected an academic year" : "This is the section where the recording will be kept."}</FormDescription>
                                        <FormMessage />
                                     </FormItem>
                                  )}
