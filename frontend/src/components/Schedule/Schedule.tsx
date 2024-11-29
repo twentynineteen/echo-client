@@ -85,26 +85,31 @@ const presenters = users.data.map((user) => {
    }
 })
 
-const formSchema = z.object({
-   academic_year: z.string(),
-   occasion: z.string().optional(),
-   section: z.string(),
-   recording_title: z.string().min(2),
-   room: z.string(),
-   input: z.string(),
-   capture_quality: z.string(),
-   stream_quality: z.string().optional(),
-   presenter: z.string(),
-   guest_presenter: z.string().optional(),
-   start_date: z.coerce.date(),
-   start_time: z.string(),
-   end_time: z.string(),
-   availability: z.string(),
-   availability_date: z.coerce.date(),
-   live_stream_toggle: z.boolean(),
-   group: z.string().optional(),
-   requested_by: z.string().optional(),
- });
+const formSchema = z
+   .object({
+      academic_year: z.string(),
+      occasion: z.string().optional(),
+      section: z.string(),
+      recording_title: z.string().min(2),
+      room: z.string(),
+      input: z.string(),
+      capture_quality: z.string(),
+      stream_quality: z.string().optional(),
+      presenter: z.string(),
+      guest_presenter: z.string().optional(),
+      start_date: z.coerce.date().min(new Date(), { message: "Please choose a date in the future."}),
+      start_time: z.coerce.string(),
+      end_time: z.coerce.string(),
+      availability: z.string(),
+      availability_date: z.coerce.date().min(new Date(), { message: "Please choose a date in the future."}),
+      live_stream_toggle: z.boolean(),
+      group: z.string().optional(),
+      requested_by: z.string().optional(),
+   })
+   .refine((data) => data.end_time > data.start_time, {
+      message: "End time cannot be earlier than start time.",
+      path: ["end_time"],
+   });
 
 
 export default function Schedule() {
