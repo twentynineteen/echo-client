@@ -14,7 +14,7 @@ import dev.danmills.echo_client.persistence.entity.EchoLogger;
 import dev.danmills.echo_client.service.RESTSectionService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5176")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SectionController {
    private final RESTSectionService restSectionService;
    private static final EchoLogger log = new EchoLogger();
@@ -49,6 +49,12 @@ public class SectionController {
    log.logString("Attempting to get Section - " + id);
    return restSectionService.getSectionById(id);
   }
+
+   /**
+   * Get all of the Schedules within a given academic year ID.
+   *
+   * @return the list of entities
+   */
 
   @GetMapping("/sections/year/{id}")
   @ResponseBody

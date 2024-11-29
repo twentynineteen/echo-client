@@ -21,7 +21,8 @@ public class SecurityConfig {
          .httpBasic(Customizer.withDefaults())
          .sessionManagement(httpSecuritySessionManagementConfigurer -> 
          httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-         .addFilterBefore(new AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-         return http.build();
+         .addFilterBefore(new AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+         .cors(Customizer.withDefaults());
+      return http.build();
    }
 }
