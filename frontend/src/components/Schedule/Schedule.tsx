@@ -89,7 +89,7 @@ const formSchema = z.object({
    academic_year: z.string(),
    occasion: z.string().optional(),
    section: z.string(),
-   recording_title: z.string(),
+   recording_title: z.string().min(2),
    room: z.string(),
    input: z.string(),
    capture_quality: z.string(),
@@ -113,10 +113,10 @@ export default function Schedule() {
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
-   // Function to toggle disabled states
-   // TODO - only toggle when academic year is NOT selected
-   const toggleDisabled = () => {
-      setSectionDisabled((prevDisabled) => !prevDisabled);
+   // Function to toggle disabled state in Section dropdown
+   // Only required to enable dropdown on selected year
+   const enableSectionDropdown = () => {
+      setSectionDisabled(true);
    }
 
    // axios set up
@@ -148,7 +148,9 @@ export default function Schedule() {
    const getSections = async (academicYear: string) => {
       try {
          const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, {
-            headers: { 'X-API-KEY': 'DwightSchrute' }
+            headers: { 
+               'X-API-KEY': 'DwightSchrute',            
+             }
          });
          // convert section array to type dropdownItems array from response data object
          const foundSections: section[] = Object.values(searchResponse.data['data']);
@@ -237,6 +239,7 @@ export default function Schedule() {
          "input": "[ADD] Audio/Display-1/Display-2",
          "capture_quality": "Highest Quality",
          "availability": "Immediately",
+         "recording_title": "",
       }
     });
 
@@ -352,7 +355,7 @@ export default function Schedule() {
                                                             value={year.label}
                                                             onSelect={() => {
                                                                form.setValue("academic_year", year.value);
-                                                               toggleDisabled();
+                                                               enableSectionDropdown();
                                                                setSelectedAcademicYear(year.value)
                                                                getSections(year.value);
                                                             }}
