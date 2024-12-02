@@ -85,6 +85,17 @@ const presenters = users.data.map((user) => {
    }
 })
 
+const subtractOneDayFromDate = () => {
+   // A function to subtract one day from the current result of 'new Date()'
+   // This is for the date setter in the form, to allow users to book in recordings on the same day
+   // Here the date is rendered in milliseconds - 1 represents the day amount
+   const date = new Date();
+   const yesterday = date.getTime() - (1 * 24 * 60 * 60 * 1000);
+   date.setTime(yesterday);
+   return date;
+
+}
+
 const formSchema = z
    .object({
       academic_year: z.string(),
@@ -97,11 +108,14 @@ const formSchema = z
       stream_quality: z.string().optional(),
       presenter: z.string(),
       guest_presenter: z.string().optional(),
-      start_date: z.coerce.date().min(new Date(), { message: "Please choose a date in the future."}),
-      start_time: z.coerce.string(),
-      end_time: z.coerce.string(),
+      start_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
+      // start_time: z.coerce.string(),
+      start_time: z.preprocess(input => `${input}:00`,
+            z.string().time()),
+      end_time: z.preprocess(input => `${input}:00`,
+         z.string().time()),
       availability: z.string(),
-      availability_date: z.coerce.date().min(new Date(), { message: "Please choose a date in the future."}),
+      availability_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
       live_stream_toggle: z.boolean(),
       group: z.string().optional(),
       requested_by: z.string().optional(),
@@ -245,6 +259,8 @@ export default function Schedule() {
          "capture_quality": "Highest Quality",
          "availability": "Immediately",
          "recording_title": "",
+         "availability_date": new Date(),
+         "stream_quality": "Highest Quality",
       }
     });
 
