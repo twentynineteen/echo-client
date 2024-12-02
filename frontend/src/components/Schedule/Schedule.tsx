@@ -1,90 +1,26 @@
 "use client"
+import axios, { AxiosResponse } from 'axios'
+import * as React from 'react'
+// Shadcn components and dependencies
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
-
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import {
-   Switch
-} from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
-
-import axios, { AxiosResponse } from 'axios'
 import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import * as React from 'react'
-
-import {
-   Select,
-   SelectContent,
-   SelectGroup,
-   SelectItem,
-   SelectLabel,
-   SelectTrigger,
-   SelectValue,
-} from "@/components/ui/select"
-
-import {
-   Form,
-   FormControl,
-   FormDescription,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from "@/@/components/ui/form"
-
-import {
-   Command,
-   CommandEmpty,
-   CommandGroup,
-   CommandInput,
-   CommandItem,
-   CommandList
-} from "@/components/ui/command"
-
-import {
-   Popover,
-   PopoverContent,
-   PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-   zodResolver
-} from "@hookform/resolvers/zod"
-import {
-   Check,
-   ChevronsUpDown
-} from "lucide-react"
-import {
-   useForm
-} from "react-hook-form"
+import { Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
+// zod and form imports / dependencies
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-import terms from '../../assets/terms.json'
-
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import rooms from '../../assets/rooms.json'
-
-const roomList = rooms.data.map((room) => {
-   return {
-      value: room.id,
-      label: room.name,
-      buildingId: room.buildingId,
-      roomId: room.id,
-   }
-})
-
-import users from "../../assets/users.json"
-
-const presenters = users.data.map((user) => {
-   return {
-      email: user.email,
-      value: user.id,
-      label: user.firstName + " " + user.lastName,
-      id: user.id,
-   }
-})
-
+// Functions
 const subtractOneDayFromDate = () => {
    // A function to subtract one day from the current result of 'new Date()'
    // This is for the date setter in the form, to allow users to book in recordings on the same day
@@ -94,6 +30,107 @@ const subtractOneDayFromDate = () => {
    date.setTime(yesterday);
    return date;
 
+}
+
+// function to create an array of set integers - for occasions dropdown
+const range = (max: number) => {
+   const array = [];
+   for (let i = 1;  i <= max; i++) {
+      array.push(i);
+   }
+   return array;
+}
+const array = range(10);
+const occasions: dropdownItems[] = array.map(item => {
+   return {
+      value: item.toString(),
+      label: item.toString(),
+   }
+});
+
+
+// Dropdown options for video availability
+const availability_options = [
+   {
+      value: "Immediately",
+      label: "Immediately",
+   },
+   {
+      value: "Never",
+      label: "Never",
+   },
+   {
+      value: "Manual",
+      label: "Manual",
+   },
+];
+
+// Zod Form Schema and Type initialisation for form
+// master type for dropdown item mapping
+type dropdownItems = {
+   value: string;
+   label: string;
+}
+
+// user type is referenced as 'presenter' on the form.
+type user = {
+   id: string;
+   email: string;
+   externalId: string;
+   timeZone: string;
+   timeZoneOffsetMinutes: number;
+   firstName: string;
+   lastName: string;
+   phoneNumber: string | null;
+   profileImageUrl: string | null;
+   roles: string[];
+   ssoId: string | null;
+}
+
+// initialise type pulled from api for rooms
+type room = {
+   id: string;
+   buildingId: string;
+   name: string;
+   externalId: string | null;
+   roomConfigurationId: string;
+   deviceId: string;
+   deviceType: string;
+   deviceSoftwareVersion: string | null;
+   createdAt: string;
+   updatedAt: string;
+}
+
+// initialise type pulled from api for year
+type year = {
+   id: string;
+   name: string;
+   externalId: string;
+   session: session[];
+   exceptions: [];
+   sectionCount: number;
+}
+
+type session = {
+   startDate: string;
+   endDate: string;
+}
+
+// initialise type pulled from api for section
+type section = {
+   id: string;
+   courseId: string;
+   termId: string;
+   scheduleIds: string[];
+   sectionNumber: string;
+   externalId: string;
+   instructorId: string;
+   description: string;
+   lessonCount: number;
+   userCount: string;
+   secondaryInstructorIds: string[];
+   lmsCourseIds: string[];
+   lmsCourses: string[];
 }
 
 const formSchema = z
@@ -129,6 +166,10 @@ export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
    const [sections, setSections] = React.useState<dropdownItems[]>([]);
    const [year, setYear] = React.useState<dropdownItems[]>([]);
+   const [room, setRoom] = React.useState<dropdownItems[]>([]);
+   const [user, setUser] = React.useState<dropdownItems[]>([]);
+
+
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
@@ -142,67 +183,12 @@ export default function Schedule() {
    const client = axios.create({
       baseURL: 'http://localhost:8080',
    });
-   // initialise type required for section list
-   type dropdownItems = {
-      value: string;
-      label: string;
-   }
-   // initialise type pulled form api for year
-   type year = {
-      id: string;
-      name: string;
-      externalId: string;
-      session: session[];
-      exceptions: [];
-      sectionCount: number;
-   }
 
-   type session = {
-      startDate: string;
-      endDate: string;
-   }
-
-   // initialise type pulled from api for section
-   type section = {
-      id: string;
-      courseId: string;
-      termId: string;
-      scheduleIds: string[];
-      sectionNumber: string;
-      externalId: string;
-      instructorId: string;
-      description: string;
-      lessonCount: number;
-      userCount: string;
-      secondaryInstructorIds: string[];
-      lmsCourseIds: string[];
-      lmsCourses: string[];
-   }
-
+   // basic auth header to backend requests in axios
    const headers = {
       headers: { 
          'X-API-KEY': 'DwightSchrute',            
        }
-   };
-
-   // get sections async call to backend api
-   const getSections = async (academicYear: string) => {
-      try {
-         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, headers);
-         // convert section array to type dropdownItems array from response data object
-         const foundSections: section[] = Object.values(searchResponse.data['data']);
-
-         // map sections to state for dropdown menu
-         const mapped: dropdownItems[] = foundSections.map((item) => {
-            return {
-               value: item.id,
-               label: item.sectionNumber,
-            }
-         });
-         setSections(mapped);
-      } catch(err) {
-         console.log(err);
-      }
    };
 
    // call to get academic year / term data from echo API for dropdown
@@ -225,66 +211,72 @@ export default function Schedule() {
       }
    };
 
-   // React call to populate academic year dropdown on page load
+   // get sections async call to backend api
+   const getUsers = async () => {
+      try {
+         const searchResponse: AxiosResponse = await client.get(`/users`, headers);
+         // convert section array to type dropdownItems array from response data object
+         const foundUser: user[] = Object.values(searchResponse.data['data']);
+
+         // map User to state for dropdown menu
+         const mapped: dropdownItems[] = foundUser.map((item) => {
+            return {
+               value: item.id,
+               label: item.firstName + " " + item.lastName,
+            }
+         });
+         setUser(mapped);
+      } catch(err) {
+         console.log(err);
+      }
+   };
+
+   // get sections async call to backend api
+   const getSections = async (academicYear: string) => {
+      try {
+         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, headers);
+         // convert section array to type dropdownItems array from response data object
+         const foundSections: section[] = Object.values(searchResponse.data['data']);
+
+         // map sections to state for dropdown menu
+         const mapped: dropdownItems[] = foundSections.map((item) => {
+            return {
+               value: item.id,
+               label: item.sectionNumber,
+            }
+         });
+         setSections(mapped);
+      } catch(err) {
+         console.log(err);
+      }
+   };
+
+   // get rooms async call to populate dropdown list from api
+   const getRooms = async () => {
+      try {
+         const searchResponse: AxiosResponse = await client.get(`/rooms`, headers);
+         // convert response to array of dropdown items
+         const foundRooms: room[] = Object.values(searchResponse.data['data']);
+
+         //map to state for dropdown menu
+         const mapped: dropdownItems[] = foundRooms.map((item) => {
+            return {
+               value: item.id,
+               label: item.name,
+            }
+         });
+         setRoom(mapped);
+      } catch(err) {
+         console.log(err);
+      }
+   };
+
+   // React call to populate dropdowns from api on page load 
    React.useEffect(() => {
       getYears();
+      getRooms();
+      getUsers();
    }, []);
-
-
-
-   const occasions = [
-      {
-         value: "1",
-         label: "1",
-      },
-      {
-         value: "2",
-         label: "2",
-      },
-      {
-         value: "3",
-         label: "3",
-      },
-      {
-         value: "4",
-         label: "4",
-      },
-      {
-         value: "5",
-         label: "5",
-      },
-      {
-         value: "6",
-         label: "6",
-      },
-      {
-         value: "7",
-         label: "7",
-      },
-      {
-         value: "8",
-         label: "8",
-      },
-      {
-         value: "9",
-         label: "9",
-      },
-   ];
-
-   const availability_options = [
-      {
-         value: "Immediately",
-         label: "Immediately",
-      },
-      {
-         value: "Never",
-         label: "Never",
-      },
-      {
-         value: "Manual",
-         label: "Manual",
-      },
-   ];
 
    const form = useForm < z.infer < typeof formSchema >> ({
       resolver: zodResolver(formSchema),
@@ -594,7 +586,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? roomList.find((room) => room.value === field.value)?.label
+                                                   {field.value ? room.find((room) => room.value === field.value)?.label
                                                    : "Select room..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -606,7 +598,7 @@ export default function Schedule() {
                                                 <CommandList>
                                                    <CommandEmpty>No room found.</CommandEmpty>
                                                    <CommandGroup>
-                                                      {roomList.map((room) => (
+                                                      {room.map((room) => (
                                                       <CommandItem
                                                          key={room.value}
                                                          value={room.label}
@@ -753,7 +745,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? presenters.find((presenter) => presenter.value === field.value)?.label
+                                                   {field.value ? user.find((presenter) => presenter.value === field.value)?.label
                                                    : "Select presenter..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -765,7 +757,7 @@ export default function Schedule() {
                                                 <CommandList>
                                                    <CommandEmpty>No presenter found.</CommandEmpty>
                                                    <CommandGroup>
-                                                      {presenters.map((presenter) => (
+                                                      {user.map((presenter) => (
                                                       <CommandItem
                                                          key={presenter.value}
                                                          value={presenter.label}
@@ -810,7 +802,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? presenters.find((presenter) => presenter.value === field.value)?.label
+                                                   {field.value ? user.find((presenter) => presenter.value === field.value)?.label
                                                    : "Select presenter..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -822,7 +814,7 @@ export default function Schedule() {
                                                 <CommandList>
                                                    <CommandEmpty>No presenter found.</CommandEmpty>
                                                    <CommandGroup>
-                                                      {presenters.map((presenter) => (
+                                                      {user.map((presenter) => (
                                                       <CommandItem
                                                          key={presenter.value}
                                                          value={presenter.label}
