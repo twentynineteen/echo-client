@@ -109,7 +109,6 @@ const formSchema = z
       presenter: z.string(),
       guest_presenter: z.string().optional(),
       start_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
-      // start_time: z.coerce.string(),
       start_time: z.preprocess(input => `${input}:00`,
             z.string().time()),
       end_time: z.preprocess(input => `${input}:00`,
@@ -129,6 +128,7 @@ const formSchema = z
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
    const [sections, setSections] = React.useState<dropdownItems[]>([]);
+   const [year, setYear] = React.useState<dropdownItems[]>([]);
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
@@ -147,6 +147,21 @@ export default function Schedule() {
       value: string;
       label: string;
    }
+   // initialise type pulled form api for year
+   type year = {
+      id: string;
+      name: string;
+      externalId: string;
+      session: session[];
+      exceptions: [];
+      sectionCount: number;
+   }
+
+   type session = {
+      startDate: string;
+      endDate: string;
+   }
+
    // initialise type pulled from api for section
    type section = {
       id: string;
@@ -163,14 +178,17 @@ export default function Schedule() {
       lmsCourseIds: string[];
       lmsCourses: string[];
    }
+
+   const headers = {
+      headers: { 
+         'X-API-KEY': 'DwightSchrute',            
+       }
+   };
+
    // get sections async call to backend api
    const getSections = async (academicYear: string) => {
       try {
-         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, {
-            headers: { 
-               'X-API-KEY': 'DwightSchrute',            
-             }
-         });
+         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, headers);
          // convert section array to type dropdownItems array from response data object
          const foundSections: section[] = Object.values(searchResponse.data['data']);
 
@@ -187,13 +205,32 @@ export default function Schedule() {
       }
    };
 
+   // call to get academic year / term data from echo API for dropdown
+   const getYears = async () => {
+      try {
+         const searchResponse: AxiosResponse = await client.get(`/terms`, headers);
+         // convert response to array of dropdown items
+         const foundYears: year[] = Object.values(searchResponse.data['data']);
 
-   const years = terms.data.map((term) => {
-      return {
-         value: term.id,
-         label: term.name,
+         //map to state for dropdown menu
+         const mapped: dropdownItems[] = foundYears.map((item) => {
+            return {
+               value: item.id,
+               label: item.name,
+            }
+         });
+         setYear(mapped);
+      } catch(err) {
+         console.log(err);
       }
-   });
+   };
+
+   // React call to populate academic year dropdown on page load
+   React.useEffect(() => {
+      getYears();
+   }, []);
+
+
 
    const occasions = [
       {
@@ -358,7 +395,7 @@ export default function Schedule() {
                                                       role="combobox"   
                                                       className="w-full justify-between p-3"
                                                    >
-                                                      {field.value ? years.find((year) => year.value === field.value)?.label
+                                                      {field.value ? year.find((year) => year.value === field.value)?.label
                                                       : "Select year..."}
                                                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                    </Button>
@@ -370,7 +407,7 @@ export default function Schedule() {
                                                    <CommandList>
                                                       <CommandEmpty>No year found.</CommandEmpty>
                                                       <CommandGroup>
-                                                         {years.map((year) => (
+                                                         {year.map((year) => (
                                                          <CommandItem
                                                             key={year.value}
                                                             value={year.label}
