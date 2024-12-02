@@ -335,14 +335,61 @@ export default function Schedule() {
       console.log("attempting to create a schedule with the following data:");
       console.log(data);
       console.log("-------------");
-      try { 
-         const request: AxiosResponse = await client.post(`/schedules/create`, headers);
-         const response = request.status;
-         console.log(response);
-      } catch(err) {
-         console.log(err);
-      }
-   }
+      const dataBody = {
+               "startTime": "15:20",
+               "startDate": "2024-12-13",
+               "endTime": "15:30",
+               "sections": [
+               {
+                  "courseId": "dc729433-4e65-4570-91f8-7685a448ed2f",
+                  "courseIdentifier": "WBSAPITEST",
+                  "courseExternalId": null,
+                  "termId": "ca144d8d-8650-4b18-bb52-2aa83641d770",
+                  "termName": "2024-25",
+                  "termExternalId": null,
+                  "sectionId": "86ba99b6-3a1b-49cc-8e15-5b7d4b0c68cc",
+                  "sectionName": "(2024/25) echo-client app streams",
+                  "sectionExternalId": null,
+                  "availability": {
+                     "availability": "Immediate",
+                     "relativeDelay": 0,
+                     "concreteTime": null,
+                     "unavailabilityDelay": 0
+                  }
+               }
+               ],
+               "name": "Recording via Frontend",
+               "venue": {
+               "campusId": "ed58390e-ec39-409d-af81-7e96b08035be",
+               "campusName": "Business School",
+               "campusExternalId": null,
+               "buildingId": "d2e48e12-3e69-4098-8b92-67ea8113931f",
+               "buildingName": "WBS Scarman",
+               "buildingExternalId": null,
+               "roomId": "28eb8977-f1ef-433b-b34d-acd3df15c2c3",
+               "roomName": "0.006",
+               "roomExternalId": null
+               },
+               "presenter": {
+               "userEmail": "daniel.mills@wbs.ac.uk",
+               "userId": "d1b78a08-92d7-49a8-82c7-2446f0bcff83",
+               "fullName": null,
+               "userExternalId": null
+               },
+               "input1": "Display",
+               "input2": "Video",
+               "captureQuality": "High"
+            };
+      
+      const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
+                                                      .then(function (response) {
+                                                         console.log(response.status);
+                                                         console.log(response.data);
+                                                      })
+                                                      .catch(function (error) {
+                                                         console.log(error);
+                                                      });
+   };
 
    // React call to populate dropdowns from api on page load 
    React.useEffect(() => {
@@ -370,12 +417,11 @@ export default function Schedule() {
       // TODO
       // A function to convert the form submission into suitable echo 360 submission format
       // generate an external id using "MODULECODE-DDMMYY-HH:MM-ROOM" format
-      // parse start date to 'dd/mm/yyyy' format
-      // parse start time to 'hh:mm:ss' format
-      // calculate duration by removing start time from end time - end time not required
+      // parse start date to 'yyyy-mm-dd' format
+      // parse start time to 'hh:mm' format
+      // parse end time to 'hh:mm' format
       // collect building name and campus name from values.room
-      // get presenter email from id - repeat for guest
-      // get course identifier from ???
+      // get presenter email from id - repeat for guest?
       // format availability if manual
       // format input options for input 1 and 2
       // Create a schedule availability object inside schedule section object
@@ -385,17 +431,27 @@ export default function Schedule() {
       // Schedule(
       //    java.lang.String startTime, 
       //    java.lang.String startDate, 
-      //    java.lang.Integer durationMinutes, 
+      //    java.lang.String endTime, 
       //    ScheduleSection[] sections, 
       //    java.lang.String name, 
-      //    java.lang.String roomId, 
-      //    java.lang.String instructorId, 
+      //    ScheduleVenue sections, 
+      //    SchedulePresenter presenter, 
       //    java.lang.String input1, 
       //    java.lang.String input2, 
       //    java.lang.String captureQuality
-      // )
-
       
+      // Parameters:
+      // startTime - Start time for the capture (to the minute) in ISO 8601 Time format. The time zone for the schedule's linked room will be used = ['HH:MM']
+      // startDate - Start date for capture in ISO 8601 Date format = ['YYYY-MM-DD']
+      // endTime - End time for the capture (to the minute) in ISO 8601 Time format. The time zone for the schedule's linked room will be used = ['HH:MM']
+      // sections - List of the Sections in which to Schedule the Capture
+      // name - Name to be given to the capture generated by this schedule
+      // venue - Venue containing details of where the created schedule will capture
+      // presenter - Presenter details for the created schedule
+      // input1 - Identifies the input being used as the primary visual input. Valid values: Display, Video, AltVideo
+      // input2 - Identifies the input being used as the secondary visual input. Valid values: Display, Video, AltVideo
+      // captureQuality - Identifies the quality for the generated capture. Valid values: Medium, High
+   
 
       const externalId = "IB9HY0-010524-13:00:00M2";
       const schedule = {
