@@ -2,11 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+} */
+
+body, html {
+  height: 100%;
+}
+
+.spa-container {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+}
+
+.content-container {
+  min-height: calc(100vh - 192px);
+}
+
+.footer--pin {
+  position: relative;
+  left: 0;
+  bottom: 0;
+}
+
+.rounded-full {
+  border-radius: 9999px;
 }
 
 @layer base {
@@ -38,7 +62,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222.2 0% 0%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;

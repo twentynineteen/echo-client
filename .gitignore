@@ -1,2 +1,3 @@
 .env
 secrets.properties
+/node_modules

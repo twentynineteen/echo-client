@@ -26,7 +26,6 @@ public class RestSpringBootController {
        return "Hello, World!";
    }
 
-
    @GetMapping("/token")
    @ResponseBody
    @Async

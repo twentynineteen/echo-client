@@ -29,4 +29,13 @@ public class RESTScheduleService {
       return scheduleList;
 
    }
+
+   public Schedule postSchedule(Schedule scheduleObject) throws Echo360Exception {
+      log.logString("postSchedule called... ");
+
+      ScheduleService scheduleService = new ScheduleService(echo360ApiService.echo360Api());
+      Schedule createSchedule = scheduleService.create(scheduleObject);
+      return createSchedule;
+
+   }
 }
