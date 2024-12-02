@@ -120,17 +120,75 @@ type session = {
 type section = {
    id: string;
    courseId: string;
+   courseExternalId: string | null;
    termId: string;
-   scheduleIds: string[];
-   sectionNumber: string;
-   externalId: string;
-   instructorId: string;
-   description: string;
-   lessonCount: number;
-   userCount: string;
-   secondaryInstructorIds: string[];
-   lmsCourseIds: string[];
-   lmsCourses: string[];
+   termName: string | null;
+   termExternalId: string | null;
+   sectionId: string;
+   sectionName: string;
+   sectionExternalId: string | null;
+   availability: availability[] | null
+   scheduleIds: string[] | null;
+   sectionNumber: string | null;
+   externalId: string | null;
+   instructorId: string | null;
+   description: string | null;
+   lessonCount: number | null;
+   userCount: string | null;
+   secondaryInstructorIds: string[] | null;
+   lmsCourseIds: string[] | null;
+   lmsCourses: string[] | null;
+}
+
+type availability = {
+   availability: string;
+   relativeDelay: number;
+   concreteTime: string | null;
+   unavailabilityDelay: number;
+}
+
+// initialise type for schedule
+type schedule = {
+   id: string;
+   startDate: string;
+   startTime: string;
+   endDate: string;
+   endTime: string;
+   daysOfWeek: string;
+   exclusionDates: string;
+   sections: section;
+   name: string;
+   externalId: string | null;
+   venue: venue;
+   presenter: presenter;
+   guestPresenter: presenter | null;
+   shouldCaption: boolean;
+   shouldStreamLive: boolean;
+   shouldAutoPublish: boolean;
+   shouldRecurCapture: boolean;
+   input1: string;
+   input2: string;
+   captureQuality: string;
+   streamQuality: string;
+}
+
+type venue = {
+   campusId: string;
+   campusName: string;
+   campusExternalId: string | null;
+   buildingId: string;
+   buildingName: string;
+   buildingExternalId: string | null;
+   roomId: string;
+   roomName: string;
+   roomExternalId: string | null;
+}
+
+type presenter = {
+   userId: string;
+   userEmail: string;
+   fullName: string | null;
+   userExternalId: string | null;
 }
 
 const formSchema = z
@@ -271,6 +329,21 @@ export default function Schedule() {
       }
    };
 
+   // a function to send the form data to create a new scheduled recording on echo360
+   const createSchedule = async (data: z.infer < typeof formSchema > ) => {
+      console.log("-------------");
+      console.log("attempting to create a schedule with the following data:");
+      console.log(data);
+      console.log("-------------");
+      try { 
+         const request: AxiosResponse = await client.post(`/schedules/create`, headers);
+         const response = request.status;
+         console.log(response);
+      } catch(err) {
+         console.log(err);
+      }
+   }
+
    // React call to populate dropdowns from api on page load 
    React.useEffect(() => {
       getYears();
@@ -349,7 +422,7 @@ export default function Schedule() {
 
    function onSubmit(values: z.infer < typeof formSchema > ) {
       try {
-        console.log(values);
+        createSchedule(values);
         
       } catch (error) {
         console.error("Form submission error", error);

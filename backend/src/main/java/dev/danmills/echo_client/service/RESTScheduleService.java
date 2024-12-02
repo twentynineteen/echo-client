@@ -30,6 +30,15 @@ public class RESTScheduleService {
 
    }
 
+   public Schedule getScheduleById(String id) throws Echo360Exception {
+      log.logString("getScheduleById called... ");
+
+      ScheduleService scheduleService = new ScheduleService(echo360ApiService.echo360Api());
+      Schedule schedule = scheduleService.get(id);
+      return schedule;
+
+   }
+
    public Schedule postSchedule(Schedule scheduleObject) throws Echo360Exception {
       log.logString("postSchedule called... ");
 
