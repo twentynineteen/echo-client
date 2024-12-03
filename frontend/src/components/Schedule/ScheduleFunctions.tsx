@@ -15,14 +15,29 @@ export const getSection: ScheduleSection = async (sectionId: string, baseUrl: st
          'X-API-KEY': header,
       }
    };
-
-   const section: AxiosResponse<ScheduleSection> = await client.get(`/sections/${sectionId}`, config)
+   // TODO use section data to return a ScheduleSection object
+   const section = await client.get(`/sections/${sectionId}`, config)
                                              .then(function (response) {
                                                 console.log(response.status);
+                                                const data = response.data;
                                                 const section: ScheduleSection = {
-                                                   "name": response.data.name
-                                                }
-                                                return response.data;
+                                                   "courseId": data.courseId,
+                                                   // "courseIdentifier": data.missing,
+                                                   // "courseExternalId": data.missing,
+                                                   "termId": data.termId,
+                                                   // "termName": data.missing,
+                                                   // "termExternalId": data.missing,
+                                                   "sectionId": data.id,
+                                                   "sectionName": data.sectionNumber,
+                                                   "sectionExternalId": data.externalId,
+                                                   "availability": {
+                                                            "availability": "Immediate",
+                                                            "relativeDelay": 0,
+                                                            "concreteTime": null,
+                                                            "unavailabilityDelay": 0
+                                                         },
+                                                };
+                                                return section;
                                              })
                                              .catch(function (error) {
                                                 console.log(error);

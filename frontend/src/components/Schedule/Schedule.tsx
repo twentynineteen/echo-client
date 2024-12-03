@@ -192,31 +192,15 @@ export default function Schedule() {
       console.log("attempting to create a schedule with the following data:");
       console.log(data);
       console.log("-------------");
-      const section: ScheduleSection = getSection(data.section);
+      const section: ScheduleSection = await getSection(data.section);
       const availability: Availability = getAvailability(data.availability, data.availability_date);
       const dataBody = {
                "startTime": removeSeconds(data.start_time),
                "startDate": "2024-12-14",
                "endTime": removeSeconds(data.end_time),
-               "sections": [
-               {
-                  "courseId": "dc729433-4e65-4570-91f8-7685a448ed2f",
-                  "courseIdentifier": "WBSAPITEST",
-                  "courseExternalId": null,
-                  "termId": "ca144d8d-8650-4b18-bb52-2aa83641d770",
-                  "termName": "2024-25",
-                  "termExternalId": null,
-                  "sectionId": "86ba99b6-3a1b-49cc-8e15-5b7d4b0c68cc",
-                  "sectionName": "(2024/25) echo-client app streams",
-                  "sectionExternalId": null,
-                  "availability": {
-                     "availability": "Immediate",
-                     "relativeDelay": 0,
-                     "concreteTime": null,
-                     "unavailabilityDelay": 0
-                  }
-               }
-               ],
+               "sections": [section],
+
+
                "name": "Recording via Frontend",
                "venue": {
                "campusId": "ed58390e-ec39-409d-af81-7e96b08035be",

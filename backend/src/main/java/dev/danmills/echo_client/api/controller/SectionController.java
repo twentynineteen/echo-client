@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.echo360.sdk.model.objects.Section;
 import com.echo360.sdk.model.requests.ListRequest;
 import com.echo360.sdk.util.Echo360Exception;
-import com.echo360.sdk.v2.model.objects.ScheduleSection;
 
 import dev.danmills.echo_client.persistence.entity.EchoLogger;
 import dev.danmills.echo_client.service.RESTSectionService;
@@ -49,22 +48,6 @@ public class SectionController {
   public Section getSectionById(@PathVariable String id) throws Echo360Exception {
    log.logString("Attempting to get Section - " + id);
    return restSectionService.getSectionById(id);
-  }
-
-
-/**
- * This Java function retrieves a section by its ID and logs an attempt to do so.
- * 
- * @param id The `id` parameter in the `getSectionById` method is used to specify the unique identifier
- * of the section that you want to retrieve. This method is a part of a Spring MVC controller that
- * handles GET requests to "/sections/{id}", where `{id}` is a path variable representing the ID
- * @return The method is returning a Section object.
- */
-  @GetMapping("/sections/v2/{id}")
-  @ResponseBody
-  public ScheduleSection getScheduleSectionById(@PathVariable String id) throws Echo360Exception {
-   log.logString("Attempting to get Section - " + id);
-   return restSectionService.getScheduleSectionById(id);
   }
 
    /**
