@@ -1,5 +1,7 @@
 package dev.danmills.echo_client.service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.echo360.sdk.util.Echo360Exception;
@@ -39,12 +41,24 @@ public class RESTScheduleService {
 
    }
 
-   public Schedule postSchedule(Schedule scheduleObject) throws Echo360Exception {
+   public ResponseEntity<Schedule> postSchedule(Schedule scheduleObject) throws Echo360Exception {
       log.logString("postSchedule called... ");
-
       ScheduleService scheduleService = new ScheduleService(echo360ApiService.echo360Api());
-      Schedule createSchedule = scheduleService.create(scheduleObject);
-      return createSchedule;
+      try {
+         // make the POST request to schedule a new recording
+         Schedule createSchedule = scheduleService.create(scheduleObject);
+
+         // If successful, return with CREATED status
+         return new ResponseEntity<>(createSchedule, HttpStatus.CREATED);
+      } catch (Echo360Exception ex) {
+         // If there is an error, return BAD_REQUEST status
+         log.logString("Echo360Exception thrown in postSchedule call... ");
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      } catch (Exception ex) {
+         // For any other errors, return BAD_REQUEST
+         log.logString("Exception thrown in postSchedule call... ");
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
 
    }
 }

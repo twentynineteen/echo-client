@@ -1,5 +1,6 @@
 package dev.danmills.echo_client.api.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +50,7 @@ public class ScheduleController {
   
   @PostMapping("/schedules/create")
   @ResponseBody
-  public Schedule postSchedule(@RequestBody Schedule scheduleObject) throws Echo360Exception {
+  public ResponseEntity<Schedule> postSchedule(@RequestBody Schedule scheduleObject) throws Echo360Exception {
    log.logString("Attempting to create a new Schedule");
    log.logString(scheduleObject.toString());
    String startTime = scheduleObject.startTime;
@@ -75,6 +76,7 @@ public class ScheduleController {
       input2,
       captureQuality
    );
+
 
    return restScheduleService.postSchedule(schedule);
   }

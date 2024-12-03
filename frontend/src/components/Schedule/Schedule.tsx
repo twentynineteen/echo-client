@@ -1,6 +1,9 @@
 "use client"
 import axios, { AxiosResponse } from 'axios'
 import * as React from 'react'
+import type { Availability, DropdownItems, Presenter, Room, Schedule, ScheduleSection, Section, Session, User, Venue, Year } from '../../types'
+// Scheduler functions
+import { getAvailability, getRange, getSection, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
 // Shadcn components and dependencies
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
 import { Button } from "@/components/ui/button"
@@ -20,34 +23,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-// Functions
-const subtractOneDayFromDate = () => {
-   // A function to subtract one day from the current result of 'new Date()'
-   // This is for the date setter in the form, to allow users to book in recordings on the same day
-   // Here the date is rendered in milliseconds - 1 represents the day amount
-   const date = new Date();
-   const yesterday = date.getTime() - (1 * 24 * 60 * 60 * 1000);
-   date.setTime(yesterday);
-   return date;
-
-}
-
-// function to create an array of set integers - for occasions dropdown
-const range = (max: number) => {
-   const array = [];
-   for (let i = 1;  i <= max; i++) {
-      array.push(i);
-   }
-   return array;
-}
-const array = range(10);
-const occasions: dropdownItems[] = array.map(item => {
+// 
+// Build an array of integers for occasion numbers and map to a list of dropdown items for Occasion field
+const array = getRange(10);
+const occasions: DropdownItems[] = array.map((item: number) => {
    return {
       value: item.toString(),
       label: item.toString(),
    }
 });
-
 
 // Dropdown options for video availability
 const availability_options = [
@@ -65,132 +49,7 @@ const availability_options = [
    },
 ];
 
-// Zod Form Schema and Type initialisation for form
-// master type for dropdown item mapping
-type dropdownItems = {
-   value: string;
-   label: string;
-}
-
-// user type is referenced as 'presenter' on the form.
-type user = {
-   id: string;
-   email: string;
-   externalId: string;
-   timeZone: string;
-   timeZoneOffsetMinutes: number;
-   firstName: string;
-   lastName: string;
-   phoneNumber: string | null;
-   profileImageUrl: string | null;
-   roles: string[];
-   ssoId: string | null;
-}
-
-// initialise type pulled from api for rooms
-type room = {
-   id: string;
-   buildingId: string;
-   name: string;
-   externalId: string | null;
-   roomConfigurationId: string;
-   deviceId: string;
-   deviceType: string;
-   deviceSoftwareVersion: string | null;
-   createdAt: string;
-   updatedAt: string;
-}
-
-// initialise type pulled from api for year
-type year = {
-   id: string;
-   name: string;
-   externalId: string;
-   session: session[];
-   exceptions: [];
-   sectionCount: number;
-}
-
-type session = {
-   startDate: string;
-   endDate: string;
-}
-
-// initialise type pulled from api for section
-type section = {
-   id: string;
-   courseId: string;
-   courseExternalId: string | null;
-   termId: string;
-   termName: string | null;
-   termExternalId: string | null;
-   sectionId: string;
-   sectionName: string;
-   sectionExternalId: string | null;
-   availability: availability[] | null
-   scheduleIds: string[] | null;
-   sectionNumber: string | null;
-   externalId: string | null;
-   instructorId: string | null;
-   description: string | null;
-   lessonCount: number | null;
-   userCount: string | null;
-   secondaryInstructorIds: string[] | null;
-   lmsCourseIds: string[] | null;
-   lmsCourses: string[] | null;
-}
-
-type availability = {
-   availability: string;
-   relativeDelay: number;
-   concreteTime: string | null;
-   unavailabilityDelay: number;
-}
-
-// initialise type for schedule
-type schedule = {
-   id: string;
-   startDate: string;
-   startTime: string;
-   endDate: string;
-   endTime: string;
-   daysOfWeek: string;
-   exclusionDates: string;
-   sections: section;
-   name: string;
-   externalId: string | null;
-   venue: venue;
-   presenter: presenter;
-   guestPresenter: presenter | null;
-   shouldCaption: boolean;
-   shouldStreamLive: boolean;
-   shouldAutoPublish: boolean;
-   shouldRecurCapture: boolean;
-   input1: string;
-   input2: string;
-   captureQuality: string;
-   streamQuality: string;
-}
-
-type venue = {
-   campusId: string;
-   campusName: string;
-   campusExternalId: string | null;
-   buildingId: string;
-   buildingName: string;
-   buildingExternalId: string | null;
-   roomId: string;
-   roomName: string;
-   roomExternalId: string | null;
-}
-
-type presenter = {
-   userId: string;
-   userEmail: string;
-   fullName: string | null;
-   userExternalId: string | null;
-}
-
+// Form Schema for validation through Zod
 const formSchema = z
    .object({
       academic_year: z.string(),
@@ -222,12 +81,10 @@ const formSchema = z
 
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
-   const [sections, setSections] = React.useState<dropdownItems[]>([]);
-   const [year, setYear] = React.useState<dropdownItems[]>([]);
-   const [room, setRoom] = React.useState<dropdownItems[]>([]);
-   const [user, setUser] = React.useState<dropdownItems[]>([]);
-
-
+   const [sections, setSections] = React.useState<DropdownItems[]>([]);
+   const [year, setYear] = React.useState<DropdownItems[]>([]);
+   const [room, setRoom] = React.useState<DropdownItems[]>([]);
+   const [user, setUser] = React.useState<DropdownItems[]>([]);
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
@@ -254,10 +111,10 @@ export default function Schedule() {
       try {
          const searchResponse: AxiosResponse = await client.get(`/terms`, headers);
          // convert response to array of dropdown items
-         const foundYears: year[] = Object.values(searchResponse.data['data']);
+         const foundYears: Year[] = Object.values(searchResponse.data['data']);
 
          //map to state for dropdown menu
-         const mapped: dropdownItems[] = foundYears.map((item) => {
+         const mapped: DropdownItems[] = foundYears.map((item) => {
             return {
                value: item.id,
                label: item.name,
@@ -274,10 +131,10 @@ export default function Schedule() {
       try {
          const searchResponse: AxiosResponse = await client.get(`/users`, headers);
          // convert section array to type dropdownItems array from response data object
-         const foundUser: user[] = Object.values(searchResponse.data['data']);
+         const foundUser: User[] = Object.values(searchResponse.data['data']);
 
          // map User to state for dropdown menu
-         const mapped: dropdownItems[] = foundUser.map((item) => {
+         const mapped: DropdownItems[] = foundUser.map((item) => {
             return {
                value: item.id,
                label: item.firstName + " " + item.lastName,
@@ -294,10 +151,10 @@ export default function Schedule() {
       try {
          const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, headers);
          // convert section array to type dropdownItems array from response data object
-         const foundSections: section[] = Object.values(searchResponse.data['data']);
+         const foundSections: Section[] = Object.values(searchResponse.data['data']);
 
          // map sections to state for dropdown menu
-         const mapped: dropdownItems[] = foundSections.map((item) => {
+         const mapped: DropdownItems[] = foundSections.map((item) => {
             return {
                value: item.id,
                label: item.sectionNumber,
@@ -314,10 +171,10 @@ export default function Schedule() {
       try {
          const searchResponse: AxiosResponse = await client.get(`/rooms`, headers);
          // convert response to array of dropdown items
-         const foundRooms: room[] = Object.values(searchResponse.data['data']);
+         const foundRooms: Room[] = Object.values(searchResponse.data['data']);
 
          //map to state for dropdown menu
-         const mapped: dropdownItems[] = foundRooms.map((item) => {
+         const mapped: DropdownItems[] = foundRooms.map((item) => {
             return {
                value: item.id,
                label: item.name,
@@ -335,10 +192,12 @@ export default function Schedule() {
       console.log("attempting to create a schedule with the following data:");
       console.log(data);
       console.log("-------------");
+      const section: ScheduleSection = getSection(data.section);
+      const availability: Availability = getAvailability(data.availability, data.availability_date);
       const dataBody = {
-               "startTime": "15:20",
-               "startDate": "2024-12-13",
-               "endTime": "15:30",
+               "startTime": removeSeconds(data.start_time),
+               "startDate": "2024-12-14",
+               "endTime": removeSeconds(data.end_time),
                "sections": [
                {
                   "courseId": "dc729433-4e65-4570-91f8-7685a448ed2f",
