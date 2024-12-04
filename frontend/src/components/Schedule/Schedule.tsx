@@ -1,9 +1,9 @@
 "use client"
 import axios, { AxiosResponse } from 'axios'
 import * as React from 'react'
-import type { Availability, DropdownItems, Presenter, Room, Schedule, ScheduleSection, Section, Session, User, Venue, Year } from '../../types'
+import type { DropdownItems, Headers, Inputs, Presenter, Room, Schedule, ScheduleSection, Section, User, Venue, Year } from '../../types'
 // Scheduler functions
-import { getAvailability, getRange, getSection, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
+import { convertDateToDateString, getInputs, getPresenter, getRange, getSection, getVenue, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
 // Shadcn components and dependencies
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
 import { Button } from "@/components/ui/button"
@@ -95,12 +95,13 @@ export default function Schedule() {
    }
 
    // axios set up
+   const baseUrl: string = 'http://localhost:8080';
    const client = axios.create({
-      baseURL: 'http://localhost:8080',
+      baseURL: baseUrl,
    });
 
    // basic auth header to backend requests in axios
-   const headers = {
+   const headers: Headers = {
       headers: { 
          'X-API-KEY': 'DwightSchrute',            
        }
@@ -188,50 +189,37 @@ export default function Schedule() {
 
    // a function to send the form data to create a new scheduled recording on echo360
    const createSchedule = async (data: z.infer < typeof formSchema > ) => {
-      console.log("-------------");
-      console.log("attempting to create a schedule with the following data:");
-      console.log(data);
-      console.log("-------------");
-      const section: ScheduleSection = await getSection(data.section);
-      const availability: Availability = getAvailability(data.availability, data.availability_date);
+      console.log("-----createSchedule called--------");
+
+      const section: ScheduleSection = await getSection(data.section, baseUrl, headers);
+      const venue: Venue = await getVenue(data.room, baseUrl, headers);
+      const presenter: Presenter = await getPresenter(data.presenter, baseUrl, headers);
+      const startDate: string = convertDateToDateString(data.start_date);
+      const inputs: Inputs = getInputs(data.input);
       const dataBody = {
                "startTime": removeSeconds(data.start_time),
-               "startDate": "2024-12-14",
+               "startDate": startDate,
                "endTime": removeSeconds(data.end_time),
                "sections": [section],
-
-
-               "name": "Recording via Frontend",
-               "venue": {
-               "campusId": "ed58390e-ec39-409d-af81-7e96b08035be",
-               "campusName": "Business School",
-               "campusExternalId": null,
-               "buildingId": "d2e48e12-3e69-4098-8b92-67ea8113931f",
-               "buildingName": "WBS Scarman",
-               "buildingExternalId": null,
-               "roomId": "28eb8977-f1ef-433b-b34d-acd3df15c2c3",
-               "roomName": "0.006",
-               "roomExternalId": null
-               },
-               "presenter": {
-               "userEmail": "daniel.mills@wbs.ac.uk",
-               "userId": "d1b78a08-92d7-49a8-82c7-2446f0bcff83",
-               "fullName": null,
-               "userExternalId": null
-               },
-               "input1": "Display",
-               "input2": "Video",
-               "captureQuality": "High"
+               "name": data.recording_title,
+               "venue": venue,
+               "presenter": presenter,
+               "input1": inputs.input1,
+               "input2": inputs.input2,
+               "captureQuality": data.capture_quality
             };
-      
+      // TODO - create a function call to validate the dataBody before creating a new schedule
+      console.log("-------Sending this request to POST / Schedules / Create ------");
+      console.log(dataBody);
+      console.log("-------------");
       const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
-                                                      .then(function (response) {
-                                                         console.log(response.status);
-                                                         console.log(response.data);
-                                                      })
-                                                      .catch(function (error) {
-                                                         console.log(error);
-                                                      });
+                                                   .then(function (response) {
+                                                      console.log(response.status);
+                                                      console.log(response.data);
+                                                   })
+                                                   .catch(function (error) {
+                                                      console.log(error);
+                                                   });
    };
 
    // React call to populate dropdowns from api on page load 
@@ -256,68 +244,6 @@ export default function Schedule() {
       }
     });
 
-   function convertFormToSchedule(values: z.infer < typeof formSchema > ) {
-      // TODO
-      // A function to convert the form submission into suitable echo 360 submission format
-      // generate an external id using "MODULECODE-DDMMYY-HH:MM-ROOM" format
-      // parse start date to 'yyyy-mm-dd' format
-      // parse start time to 'hh:mm' format
-      // parse end time to 'hh:mm' format
-      // collect building name and campus name from values.room
-      // get presenter email from id - repeat for guest?
-      // format availability if manual
-      // format input options for input 1 and 2
-      // Create a schedule availability object inside schedule section object
-      // parameters for ScheduleAvailability - True, False, concreteTime
-      // ScheduleSection : [ScheduleSection(values.section, ScheduleAvailability())], 
-
-      // Schedule(
-      //    java.lang.String startTime, 
-      //    java.lang.String startDate, 
-      //    java.lang.String endTime, 
-      //    ScheduleSection[] sections, 
-      //    java.lang.String name, 
-      //    ScheduleVenue sections, 
-      //    SchedulePresenter presenter, 
-      //    java.lang.String input1, 
-      //    java.lang.String input2, 
-      //    java.lang.String captureQuality
-      
-      // Parameters:
-      // startTime - Start time for the capture (to the minute) in ISO 8601 Time format. The time zone for the schedule's linked room will be used = ['HH:MM']
-      // startDate - Start date for capture in ISO 8601 Date format = ['YYYY-MM-DD']
-      // endTime - End time for the capture (to the minute) in ISO 8601 Time format. The time zone for the schedule's linked room will be used = ['HH:MM']
-      // sections - List of the Sections in which to Schedule the Capture
-      // name - Name to be given to the capture generated by this schedule
-      // venue - Venue containing details of where the created schedule will capture
-      // presenter - Presenter details for the created schedule
-      // input1 - Identifies the input being used as the primary visual input. Valid values: Display, Video, AltVideo
-      // input2 - Identifies the input being used as the secondary visual input. Valid values: Display, Video, AltVideo
-      // captureQuality - Identifies the quality for the generated capture. Valid values: Medium, High
-   
-
-      const externalId = "IB9HY0-010524-13:00:00M2";
-      const schedule = {
-         externalId: externalId,
-         name: values.recording_title,
-         startDate: "dd/mm/yyyy",
-         startTime: "13:00",
-         durationMinutes: "14:00",
-         roomId: values.room,
-         instructorId: values.presenter,
-         guestInstructor: values.guest_presenter,
-         termId: values.academic_year,
-         ScheduleSection : [ScheduleSection(values.section, ScheduleAvailability())],
-         "Availability": "Concrete | 2024-05-10",
-         shouldCaption: "TRUE",
-         shouldStreamLive: values.live_stream_toggle,
-         input1: "",
-         input2: "",
-         captureQuality: values.capture_quality,
-         streamQuality: values.stream_quality,
-      };
-      return schedule;
-   }
 
    function onSubmit(values: z.infer < typeof formSchema > ) {
       try {

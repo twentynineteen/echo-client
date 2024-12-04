@@ -5,6 +5,46 @@ export type DropdownItems = {
    label: string;
 }
 
+// Headers type for api key
+export type Headers = {
+   headers: {
+      [key:string]: string;
+   };
+}
+
+// Course type
+export type Course = {
+   courseIdentifier: string;
+   departmentId: string;
+   externalId: string;
+   id: string;
+   name: string;
+   organizationId: string;
+   sectionCount: number;
+}
+
+// Building type
+export type Building = {
+   campusId: string;
+   externalId: string;
+   id: string;
+   name: string;
+}
+
+// Campus type
+export type Campus = {
+   externalId: string;
+   id: string;
+   name: string;
+   timeZone: string;
+   timeZoneOffsetMinutes: number;
+}
+
+export type Inputs = {
+   input1: string | null;
+   input2: string | null;
+}
+
 // user type is referenced as 'presenter' on the form.
 export type User = {
    id: string;
@@ -34,7 +74,7 @@ export type Room = {
    updatedAt: string;
 }
 
-// initialise type pulled from api for year
+// initialise type pulled from api for year - referred to in the echo360Api as class Term
 export type Year = {
    id: string;
    name: string;
@@ -82,7 +122,7 @@ export type ScheduleSection = {
    sectionId: string;
    sectionName: string;
    sectionExternalId: string | null;
-   availability: Availability[] | null
+   availability: Availability | null
 }
 
 export type Availability = {
