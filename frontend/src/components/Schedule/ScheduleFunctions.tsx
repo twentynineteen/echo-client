@@ -1,6 +1,6 @@
 import { Header } from '@tanstack/react-table';
 import axios from 'axios';
-import type { Availability, Building, Campus, Course, Headers, Inputs, Presenter, Room, Schedule, ScheduleSection, Venue, Year } from '../../types';
+import type { Availability, Building, Campus, Course, Headers, Inputs, Presenter, Room, Schedule, SchedulePresenter, ScheduleSection, Venue, Year } from '../../types';
 
 //Function to get course information
 export async function getCourse(courseId: string, baseUrl: string, header: Headers): Promise<Course> {
@@ -182,7 +182,7 @@ export async function getCampus(campusId: string, baseUrl: string, header: Heade
 }
 
 // Function to get presenter
-export async function getPresenter(presenterId: string, baseUrl: string, header: Headers): Promise<Presenter> {
+export async function getPresenter(presenterId: string, baseUrl: string, header: Headers): Promise<SchedulePresenter> {
    const client = axios.create({
       baseURL: baseUrl,
    });
@@ -190,7 +190,13 @@ export async function getPresenter(presenterId: string, baseUrl: string, header:
    const presenter = await client.get(`/users/${presenterId}`, header)
                            .then(async function (response) {
                               const data = response.data;
-                              return data;
+                              const schedulePresenter: SchedulePresenter = {
+                                 fullName: data.firstName + " " + data.lastName,
+                                 userEmail: data.email,
+                                 userExternalId: data.externalId,
+                                 userId: data.id,
+                              }
+                              return schedulePresenter;
                            })
                            .catch(function (error) {
                               console.log(error);

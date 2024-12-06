@@ -176,3 +176,10 @@ export type Presenter = {
    userExternalId: string | null;
 }
 
+export type SchedulePresenter = {
+   fullName: string,
+   userEmail: string,
+   userExternalId: string | null,
+   userId: string,
+}
+
