@@ -1,5 +1,6 @@
+import { Header } from '@tanstack/react-table';
 import axios from 'axios';
-import type { Availability, Building, Campus, Course, Headers, Inputs, Presenter, Room, ScheduleSection, Venue, Year } from '../../types';
+import type { Availability, Building, Campus, Course, Headers, Inputs, Presenter, Room, Schedule, ScheduleSection, Venue, Year } from '../../types';
 
 //Function to get course information
 export async function getCourse(courseId: string, baseUrl: string, header: Headers): Promise<Course> {
@@ -10,8 +11,7 @@ export async function getCourse(courseId: string, baseUrl: string, header: Heade
 
    // 
    const course = await client.get(`/courses/${courseId}`, header)
-                              .then(function (response) {
-                                 console.log(response.status);
+                              .then(function (response) {           
                                  const data = response.data;
                                  return data;
                               })
@@ -31,7 +31,6 @@ export async function getTerm(termId: string, baseUrl: string, header: Headers )
       // 
       const term = await client.get(`/terms/${termId}`, header)
                                  .then(function (response) {
-                                    console.log(response.status);
                                     const data = response.data;
                                     return data;
                                  })
@@ -50,10 +49,8 @@ export async function getSection(sectionId: string, baseUrl: string, header: Hea
    // TODO use section data to return a ScheduleSection object
    const section = await client.get(`/sections/${sectionId}`, header)
                               .then(async function (response) {
-                                 console.log(response.status);
+
                                  const data = response.data;
-                                 console.log("-------getSection------")
-                                 console.log(data);
                                  return data;
                               })
                               .catch(function (error) {
@@ -83,13 +80,13 @@ export async function getSection(sectionId: string, baseUrl: string, header: Hea
       "sectionExternalId": section.externalId,
       "availability": availability,
    };
-   console.log(scheduleSection);
+
    return scheduleSection;
 }
+
 // Function to get venue
 export async function getVenue(roomId: string, baseUrl: string, header: Headers): Promise<Venue> {
    // make a series of calls to get venue information - then build Venue object
-   console.log("Attempting to get Room using id: " + roomId);
    const room: Room = await getRoom(roomId, baseUrl, header);
    const building: Building = await getBuilding(room.buildingId, baseUrl, header);
    const campus: Campus = await getCampus(building.campusId, baseUrl, header);
@@ -143,8 +140,6 @@ export async function getRoom(roomId: string, baseUrl: string, header: Headers):
    const room = await client.get(`/rooms/${roomId}`, header)
                            .then(async function (response) {
                               const data = response.data;
-                              console.log("------getRoom-----")
-                              console.log(data);
                               return data;
                            })
                            .catch(function (error) {
@@ -249,4 +244,12 @@ export function convertDateToDateString(date: Date): string {
    const day = String(date.getDate()).padStart(2, '0');
 
    return `${year}-${month}-${day}`;
+}
+
+export function convertCaptureQuality(captureQuality: string) {
+   let qualityString: string = "High";
+   if (captureQuality == "Medium Quality") {
+      qualityString = "Medium";
+   }
+   return qualityString;
 }

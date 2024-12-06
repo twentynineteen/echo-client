@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 import * as React from 'react'
 import type { DropdownItems, Headers, Inputs, Presenter, Room, Schedule, ScheduleSection, Section, User, Venue, Year } from '../../types'
 // Scheduler functions
-import { convertDateToDateString, getInputs, getPresenter, getRange, getSection, getVenue, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
+import { convertCaptureQuality, convertDateToDateString, getInputs, getPresenter, getRange, getSection, getVenue, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
 // Shadcn components and dependencies
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
 import { Button } from "@/components/ui/button"
@@ -195,23 +195,23 @@ export default function Schedule() {
       const venue: Venue = await getVenue(data.room, baseUrl, headers);
       const presenter: Presenter = await getPresenter(data.presenter, baseUrl, headers);
       const startDate: string = convertDateToDateString(data.start_date);
+      const startTime: string = removeSeconds(data.start_time);
+      const endTime: string = removeSeconds(data.end_time);
       const inputs: Inputs = getInputs(data.input);
+      const captureQuality: string = convertCaptureQuality(data.capture_quality);
       const dataBody = {
-               "startTime": removeSeconds(data.start_time),
+               "startTime": startTime,
                "startDate": startDate,
-               "endTime": removeSeconds(data.end_time),
+               "endTime": endTime,
                "sections": [section],
                "name": data.recording_title,
                "venue": venue,
                "presenter": presenter,
                "input1": inputs.input1,
                "input2": inputs.input2,
-               "captureQuality": data.capture_quality
+               "captureQuality": captureQuality,
             };
-      // TODO - create a function call to validate the dataBody before creating a new schedule
-      console.log("-------Sending this request to POST / Schedules / Create ------");
-      console.log(dataBody);
-      console.log("-------------");
+
       const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
                                                    .then(function (response) {
                                                       console.log(response.status);

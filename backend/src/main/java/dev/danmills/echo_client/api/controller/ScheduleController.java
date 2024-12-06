@@ -52,7 +52,6 @@ public class ScheduleController {
   @ResponseBody
   public ResponseEntity<Schedule> postSchedule(@RequestBody Schedule scheduleObject) throws Echo360Exception {
    log.logString("Attempting to create a new Schedule");
-   log.logString(scheduleObject.toString());
    String startTime = scheduleObject.startTime;
    String startDate = scheduleObject.startDate;
    String endTime = scheduleObject.endTime;
@@ -63,7 +62,7 @@ public class ScheduleController {
    String input1 = scheduleObject.input1;
    String input2 = scheduleObject.input2;
    String captureQuality = scheduleObject.captureQuality;
-
+   
    Schedule schedule = new Schedule(
       startTime,
       startDate,
@@ -76,8 +75,6 @@ public class ScheduleController {
       input2,
       captureQuality
    );
-
-
    return restScheduleService.postSchedule(schedule);
   }
 }

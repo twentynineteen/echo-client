@@ -47,12 +47,15 @@ public class RESTScheduleService {
       try {
          // make the POST request to schedule a new recording
          Schedule createSchedule = scheduleService.create(scheduleObject);
-
+         
          // If successful, return with CREATED status
          return new ResponseEntity<>(createSchedule, HttpStatus.CREATED);
       } catch (Echo360Exception ex) {
          // If there is an error, return BAD_REQUEST status
          log.logString("Echo360Exception thrown in postSchedule call... ");
+         // print error message to console for debugging
+         log.logString(ex.getServerMessage());
+         log.logString(ex.getMessage());
          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       } catch (Exception ex) {
          // For any other errors, return BAD_REQUEST

@@ -3,8 +3,13 @@ get http://localhost:8080/sections/86ba99b6-3a1b-49cc-8e15-5b7d4b0c68cc
 content-type: application/json
 X-API-KEY: DwightSchrute
 
-### Get schedule
-get http://localhost:8080/schedules
+### Get schedules
+get http://localhost:8080/schedules/
+content-type: application/json
+X-API-KEY: DwightSchrute
+
+### Get schedule for single id
+get http://localhost:8080/schedules/76228094-8b94-4559-812d-fe9df3b92e3f
 content-type: application/json
 X-API-KEY: DwightSchrute
 
