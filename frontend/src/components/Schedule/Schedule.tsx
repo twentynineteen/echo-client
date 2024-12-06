@@ -1,7 +1,7 @@
 "use client"
 import axios, { AxiosResponse } from 'axios'
 import * as React from 'react'
-import type { DropdownItems, Headers, Inputs, Presenter, Room, Schedule, ScheduleSection, Section, User, Venue, Year } from '../../types'
+import type { DropdownItems, Headers, Inputs, Room, Schedule, SchedulePresenter, ScheduleSection, Section, User, Venue, Year } from '../../types'
 // Scheduler functions
 import { convertCaptureQuality, convertDateToDateString, getInputs, getPresenter, getRange, getSection, getVenue, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
 // Shadcn components and dependencies
@@ -193,7 +193,7 @@ export default function Schedule() {
 
       const section: ScheduleSection = await getSection(data.section, baseUrl, headers);
       const venue: Venue = await getVenue(data.room, baseUrl, headers);
-      const presenter: Presenter = await getPresenter(data.presenter, baseUrl, headers);
+      const presenter: SchedulePresenter = await getPresenter(data.presenter, baseUrl, headers);
       const startDate: string = convertDateToDateString(data.start_date);
       const startTime: string = removeSeconds(data.start_time);
       const endTime: string = removeSeconds(data.end_time);
@@ -212,6 +212,7 @@ export default function Schedule() {
                "captureQuality": captureQuality,
             };
 
+      console.log(dataBody);
       const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
                                                    .then(function (response) {
                                                       console.log(response.status);
@@ -236,11 +237,11 @@ export default function Schedule() {
          "start_date": date,
          "live_stream_toggle": false,
          "input": "[ADD] Audio/Display-1/Display-2",
-         "capture_quality": "Highest Quality",
+         "capture_quality": "High Quality",
          "availability": "Immediately",
          "recording_title": "",
          "availability_date": new Date(),
-         "stream_quality": "Highest Quality",
+         "stream_quality": "High Quality",
       }
     });
 
@@ -594,14 +595,6 @@ export default function Schedule() {
                                              >
                                                 <FormItem className="flex items-center space-x-3 space-y-0">
                                                 <FormControl>
-                                                   <RadioGroupItem value="Highest Quality" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                   Highest Quality
-                                                </FormLabel>
-                                                </FormItem>
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
                                                    <RadioGroupItem value="High Quality" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal">
@@ -680,63 +673,6 @@ export default function Schedule() {
                                           </PopoverContent>
                                        </Popover>
                                        <FormDescription>This is the main presenter on the recording.</FormDescription>
-                                       <FormMessage />
-                                    </FormItem>
-                                 )}
-                                 />
-                           </div>
-                           <div className="guest-presenter gap-3 mx-3">
-                              <FormField 
-                                 control={form.control}
-                                 name="guest_presenter"
-                                 render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                       <FormLabel className="my-2 font-bold">Guest Presenter</FormLabel>
-                                       <Popover>
-                                          <PopoverTrigger asChild>
-                                             <FormControl>
-                                                <Button 
-                                                   variant="outline"
-                                                   role="combobox"   
-                                                   className="w-full justify-between p-3"
-                                                >
-                                                   {field.value ? user.find((presenter) => presenter.value === field.value)?.label
-                                                   : "Select presenter..."}
-                                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
-                                                </Button>
-                                             </FormControl>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-full p-3 bg-background">
-                                             <Command className="bg-background">
-                                             <CommandInput placeholder="Search presenter..." />
-                                                <CommandList>
-                                                   <CommandEmpty>No presenter found.</CommandEmpty>
-                                                   <CommandGroup>
-                                                      {user.map((presenter) => (
-                                                      <CommandItem
-                                                         key={presenter.value}
-                                                         value={presenter.label}
-                                                         onSelect={() => {
-                                                            form.setValue("guest_presenter", presenter.value);
-                                                         }}
-                                                      >
-                                                         <Check
-                                                            className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            presenter.value === field.value
-                                                               ? "opacity-100"
-                                                               : "opacity-0"
-                                                            )}
-                                                         />
-                                                         {presenter.label}
-                                                      </CommandItem>
-                                                      ))}
-                                                   </CommandGroup>
-                                                </CommandList> 
-                                             </Command>
-                                          </PopoverContent>
-                                       </Popover>
-                                       <FormDescription>This is the guest presenter on the recording (optional).</FormDescription>
                                        <FormMessage />
                                     </FormItem>
                                  )}
@@ -973,14 +909,6 @@ export default function Schedule() {
                                                 defaultValue={field.value}
                                                 className="flex flex-col space-y-1"
                                              >
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                   <RadioGroupItem value="Highest Quality" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                   Highest Quality
-                                                </FormLabel>
-                                                </FormItem>
                                                 <FormItem className="flex items-center space-x-3 space-y-0">
                                                 <FormControl>
                                                    <RadioGroupItem value="High Quality" />

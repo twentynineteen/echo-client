@@ -9,7 +9,7 @@ content-type: application/json
 X-API-KEY: DwightSchrute
 
 ### Get schedule for single id
-get http://localhost:8080/schedules/76228094-8b94-4559-812d-fe9df3b92e3f
+get http://localhost:8080/schedules/e7f53160-0f6f-40c6-a244-a4de5125a504
 content-type: application/json
 X-API-KEY: DwightSchrute
 
