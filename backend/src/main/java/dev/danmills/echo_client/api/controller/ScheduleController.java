@@ -52,12 +52,6 @@ public class ScheduleController {
   @ResponseBody
   public ResponseEntity<Schedule> postSchedule(@RequestBody Schedule scheduleObject) throws Echo360Exception {
    log.logString("Attempting to create a new Schedule");
-   log.logString("submitted presenter: ");
-   log.logString(scheduleObject.presenter.toString());
-   // call to get presenter from presenter info supplied on frontend
-   SchedulePresenter presenter = SchedulePresenter.SchedulePresenterByUserEmail(scheduleObject.presenter.userEmail);
-   log.logString("Presenter Object - SchedulePresenter");
-   log.logString(presenter.toString());
    
    String startTime = scheduleObject.startTime;
    String startDate = scheduleObject.startDate;
@@ -65,6 +59,7 @@ public class ScheduleController {
    ScheduleSection[] sections = scheduleObject.sections;
    String name = scheduleObject.name;
    ScheduleVenue venue = scheduleObject.venue;
+   SchedulePresenter presenter = scheduleObject.presenter;
    String input1 = scheduleObject.input1;
    String input2 = scheduleObject.input2;
    String captureQuality = scheduleObject.captureQuality;
