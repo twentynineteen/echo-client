@@ -1,6 +1,7 @@
 package dev.danmills.echo_client.api.controller;
 
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,6 +13,7 @@ import com.echo360.sdk.util.Echo360Exception;
 import dev.danmills.echo_client.service.SDKTokenService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class RestSpringBootController {
 
    // Declare rest services for methods

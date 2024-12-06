@@ -1,101 +1,55 @@
 "use client"
+import axios, { AxiosResponse } from 'axios'
+import * as React from 'react'
+import type { DropdownItems, Headers, Inputs, Presenter, Room, Schedule, ScheduleSection, Section, User, Venue, Year } from '../../types'
+// Scheduler functions
+import { convertCaptureQuality, convertDateToDateString, getInputs, getPresenter, getRange, getSection, getVenue, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
+// Shadcn components and dependencies
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
-
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import {
-   Switch
-} from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
-
-import axios, { AxiosResponse } from 'axios'
 import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import * as React from 'react'
-
-import {
-   Select,
-   SelectContent,
-   SelectGroup,
-   SelectItem,
-   SelectLabel,
-   SelectTrigger,
-   SelectValue,
-} from "@/components/ui/select"
-
-import {
-   Form,
-   FormControl,
-   FormDescription,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from "@/@/components/ui/form"
-
-import {
-   Command,
-   CommandEmpty,
-   CommandGroup,
-   CommandInput,
-   CommandItem,
-   CommandList
-} from "@/components/ui/command"
-
-import {
-   Popover,
-   PopoverContent,
-   PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-   zodResolver
-} from "@hookform/resolvers/zod"
-import {
-   Check,
-   ChevronsUpDown
-} from "lucide-react"
-import {
-   useForm
-} from "react-hook-form"
+import { Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
+// zod and form imports / dependencies
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-import terms from '../../assets/terms.json'
-
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import rooms from '../../assets/rooms.json'
-
-const roomList = rooms.data.map((room) => {
+// 
+// Build an array of integers for occasion numbers and map to a list of dropdown items for Occasion field
+const array = getRange(10);
+const occasions: DropdownItems[] = array.map((item: number) => {
    return {
-      value: room.id,
-      label: room.name,
-      buildingId: room.buildingId,
-      roomId: room.id,
+      value: item.toString(),
+      label: item.toString(),
    }
-})
+});
 
-import users from "../../assets/users.json"
+// Dropdown options for video availability
+const availability_options = [
+   {
+      value: "Immediately",
+      label: "Immediately",
+   },
+   {
+      value: "Never",
+      label: "Never",
+   },
+   {
+      value: "Manual",
+      label: "Manual",
+   },
+];
 
-const presenters = users.data.map((user) => {
-   return {
-      email: user.email,
-      value: user.id,
-      label: user.firstName + " " + user.lastName,
-      id: user.id,
-   }
-})
-
-const subtractOneDayFromDate = () => {
-   // A function to subtract one day from the current result of 'new Date()'
-   // This is for the date setter in the form, to allow users to book in recordings on the same day
-   // Here the date is rendered in milliseconds - 1 represents the day amount
-   const date = new Date();
-   const yesterday = date.getTime() - (1 * 24 * 60 * 60 * 1000);
-   date.setTime(yesterday);
-   return date;
-
-}
-
+// Form Schema for validation through Zod
 const formSchema = z
    .object({
       academic_year: z.string(),
@@ -109,7 +63,6 @@ const formSchema = z
       presenter: z.string(),
       guest_presenter: z.string().optional(),
       start_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
-      // start_time: z.coerce.string(),
       start_time: z.preprocess(input => `${input}:00`,
             z.string().time()),
       end_time: z.preprocess(input => `${input}:00`,
@@ -128,7 +81,10 @@ const formSchema = z
 
 export default function Schedule() {
    const [date, setDate] = React.useState(new Date());
-   const [sections, setSections] = React.useState<dropdownItems[]>([]);
+   const [sections, setSections] = React.useState<DropdownItems[]>([]);
+   const [year, setYear] = React.useState<DropdownItems[]>([]);
+   const [room, setRoom] = React.useState<DropdownItems[]>([]);
+   const [user, setUser] = React.useState<DropdownItems[]>([]);
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
@@ -139,43 +95,67 @@ export default function Schedule() {
    }
 
    // axios set up
+   const baseUrl: string = 'http://localhost:8080';
    const client = axios.create({
-      baseURL: 'http://localhost:8080',
+      baseURL: baseUrl,
    });
-   // initialise type required for section list
-   type dropdownItems = {
-      value: string;
-      label: string;
-   }
-   // initialise type pulled from api for section
-   type section = {
-      id: string;
-      courseId: string;
-      termId: string;
-      scheduleIds: string[];
-      sectionNumber: string;
-      externalId: string;
-      instructorId: string;
-      description: string;
-      lessonCount: number;
-      userCount: string;
-      secondaryInstructorIds: string[];
-      lmsCourseIds: string[];
-      lmsCourses: string[];
-   }
+
+   // basic auth header to backend requests in axios
+   const headers: Headers = {
+      headers: { 
+         'X-API-KEY': 'DwightSchrute',            
+       }
+   };
+
+   // call to get academic year / term data from echo API for dropdown
+   const getYears = async () => {
+      try {
+         const searchResponse: AxiosResponse = await client.get(`/terms`, headers);
+         // convert response to array of dropdown items
+         const foundYears: Year[] = Object.values(searchResponse.data['data']);
+
+         //map to state for dropdown menu
+         const mapped: DropdownItems[] = foundYears.map((item) => {
+            return {
+               value: item.id,
+               label: item.name,
+            }
+         });
+         setYear(mapped);
+      } catch(err) {
+         console.log(err);
+      }
+   };
+
+   // get sections async call to backend api
+   const getUsers = async () => {
+      try {
+         const searchResponse: AxiosResponse = await client.get(`/users`, headers);
+         // convert section array to type dropdownItems array from response data object
+         const foundUser: User[] = Object.values(searchResponse.data['data']);
+
+         // map User to state for dropdown menu
+         const mapped: DropdownItems[] = foundUser.map((item) => {
+            return {
+               value: item.id,
+               label: item.firstName + " " + item.lastName,
+            }
+         });
+         setUser(mapped);
+      } catch(err) {
+         console.log(err);
+      }
+   };
+
    // get sections async call to backend api
    const getSections = async (academicYear: string) => {
       try {
-         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, {
-            headers: { 
-               'X-API-KEY': 'DwightSchrute',            
-             }
-         });
+         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, headers);
          // convert section array to type dropdownItems array from response data object
-         const foundSections: section[] = Object.values(searchResponse.data['data']);
+         const foundSections: Section[] = Object.values(searchResponse.data['data']);
 
          // map sections to state for dropdown menu
-         const mapped: dropdownItems[] = foundSections.map((item) => {
+         const mapped: DropdownItems[] = foundSections.map((item) => {
             return {
                value: item.id,
                label: item.sectionNumber,
@@ -187,67 +167,67 @@ export default function Schedule() {
       }
    };
 
+   // get rooms async call to populate dropdown list from api
+   const getRooms = async () => {
+      try {
+         const searchResponse: AxiosResponse = await client.get(`/rooms`, headers);
+         // convert response to array of dropdown items
+         const foundRooms: Room[] = Object.values(searchResponse.data['data']);
 
-   const years = terms.data.map((term) => {
-      return {
-         value: term.id,
-         label: term.name,
+         //map to state for dropdown menu
+         const mapped: DropdownItems[] = foundRooms.map((item) => {
+            return {
+               value: item.id,
+               label: item.name,
+            }
+         });
+         setRoom(mapped);
+      } catch(err) {
+         console.log(err);
       }
-   });
+   };
 
-   const occasions = [
-      {
-         value: "1",
-         label: "1",
-      },
-      {
-         value: "2",
-         label: "2",
-      },
-      {
-         value: "3",
-         label: "3",
-      },
-      {
-         value: "4",
-         label: "4",
-      },
-      {
-         value: "5",
-         label: "5",
-      },
-      {
-         value: "6",
-         label: "6",
-      },
-      {
-         value: "7",
-         label: "7",
-      },
-      {
-         value: "8",
-         label: "8",
-      },
-      {
-         value: "9",
-         label: "9",
-      },
-   ];
+   // a function to send the form data to create a new scheduled recording on echo360
+   const createSchedule = async (data: z.infer < typeof formSchema > ) => {
+      console.log("-----createSchedule called--------");
 
-   const availability_options = [
-      {
-         value: "Immediately",
-         label: "Immediately",
-      },
-      {
-         value: "Never",
-         label: "Never",
-      },
-      {
-         value: "Manual",
-         label: "Manual",
-      },
-   ];
+      const section: ScheduleSection = await getSection(data.section, baseUrl, headers);
+      const venue: Venue = await getVenue(data.room, baseUrl, headers);
+      const presenter: Presenter = await getPresenter(data.presenter, baseUrl, headers);
+      const startDate: string = convertDateToDateString(data.start_date);
+      const startTime: string = removeSeconds(data.start_time);
+      const endTime: string = removeSeconds(data.end_time);
+      const inputs: Inputs = getInputs(data.input);
+      const captureQuality: string = convertCaptureQuality(data.capture_quality);
+      const dataBody = {
+               "startTime": startTime,
+               "startDate": startDate,
+               "endTime": endTime,
+               "sections": [section],
+               "name": data.recording_title,
+               "venue": venue,
+               "presenter": presenter,
+               "input1": inputs.input1,
+               "input2": inputs.input2,
+               "captureQuality": captureQuality,
+            };
+
+      const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
+                                                   .then(function (response) {
+                                                      console.log(response.status);
+                                                      console.log(response.data);
+                                                   })
+                                                   .catch(function (error) {
+                                                      console.log(error);
+                                                   });
+   };
+
+   // React call to populate dropdowns from api on page load 
+   React.useEffect(() => {
+      getYears();
+      getRooms();
+      getUsers();
+   }, []);
 
    const form = useForm < z.infer < typeof formSchema >> ({
       resolver: zodResolver(formSchema),
@@ -264,63 +244,10 @@ export default function Schedule() {
       }
     });
 
-   function convertFormToSchedule(values: z.infer < typeof formSchema > ) {
-      // TODO
-      // A function to convert the form submission into suitable echo 360 submission format
-      // generate an external id using "MODULECODE-DDMMYY-HH:MM-ROOM" format
-      // parse start date to 'dd/mm/yyyy' format
-      // parse start time to 'hh:mm:ss' format
-      // calculate duration by removing start time from end time - end time not required
-      // collect building name and campus name from values.room
-      // get presenter email from id - repeat for guest
-      // get course identifier from ???
-      // format availability if manual
-      // format input options for input 1 and 2
-      // Create a schedule availability object inside schedule section object
-      // parameters for ScheduleAvailability - True, False, concreteTime
-      // ScheduleSection : [ScheduleSection(values.section, ScheduleAvailability())], 
-
-      // Schedule(
-      //    java.lang.String startTime, 
-      //    java.lang.String startDate, 
-      //    java.lang.Integer durationMinutes, 
-      //    ScheduleSection[] sections, 
-      //    java.lang.String name, 
-      //    java.lang.String roomId, 
-      //    java.lang.String instructorId, 
-      //    java.lang.String input1, 
-      //    java.lang.String input2, 
-      //    java.lang.String captureQuality
-      // )
-
-      
-
-      const externalId = "IB9HY0-010524-13:00:00M2";
-      const schedule = {
-         externalId: externalId,
-         name: values.recording_title,
-         startDate: "dd/mm/yyyy",
-         startTime: "13:00",
-         durationMinutes: "14:00",
-         roomId: values.room,
-         instructorId: values.presenter,
-         guestInstructor: values.guest_presenter,
-         termId: values.academic_year,
-         ScheduleSection : [ScheduleSection(values.section, ScheduleAvailability())],
-         "Availability": "Concrete | 2024-05-10",
-         shouldCaption: "TRUE",
-         shouldStreamLive: values.live_stream_toggle,
-         input1: "",
-         input2: "",
-         captureQuality: values.capture_quality,
-         streamQuality: values.stream_quality,
-      };
-      return schedule;
-   }
 
    function onSubmit(values: z.infer < typeof formSchema > ) {
       try {
-        console.log(values);
+        createSchedule(values);
         
       } catch (error) {
         console.error("Form submission error", error);
@@ -358,7 +285,7 @@ export default function Schedule() {
                                                       role="combobox"   
                                                       className="w-full justify-between p-3"
                                                    >
-                                                      {field.value ? years.find((year) => year.value === field.value)?.label
+                                                      {field.value ? year.find((year) => year.value === field.value)?.label
                                                       : "Select year..."}
                                                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                    </Button>
@@ -370,7 +297,7 @@ export default function Schedule() {
                                                    <CommandList>
                                                       <CommandEmpty>No year found.</CommandEmpty>
                                                       <CommandGroup>
-                                                         {years.map((year) => (
+                                                         {year.map((year) => (
                                                          <CommandItem
                                                             key={year.value}
                                                             value={year.label}
@@ -557,7 +484,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? roomList.find((room) => room.value === field.value)?.label
+                                                   {field.value ? room.find((room) => room.value === field.value)?.label
                                                    : "Select room..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -569,7 +496,7 @@ export default function Schedule() {
                                                 <CommandList>
                                                    <CommandEmpty>No room found.</CommandEmpty>
                                                    <CommandGroup>
-                                                      {roomList.map((room) => (
+                                                      {room.map((room) => (
                                                       <CommandItem
                                                          key={room.value}
                                                          value={room.label}
@@ -716,7 +643,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? presenters.find((presenter) => presenter.value === field.value)?.label
+                                                   {field.value ? user.find((presenter) => presenter.value === field.value)?.label
                                                    : "Select presenter..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -728,7 +655,7 @@ export default function Schedule() {
                                                 <CommandList>
                                                    <CommandEmpty>No presenter found.</CommandEmpty>
                                                    <CommandGroup>
-                                                      {presenters.map((presenter) => (
+                                                      {user.map((presenter) => (
                                                       <CommandItem
                                                          key={presenter.value}
                                                          value={presenter.label}
@@ -773,7 +700,7 @@ export default function Schedule() {
                                                    role="combobox"   
                                                    className="w-full justify-between p-3"
                                                 >
-                                                   {field.value ? presenters.find((presenter) => presenter.value === field.value)?.label
+                                                   {field.value ? user.find((presenter) => presenter.value === field.value)?.label
                                                    : "Select presenter..."}
                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                                 </Button>
@@ -785,7 +712,7 @@ export default function Schedule() {
                                                 <CommandList>
                                                    <CommandEmpty>No presenter found.</CommandEmpty>
                                                    <CommandGroup>
-                                                      {presenters.map((presenter) => (
+                                                      {user.map((presenter) => (
                                                       <CommandItem
                                                          key={presenter.value}
                                                          value={presenter.label}
