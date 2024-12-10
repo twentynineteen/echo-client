@@ -1,6 +1,7 @@
 import { Header } from '@tanstack/react-table';
-import axios from 'axios';
-import type { Availability, Building, Campus, Course, Headers, Inputs, Presenter, Room, Schedule, SchedulePresenter, ScheduleSection, Venue, Year } from '../../types';
+import axios, { AxiosResponse } from 'axios';
+import { Recording } from '../../components/RecordingsTable/columns';
+import type { Availability, Building, Campus, Course, Headers, Inputs, ListRequest, Presenter, Room, Schedule, SchedulePresenter, ScheduleSection, Venue, Year } from '../../types';
 
 //Function to get course information
 export async function getCourse(courseId: string, baseUrl: string, header: Headers): Promise<Course> {
@@ -82,6 +83,28 @@ export async function getSection(sectionId: string, baseUrl: string, header: Hea
    };
 
    return scheduleSection;
+}
+
+// Function to return the list of scheduled recordings from Echo360 API
+export async function getSchedules(baseUrl: string, header: Headers): Promise<ListRequest<Schedule>> {
+   
+   // make a call to section service in echo api
+   const client = axios.create({
+      baseURL: baseUrl,
+   });
+
+   try {
+      // call backend
+      const axiosGet: AxiosResponse<ListRequest<Schedule>> = await client.get(`/schedules`, header);
+
+      //  convert response to array of schedules and return
+      const scheduleData: ListRequest<Schedule> = axiosGet.data;
+      return scheduleData;
+   } catch(err) {
+      console.error("Error: failed to get list of scheduled recordings", err);
+      
+   }
+
 }
 
 // Function to get venue
@@ -203,6 +226,8 @@ export async function getPresenter(presenterId: string, baseUrl: string, header:
                            });
    return presenter;
 }
+
+
 
 // Function to get date difference in days
 export function getDateDifferenceInDays(date1: Date, date2: Date): number {

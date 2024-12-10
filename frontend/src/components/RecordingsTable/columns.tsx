@@ -16,6 +16,7 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Schedule } from "@/types";
 
 type Nullable<T> = T | null;
 
@@ -59,7 +60,7 @@ type Presenter = {
    userExternalId: Nullable<string>
 }
 
-export type Recordings = {
+export type Recording = {
    id: string
    startDate: string
    startTime: string
@@ -83,7 +84,7 @@ export type Recordings = {
    streamQuality: Nullable<string>
 }
 
-export const columns: ColumnDef<Recordings>[] = [
+export const columns: ColumnDef<Schedule>[] = [
    {
       id: "select",
       header: ({ table }) => (
