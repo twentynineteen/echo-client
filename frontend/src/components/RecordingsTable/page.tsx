@@ -3,41 +3,49 @@ import { getSchedules } from "../Schedule/ScheduleFunctions";
 import { DataTable } from "../ui/data-table";
 import { columns } from "./columns";
 
-// import dummyData from '../../assets/schedules.json';
+import React from 'react';
 
 async function getScheduleData(): Promise<ListRequest<Schedule>> {
    
-     // axios set up
-     const baseUrl: string = 'http://localhost:8080';
-  
-     // basic auth header to backend requests in axios
-     const headers: Headers = {
-        headers: { 
-           'X-API-KEY': 'DwightSchrute',            
-         }
-     };
+   // axios set up
+   const baseUrl: string = 'http://localhost:8080';
+
+   // basic auth header to backend requests in axios
+   const headers: Headers = {
+      headers: { 
+         'X-API-KEY': 'DwightSchrute',            
+      }
+   };
+
    const schedules: ListRequest<Schedule> = await getSchedules(baseUrl, headers);
    return schedules;
 }
 
-export default async function RecordingsTablePage() {
-   const data: ListRequest<Schedule> = await getScheduleData();
-   const recordings: Schedule[] = Object.values(data);
-  console.log("typeof");
-  console.log(typeof recordings);
-  console.log("data.data = ");
-  console.log(data['data']);
-//   console.log("data.data.toString = ");
-//   console.log(data.data.toString());
-//   const recordings = data.data.map((recording)=> (
-//    recording
-// ));
+export default function RecordingsTablePage() {
+   const [recordings, setRecordings] = React.useState<Schedule[]>([]); //state for recordings list data. return null if unresolved
+   const [loading, setLoading] = React.useState<boolean>(true); //state for loading data. Default to true.
 
-//   console.log(typeof mapped);
+   React.useEffect(()=> {
+      //fetch data
+      const fetchData = async () => {
+         const result: ListRequest<Schedule> = await getScheduleData();
+         // Parse listRequest response (result) into an array of objects containing scheduled recordings
+         const mappedData = result.data.map((recording)=>(recording));
+         // render list of recordings into recordings state so that it can be displayed on browser table
+         setRecordings(mappedData);
+         // set loading state to false so that table can be displayed on screen
+         setLoading(false);
+      };
+      // call fetchData on page mount
+      fetchData();
+   }, [])
+
+
+   if (loading) return <div>Loading...</div>; //loading state
 
    return (
       <div className="container">
          <DataTable columns={columns} data={recordings} />
       </div>
    )
-}0
+}
