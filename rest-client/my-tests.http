@@ -4,7 +4,7 @@ content-type: application/json
 X-API-KEY: DwightSchrute
 
 ### Get schedules
-get http://localhost:8080/schedules/
+get http://localhost:8080/schedules
 content-type: application/json
 X-API-KEY: DwightSchrute
 
