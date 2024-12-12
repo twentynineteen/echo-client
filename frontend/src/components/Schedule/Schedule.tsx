@@ -193,7 +193,7 @@ export default function Schedule() {
 
    // a function to send the form data to create a new scheduled recording on echo360
    const createSchedule = async (data: z.infer < typeof formSchema > ) => {
-      console.log("-----createSchedule called--------");
+      // console.log("-----createSchedule called--------");
 
       const section: ScheduleSection = await getSection(data.section, baseUrl, headers);
       const venue: Venue = await getVenue(data.room, baseUrl, headers);
@@ -216,19 +216,28 @@ export default function Schedule() {
                "captureQuality": captureQuality,
             };
 
-      console.log(dataBody);
+      // console.log(dataBody);
       const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
                                                    .then(function (response) {
-                                                      // console.log(response.status);
-                                                      // console.log(response.data);
+                                                      // convert 201 status to success if response is successful
+                                                      const status = response.status == 201 ? "Success!" : response.status;
                                                       toast({
-                                                         title: `Form submission status: ${response.status}`,
-                                                         description: `${response.data}`
+                                                         title: `Form submission status: ${status}`,
+                                                         description: `${dataBody.name} - ${dataBody.startDate} - ${dataBody.startTime} - ${dataBody.endTime}`,
+                                                         variant: "success"
                                                       })
                                                    })
                                                    .catch(function (error) {
                                                       console.log(error);
+                                                      // convert 400 status to failed if response is unsuccessful
+                                                      const status = error.status == 400 ? "Failed" : error.status;
+                                                      toast({
+                                                         title: `Form submission status: ${status}`,
+                                                         description: `${error.code}: ${error.message}`,
+                                                         variant: "destructive"
+                                                      })
                                                    });
+      
    };
 
    // React call to populate dropdowns from api on page load 
@@ -256,11 +265,9 @@ export default function Schedule() {
 
    function onSubmit(values: z.infer < typeof formSchema > ) {
       try {
-        createSchedule(values);
-        
+        createSchedule(values);        
       } catch (error) {
-        console.error("Form submission error", error);
-        
+        console.error("Form submission error", error);        
       }
     }
    
