@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 
+import { Toaster } from "@/@/components/ui/toaster";
 import Footer from "./components/Footer/Footer";
 import Modules from "./components/Modules/Modules";
 import MyRecordings from "./components/MyRecordings/MyRecordings";
@@ -58,6 +59,7 @@ function Layout() {
       <div className="content-container">
         <Navbar/>
         <Outlet />
+        <Toaster />
       </div>
       <div className="footer--pin">
         <Footer />
