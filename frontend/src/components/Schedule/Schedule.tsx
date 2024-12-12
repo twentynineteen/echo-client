@@ -6,6 +6,7 @@ import type { DropdownItems, Headers, Inputs, Room, Schedule, SchedulePresenter,
 import { convertCaptureQuality, convertDateToDateString, getInputs, getPresenter, getRange, getSection, getVenue, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
 // Shadcn components and dependencies
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
+import { useToast } from "@/@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
@@ -87,6 +88,9 @@ export default function Schedule() {
    const [user, setUser] = React.useState<DropdownItems[]>([]);
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
+
+   // Toast setup for form submission response
+   const { toast } = useToast();
 
    // Function to toggle disabled state in Section dropdown
    // Only required to enable dropdown on selected year
@@ -215,8 +219,12 @@ export default function Schedule() {
       console.log(dataBody);
       const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
                                                    .then(function (response) {
-                                                      console.log(response.status);
-                                                      console.log(response.data);
+                                                      // console.log(response.status);
+                                                      // console.log(response.data);
+                                                      toast({
+                                                         title: `Form submission status: ${response.status}`,
+                                                         description: `${response.data}`
+                                                      })
                                                    })
                                                    .catch(function (error) {
                                                       console.log(error);
