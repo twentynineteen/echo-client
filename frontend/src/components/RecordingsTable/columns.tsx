@@ -17,6 +17,8 @@ import {
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Schedule } from "@/types";
+import React from "react";
+import { RecordingSheet } from "../RecordingSheet/RecordingSheet";
 
 type Nullable<T> = T | null;
 
@@ -177,6 +179,17 @@ export const columns: ColumnDef<Schedule>[] = [
       id: "actions",
       cell: ({ row }) => {
          const recording = row.original
+
+         // State to track visibility
+         const [isVisible, setIsVisible] = React.useState(false);
+
+         // State to track current recording Id
+         const [selectedId, setSelectedId] = React.useState("");
+
+         // Toggle visibility on click
+         const toggleVisibility = () => {
+            setIsVisible((prevState) => !prevState);
+         };
    
          return (
             <DropdownMenu>
@@ -200,9 +213,18 @@ export const columns: ColumnDef<Schedule>[] = [
                   Copy recording Start Date
                   </DropdownMenuItem>
                <DropdownMenuSeparator />
-               <DropdownMenuItem>View section</DropdownMenuItem>
+               <DropdownMenuItem
+                  onClick={() => {
+                     setSelectedId(recording.id);
+                     toggleVisibility();
+
+                  }}
+               >
+                  Edit recording
+               </DropdownMenuItem>
                <DropdownMenuItem>View schedule details</DropdownMenuItem>
             </DropdownMenuContent>
+            {isVisible && <RecordingSheet props={recording.id} />}
             </DropdownMenu>
          )
       },
