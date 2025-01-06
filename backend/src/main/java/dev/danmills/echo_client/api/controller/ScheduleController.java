@@ -63,6 +63,7 @@ public class ScheduleController {
    String input1 = scheduleObject.input1;
    String input2 = scheduleObject.input2;
    String captureQuality = scheduleObject.captureQuality;
+
    
    Schedule schedule = new Schedule(
       startTime,
@@ -75,6 +76,7 @@ public class ScheduleController {
       input1,
       input2,
       captureQuality
+      
    );
    return restScheduleService.postSchedule(schedule);
   }

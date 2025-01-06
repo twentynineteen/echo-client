@@ -214,9 +214,10 @@ export default function Schedule() {
                "input1": inputs.input1,
                "input2": inputs.input2,
                "captureQuality": captureQuality,
+               "shouldStreamLive": data.live_stream_toggle,
             };
 
-      // console.log(dataBody);
+      console.log(dataBody); 
       const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
                                                    .then(function (response) {
                                                       // convert 201 status to success if response is successful
@@ -560,18 +561,18 @@ export default function Schedule() {
                                              >
                                                 <FormItem className="flex items-center space-x-3 space-y-0">
                                                 <FormControl>
-                                                   <RadioGroupItem value="[ADD] Audio/Display-1/Display-2" />
+                                                   <RadioGroupItem value="[ADV] Audio/Display-1/Display-2" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal">
-                                                   [ADD] Audio/Display-1/Display-2
+                                                   [ADV] Audio/Display-1/Display-2
                                                 </FormLabel>
                                                 </FormItem>
                                                 <FormItem className="flex items-center space-x-3 space-y-0">
                                                 <FormControl>
-                                                   <RadioGroupItem value="[AD] Audio/Display-1" />
+                                                   <RadioGroupItem value="[AV] Audio/Display-1" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal">
-                                                   [AD] Audio/Display-1
+                                                   [AV] Audio/Display-1
                                                 </FormLabel>
                                                 </FormItem>
                                                 <FormItem className="flex items-center space-x-3 space-y-0">

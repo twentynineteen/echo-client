@@ -71,6 +71,7 @@ export function DataTable<TData, TValue>({
             table.getColumn("startDate")?.setFilterValue(event.target.value)
           }
           className="max-w-sm bg-background p-3"
+          id="filter-input"
         />
       </div>
          {/* Table content */}

@@ -134,11 +134,11 @@ export function getInputs(input: string): Inputs {
    let input1 = null;
    let input2 = null;
 
-   if (input == "[ADD] Audio/Display-1/Display-2") {
+   if (input == "[ADV] Audio/Display-1/Display-2") {
       input1 = "Display";
       input2 = "Video";
    }
-   if (input == "[AD] Audio/Display-1") {
+   if (input == "[AV] Audio/Display-1") {
       input1 = "Video";
    }
    if (input == "[AD] Audio/Display-2") {

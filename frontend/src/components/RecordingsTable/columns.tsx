@@ -176,7 +176,7 @@ export const columns: ColumnDef<Schedule>[] = [
    {
       id: "actions",
       cell: ({ row }) => {
-         const payment = row.original
+         const recording = row.original
    
          return (
             <DropdownMenu>
@@ -189,10 +189,16 @@ export const columns: ColumnDef<Schedule>[] = [
             <DropdownMenuContent align="end" className="bg-background p-3 w-full">
                <DropdownMenuLabel className="font-bold">Actions</DropdownMenuLabel>
                <DropdownMenuItem
-                  onClick={() => navigator.clipboard.writeText(payment.id)}
+                  onClick={() => navigator.clipboard.writeText(recording.id)}
                >
                   Copy recording ID
                </DropdownMenuItem>
+               {/* <DropdownMenuSeparator /> */}
+               <DropdownMenuItem 
+                  onClick={() => navigator.clipboard.writeText(recording.startDate ? recording.startDate : "")}
+               >
+                  Copy recording Start Date
+                  </DropdownMenuItem>
                <DropdownMenuSeparator />
                <DropdownMenuItem>View section</DropdownMenuItem>
                <DropdownMenuItem>View schedule details</DropdownMenuItem>
