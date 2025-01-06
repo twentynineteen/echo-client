@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Schedule } from "@/types";
 import React from "react";
+import type { Headers } from '../../types';
 import { RecordingSheet } from "../RecordingSheet/RecordingSheet";
 
 type Nullable<T> = T | null;
@@ -84,6 +85,33 @@ export type Recording = {
    input2: Nullable<string>
    captureQuality: Nullable<string>
    streamQuality: Nullable<string>
+}
+
+// function to collect recording for editing
+import axios, { AxiosResponse } from "axios";
+
+// axios set up
+const baseUrl: string = 'http://localhost:8080';
+const client = axios.create({
+   baseURL: baseUrl,
+});
+
+// basic auth header to backend requests in axios
+const headers: Headers = {
+   headers: { 
+      'X-API-KEY': 'DwightSchrute',            
+    }
+};
+
+const getScheduleById = async (id: string)=> {
+   try {
+      const request: AxiosResponse = await client.get(`/schedules/${id}`, headers);
+                                                // console.log(request.data);                                                
+                                                return request.data;
+      } catch(err) {
+         console.error(err);
+      }
+
 }
 
 export const columns: ColumnDef<Schedule>[] = [
@@ -214,8 +242,9 @@ export const columns: ColumnDef<Schedule>[] = [
                   </DropdownMenuItem>
                <DropdownMenuSeparator />
                <DropdownMenuItem
-                  onClick={() => {
-                     setSelectedId(recording.id);
+                  onClick={async () => {
+                     // setSelectedId(recording.id);
+                     setSelectedId(await getScheduleById(recording.id));
                      toggleVisibility();
 
                   }}
@@ -224,7 +253,7 @@ export const columns: ColumnDef<Schedule>[] = [
                </DropdownMenuItem>
                <DropdownMenuItem>View schedule details</DropdownMenuItem>
             </DropdownMenuContent>
-            {isVisible && <RecordingSheet props={recording.id} />}
+            {isVisible && <RecordingSheet selectedId={selectedId} />}
             </DropdownMenu>
          )
       },
