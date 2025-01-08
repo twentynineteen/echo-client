@@ -47,6 +47,13 @@ public class ScheduleController {
    log.logString("Attempting to get Schedules");
    return restScheduleService.getScheduleById(id);
   }
+
+  @PostMapping("/schedules/update")
+  @ResponseBody
+  public ResponseEntity<Schedule> updateSchedule(@RequestBody Schedule scheduleObject) throws Echo360Exception {
+   log.logString("Attempting to update schedule");
+   return restScheduleService.updateSchedule(scheduleObject);
+  }
   
   @PostMapping("/schedules/create")
   @ResponseBody

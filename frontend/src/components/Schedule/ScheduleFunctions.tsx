@@ -1,7 +1,8 @@
-import { Header } from '@tanstack/react-table';
+import { toast } from '@/@/hooks/use-toast';
 import axios, { AxiosResponse } from 'axios';
-import { Recording } from '../../components/RecordingsTable/columns';
-import type { Availability, Building, Campus, Course, Headers, Inputs, ListRequest, Presenter, Room, Schedule, SchedulePresenter, ScheduleSection, Venue, Year } from '../../types';
+import { baseUrl, client, headers } from "../../lib/utils";
+import type { Availability, Building, Campus, Course, DropdownItems, Headers, Inputs, ListRequest, Room, Schedule, SchedulePresenter, ScheduleSection, Section, User, Venue, Year } from '../../types';
+import { formSchema } from './ScheduleUtils';
 
 //Function to get course information
 export async function getCourse(courseId: string, baseUrl: string, header: Headers): Promise<Course> {
@@ -21,6 +22,91 @@ export async function getCourse(courseId: string, baseUrl: string, header: Heade
                               })
    return course;
 }
+// get rooms for form dropdown
+// async call to populate dropdown list from api
+export async function getRooms(): Promise<DropdownItems[]> {
+   try {
+      const searchResponse: AxiosResponse = await client.get(`/rooms`, headers);
+      // convert response to array of dropdown items
+      const foundRooms: Room[] = Object.values(searchResponse.data['data']);
+
+      //map to state for dropdown menu
+      const mapped: DropdownItems[] = foundRooms.map((item) => {
+         return {
+            value: item.id,
+            label: item.name,
+         }
+      });
+      return mapped;
+   } catch(err) {
+      throw new Error('Failed to fetch rooms ' + err);
+   }
+};
+
+// get years for form dropdown
+// call to get academic year / term data from echo API for dropdown
+export async function getYears(): Promise<DropdownItems[]> {
+   try {
+      const searchResponse: AxiosResponse = await client.get(`/terms`, headers);
+      // convert response to array of dropdown items
+      const foundYears: Year[] = Object.values(searchResponse.data['data']);
+
+      //map to state for dropdown menu
+      const mapped: DropdownItems[] = foundYears.map((item) => {
+         return {
+            value: item.id,
+            label: item.name,
+         }
+      });
+      return mapped;
+   } catch(err) {
+      throw new Error('Failed to fetch years ' + err);
+   }
+};
+
+// get sections for form dropdown
+// get sections async call to backend api
+export async function getSections(academicYear: string) {
+   try {
+      const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, headers);
+      // convert section array to type dropdownItems array from response data object
+      const foundSections: Section[] = Object.values(searchResponse.data['data']);
+
+      // map sections to state for dropdown menu
+      const mapped = foundSections.map((item) => {
+         return {
+            value: item.id,
+            label: item.sectionNumber,
+         }
+      });
+      return mapped;
+   } catch(err) {
+      throw new Error('Failed to fetch sections ' + err);
+      
+   }
+};
+
+// get users for presenter dropdown
+// get sections async call to backend api
+export async function getUsers(): Promise<DropdownItems[]> {
+   try {
+      const searchResponse: AxiosResponse = await client.get(`/users`, headers);
+         // convert section array to type dropdownItems array from response data object
+         const foundUser: User[] = Object.values(searchResponse.data['data']);
+
+         // map User to state for dropdown menu
+         const mapped: DropdownItems[] = foundUser.map((item) => {
+         return {
+            value: item.id,
+               label: item.firstName + " " + item.lastName,
+            }
+         });
+         return mapped;
+      } catch(err) {
+         console.log(err);
+         throw new Error('Failed to fetch users ' + err);
+      }
+   };
 
 //Function to get term / year information
 export async function getTerm(termId: string, baseUrl: string, header: Headers ): Promise<Year> {
@@ -101,7 +187,7 @@ export async function getSchedules(baseUrl: string, header: Headers): Promise<Li
       const scheduleData: ListRequest<Schedule> = axiosGet.data;
       return scheduleData;
    } catch(err) {
-      console.error("Error: failed to get list of scheduled recordings", err);
+      throw new Error('Error: failed to get list of scheduled recordings' + err);
       
    }
 
@@ -199,7 +285,7 @@ export async function getCampus(campusId: string, baseUrl: string, header: Heade
                               return data;
                            })
                            .catch(function (error) {
-                              console.log(error);
+                              throw new Error(error);
                            });
    return campus;
 }
@@ -222,7 +308,8 @@ export async function getPresenter(presenterId: string, baseUrl: string, header:
                               return schedulePresenter;
                            })
                            .catch(function (error) {
-                              console.log(error);
+                              
+                              throw new Error(error);
                            });
    return presenter;
 }
@@ -284,3 +371,57 @@ export function convertCaptureQuality(captureQuality: string) {
    }
    return qualityString;
 }
+
+// Toast setup for form submission response
+const { toast } = useToast();
+
+// a function to send the form data to create a new scheduled recording on echo360
+export const createSchedule = async (data: z.infer < typeof formSchema > ) => {
+   // console.log("-----createSchedule called--------");
+
+   const section: ScheduleSection = await getSection(data.section, baseUrl, headers);
+   const venue: Venue = await getVenue(data.room, baseUrl, headers);
+   const presenter: SchedulePresenter = await getPresenter(data.presenter, baseUrl, headers);
+   const startDate: string = convertDateToDateString(data.start_date);
+   const startTime: string = removeSeconds(data.start_time);
+   const endTime: string = removeSeconds(data.end_time);
+   const inputs: Inputs = getInputs(data.input);
+   const captureQuality: string = convertCaptureQuality(data.capture_quality);
+   const dataBody = {
+            "startTime": startTime,
+            "startDate": startDate,
+            "endTime": endTime,
+            "sections": [section],
+            "name": data.recording_title,
+            "venue": venue,
+            "presenter": presenter,
+            "input1": inputs.input1,
+            "input2": inputs.input2,
+            "captureQuality": captureQuality,
+            "shouldStreamLive": data.live_stream_toggle,
+         };
+
+   console.log(dataBody); 
+   const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
+                                                .then(function (response) {
+                                                   // convert 201 status to success if response is successful
+                                                   const status = response.status == 201 ? "Success!" : response.status;
+                                                   toast({
+                                                      title: `Form submission status: ${status}`,
+                                                      description: `${dataBody.name} - ${dataBody.startDate} - ${dataBody.startTime} - ${dataBody.endTime}`,
+                                                      variant: "success"
+                                                   })
+                                                })
+                                                .catch(function (error) {
+                                                   console.log(error);
+                                                   // convert 400 status to failed if response is unsuccessful
+                                                   const status = error.status == 400 ? "Failed" : error.status;
+                                                   toast({
+                                                      title: `Form submission status: ${status}`,
+                                                      description: `${error.code}: ${error.message}`,
+                                                      variant: "destructive"
+                                                   })
+                                                });
+   return request;
+   
+};

@@ -1,9 +1,9 @@
 "use client"
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 import * as React from 'react'
-import type { DropdownItems, Headers, Inputs, Room, Schedule, SchedulePresenter, ScheduleSection, Section, User, Venue, Year } from '../../types'
+import type { DropdownItems, Inputs, Room, Schedule, SchedulePresenter, ScheduleSection, Venue } from '../../types'
 // Scheduler functions
-import { convertCaptureQuality, convertDateToDateString, getInputs, getPresenter, getRange, getSection, getVenue, removeSeconds, subtractOneDayFromDate } from './ScheduleFunctions'
+import { convertCaptureQuality, convertDateToDateString, createSchedule, getInputs, getPresenter, getSection, getVenue, removeSeconds } from './ScheduleFunctions'
 // Shadcn components and dependencies
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
 import { useToast } from "@/@/hooks/use-toast"
@@ -19,250 +19,26 @@ import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
+
 // zod and form imports / dependencies
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { availability_options, defaultValues, formSchema } from "../Schedule/ScheduleUtils"
 
-// 
-// Build an array of integers for occasion numbers and map to a list of dropdown items for Occasion field
-const array = getRange(10);
-const occasions: DropdownItems[] = array.map((item: number) => {
-   return {
-      value: item.toString(),
-      label: item.toString(),
-   }
-});
 
-// Dropdown options for video availability
-const availability_options = [
-   {
-      value: "Immediately",
-      label: "Immediately",
-   },
-   {
-      value: "Never",
-      label: "Never",
-   },
-   {
-      value: "Manual",
-      label: "Manual",
-   },
-];
-
-// Form Schema for validation through Zod
-const formSchema = z
-   .object({
-      academic_year: z.string(),
-      occasion: z.string().optional(),
-      section: z.string(),
-      recording_title: z.string().min(2),
-      room: z.string(),
-      input: z.string(),
-      capture_quality: z.string(),
-      stream_quality: z.string().optional(),
-      presenter: z.string(),
-      guest_presenter: z.string().optional(),
-      start_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
-      start_time: z.preprocess(input => `${input}:00`,
-            z.string().time()),
-      end_time: z.preprocess(input => `${input}:00`,
-         z.string().time()),
-      availability: z.string(),
-      availability_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
-      live_stream_toggle: z.boolean(),
-      group: z.string().optional(),
-      requested_by: z.string().optional(),
-   })
-   .refine((data) => data.end_time > data.start_time, {
-      message: "End time cannot be earlier than start time.",
-      path: ["end_time"],
-   });
-
+import AcademicYearCard from '../forms/fields/AcademicYearCard'
+import CaptureQualityField from '../forms/fields/CaptureQualityField'
+import PresenterField from '../forms/fields/PresenterField'
+import RoomField from '../forms/fields/RoomField'
+import RoomInputField from '../forms/fields/RoomInputField'
 
 export default function Schedule() {
-   const [date, setDate] = React.useState(new Date());
-   const [sections, setSections] = React.useState<DropdownItems[]>([]);
-   const [year, setYear] = React.useState<DropdownItems[]>([]);
-   const [room, setRoom] = React.useState<DropdownItems[]>([]);
-   const [user, setUser] = React.useState<DropdownItems[]>([]);
-   const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
-   const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
-
-   // Toast setup for form submission response
-   const { toast } = useToast();
-
-   // Function to toggle disabled state in Section dropdown
-   // Only required to enable dropdown on selected year
-   const enableSectionDropdown = () => {
-      setSectionDisabled(true);
-   }
-
-   // axios set up
-   const baseUrl: string = 'http://localhost:8080';
-   const client = axios.create({
-      baseURL: baseUrl,
-   });
-
-   // basic auth header to backend requests in axios
-   const headers: Headers = {
-      headers: { 
-         'X-API-KEY': 'DwightSchrute',            
-       }
-   };
-
-   // call to get academic year / term data from echo API for dropdown
-   const getYears = async () => {
-      try {
-         const searchResponse: AxiosResponse = await client.get(`/terms`, headers);
-         // convert response to array of dropdown items
-         const foundYears: Year[] = Object.values(searchResponse.data['data']);
-
-         //map to state for dropdown menu
-         const mapped: DropdownItems[] = foundYears.map((item) => {
-            return {
-               value: item.id,
-               label: item.name,
-            }
-         });
-         setYear(mapped);
-      } catch(err) {
-         console.log(err);
-      }
-   };
-
-   // get sections async call to backend api
-   const getUsers = async () => {
-      try {
-         const searchResponse: AxiosResponse = await client.get(`/users`, headers);
-         // convert section array to type dropdownItems array from response data object
-         const foundUser: User[] = Object.values(searchResponse.data['data']);
-
-         // map User to state for dropdown menu
-         const mapped: DropdownItems[] = foundUser.map((item) => {
-            return {
-               value: item.id,
-               label: item.firstName + " " + item.lastName,
-            }
-         });
-         setUser(mapped);
-      } catch(err) {
-         console.log(err);
-      }
-   };
-
-   // get sections async call to backend api
-   const getSections = async (academicYear: string) => {
-      try {
-         const searchResponse: AxiosResponse = await client.get(`/sections/year/${academicYear}`, headers);
-         // convert section array to type dropdownItems array from response data object
-         const foundSections: Section[] = Object.values(searchResponse.data['data']);
-
-         // map sections to state for dropdown menu
-         const mapped: DropdownItems[] = foundSections.map((item) => {
-            return {
-               value: item.id,
-               label: item.sectionNumber,
-            }
-         });
-         setSections(mapped);
-      } catch(err) {
-         console.log(err);
-      }
-   };
-
-   // get rooms async call to populate dropdown list from api
-   const getRooms = async () => {
-      try {
-         const searchResponse: AxiosResponse = await client.get(`/rooms`, headers);
-         // convert response to array of dropdown items
-         const foundRooms: Room[] = Object.values(searchResponse.data['data']);
-
-         //map to state for dropdown menu
-         const mapped: DropdownItems[] = foundRooms.map((item) => {
-            return {
-               value: item.id,
-               label: item.name,
-            }
-         });
-         setRoom(mapped);
-      } catch(err) {
-         console.log(err);
-      }
-   };
-
-   // a function to send the form data to create a new scheduled recording on echo360
-   const createSchedule = async (data: z.infer < typeof formSchema > ) => {
-      // console.log("-----createSchedule called--------");
-
-      const section: ScheduleSection = await getSection(data.section, baseUrl, headers);
-      const venue: Venue = await getVenue(data.room, baseUrl, headers);
-      const presenter: SchedulePresenter = await getPresenter(data.presenter, baseUrl, headers);
-      const startDate: string = convertDateToDateString(data.start_date);
-      const startTime: string = removeSeconds(data.start_time);
-      const endTime: string = removeSeconds(data.end_time);
-      const inputs: Inputs = getInputs(data.input);
-      const captureQuality: string = convertCaptureQuality(data.capture_quality);
-      const dataBody = {
-               "startTime": startTime,
-               "startDate": startDate,
-               "endTime": endTime,
-               "sections": [section],
-               "name": data.recording_title,
-               "venue": venue,
-               "presenter": presenter,
-               "input1": inputs.input1,
-               "input2": inputs.input2,
-               "captureQuality": captureQuality,
-               "shouldStreamLive": data.live_stream_toggle,
-            };
-
-      console.log(dataBody); 
-      const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
-                                                   .then(function (response) {
-                                                      // convert 201 status to success if response is successful
-                                                      const status = response.status == 201 ? "Success!" : response.status;
-                                                      toast({
-                                                         title: `Form submission status: ${status}`,
-                                                         description: `${dataBody.name} - ${dataBody.startDate} - ${dataBody.startTime} - ${dataBody.endTime}`,
-                                                         variant: "success"
-                                                      })
-                                                   })
-                                                   .catch(function (error) {
-                                                      console.log(error);
-                                                      // convert 400 status to failed if response is unsuccessful
-                                                      const status = error.status == 400 ? "Failed" : error.status;
-                                                      toast({
-                                                         title: `Form submission status: ${status}`,
-                                                         description: `${error.code}: ${error.message}`,
-                                                         variant: "destructive"
-                                                      })
-                                                   });
-      
-   };
-
-   // React call to populate dropdowns from api on page load 
-   React.useEffect(() => {
-      getYears();
-      getRooms();
-      getUsers();
-   }, []);
 
    const form = useForm < z.infer < typeof formSchema >> ({
       resolver: zodResolver(formSchema),
-      defaultValues: {
-         "occasion": "1",
-         "start_date": date,
-         "live_stream_toggle": false,
-         "input": "[ADD] Audio/Display-1/Display-2",
-         "capture_quality": "High Quality",
-         "availability": "Immediately",
-         "recording_title": "",
-         "availability_date": new Date(),
-         "stream_quality": "High Quality",
-      }
-    });
-
+      defaultValues: defaultValues
+   });
 
    function onSubmit(values: z.infer < typeof formSchema > ) {
       try {
@@ -271,11 +47,9 @@ export default function Schedule() {
         console.error("Form submission error", error);        
       }
     }
-   
 
   return (
-     <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-6 sm:flex-wrap lg:flex-row">
-      
+   <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 items-center h-full pb-6 sm:flex-wrap lg:flex-row">
       <div className="gap-4 max-w-7xl">
          <div className="page-header">
             <p className="text-3xl">Schedule a recording</p>
@@ -285,414 +59,26 @@ export default function Schedule() {
                <form onSubmit={form.handleSubmit(onSubmit)} className="">
                   <div className="form-container-master flex flex-col lg:flex-row justify-center gap-4 mx-3 mt-6">
                      <div className="form-container">
-                        <div className="year-module-title border p-3 mb-3 rounded-lg">
-                           <div className="year-occasion-row flex justify-around gap-3 mr-3 ml-3">
-                              <div className="academic-year grow">
-                                 <FormField 
-                                    control={form.control}
-                                    name="academic_year"
-                                    render={({ field }) => (
-                                       <FormItem className="flex flex-col">
-                                          <FormLabel className="my-2 font-bold">Academic Year</FormLabel>
-                                          <Popover>
-                                             <PopoverTrigger asChild>
-                                                <FormControl>
-                                                   <Button 
-                                                      variant="outline"
-                                                      role="combobox"   
-                                                      className="w-full justify-between p-3"
-                                                   >
-                                                      {field.value ? year.find((year) => year.value === field.value)?.label
-                                                      : "Select year..."}
-                                                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
-                                                   </Button>
-                                                </FormControl>
-                                             </PopoverTrigger>
-                                             <PopoverContent className="w-full p-3 bg-background">
-                                                <Command className="bg-background">
-                                                <CommandInput placeholder="Search year..." />
-                                                   <CommandList>
-                                                      <CommandEmpty>No year found.</CommandEmpty>
-                                                      <CommandGroup>
-                                                         {year.map((year) => (
-                                                         <CommandItem
-                                                            key={year.value}
-                                                            value={year.label}
-                                                            onSelect={() => {
-                                                               form.setValue("academic_year", year.value);
-                                                               enableSectionDropdown();
-                                                               setSelectedAcademicYear(year.value)
-                                                               getSections(year.value);
-                                                            }}
-                                                         >
-                                                            <Check
-                                                               className={cn(
-                                                               "mr-2 h-4 w-4",
-                                                               year.value === field.value
-                                                                  ? "opacity-100"
-                                                                  : "opacity-0"
-                                                               )}
-                                                            />
-                                                            {year.label}
-                                                         </CommandItem>
-                                                         ))}
-                                                      </CommandGroup>
-                                                   </CommandList> 
-                                                </Command>
-                                             </PopoverContent>
-                                          </Popover>
-                                          <FormDescription>This is the term that will be used in the booking.</FormDescription>
-                                          <FormMessage />
-                                       </FormItem>
-                                    )}
-                                    />
-                              </div>
-                              <div className="occasion">
-                                 <FormField 
-                                    control={form.control}
-                                    name="occasion"
-                                    render={({ field }) => (
-                                       <FormItem className="flex flex-col">
-                                          <FormLabel className="my-2 font-bold">Occasion</FormLabel>
-                                          <Popover>
-                                             <PopoverTrigger asChild>
-                                                <FormControl>
-                                                   <Button 
-                                                      variant="outline"
-                                                      role="combobox"   
-                                                      className="w-full justify-between p-3"
-                                                   >
-                                                      {field.value ? occasions.find((occasion) => occasion.value === field.value)?.label
-                                                      : "Select occasion..."}
-                                                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
-                                                   </Button>
-                                                </FormControl>
-                                             </PopoverTrigger>
-                                             <PopoverContent className="w-full p-3 bg-background">
-                                                <Command className="bg-background">
-                                                <CommandInput placeholder="Search occasion..." />
-                                                   <CommandList>
-                                                      <CommandEmpty>No occasion found.</CommandEmpty>
-                                                      <CommandGroup>
-                                                         {occasions.map((occasion) => (
-                                                         <CommandItem
-                                                            key={occasion.value}
-                                                            value={occasion.label}
-                                                            onSelect={() => {
-                                                               form.setValue("occasion", occasion.value);
-                                                            }}
-                                                         >
-                                                            <Check
-                                                               className={cn(
-                                                               "mr-2 h-4 w-4",
-                                                               occasion.value === field.value
-                                                                  ? "opacity-100"
-                                                                  : "opacity-0"
-                                                               )}
-                                                            />
-                                                            {occasion.label}
-                                                         </CommandItem>
-                                                         ))}
-                                                      </CommandGroup>
-                                                   </CommandList> 
-                                                </Command>
-                                             </PopoverContent>
-                                          </Popover>
-                                          <FormDescription className="pb-3">This is for modules with more than one occasion at WBS.</FormDescription>
-                                          <FormMessage />
-                                       </FormItem>
-                                    )}
-                                    />
-                              </div>
-                           </div>
-                           <div className="section gap-3 mr-3 ml-3 ">
-                              <FormField 
-                                 control={form.control}
-                                 name="section"
-                                 render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                       <FormLabel className="my-2 font-bold">Section</FormLabel>
-                                       <Popover>
-                                          <PopoverTrigger asChild>
-                                             <FormControl>
-                                                <Button 
-                                                   variant="outline"
-                                                   role="combobox"   
-                                                   className="w-full justify-between p-3"
-                                                   disabled={!sectionDisabled}
-                                                >
-                                                   {field.value ? sections.find((section) => section.value === field.value)?.label
-                                                   : "Select section..."}
-                                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
-                                                </Button>
-                                             </FormControl>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-full p-3 bg-background">
-                                             <Command className="bg-background">
-                                             <CommandInput placeholder="Search section..." />
-                                                <CommandList>
-                                                   <CommandEmpty>No section found.</CommandEmpty>
-                                                   <CommandGroup>
-                                                      {sections.map((section) => (
-                                                      <CommandItem
-                                                         key={section.value}
-                                                         value={section.label}
-                                                         onSelect={() => {
-                                                            form.setValue("section", section.value);
-                                                         }}
-                                                      >
-                                                         <Check
-                                                            className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            section.value === field.value
-                                                               ? "opacity-100"
-                                                               : "opacity-0"
-                                                            )}
-                                                         />
-                                                         {section.label}
-                                                      </CommandItem>
-                                                      ))}
-                                                   </CommandGroup>
-                                                </CommandList> 
-                                             </Command>
-                                          </PopoverContent>
-                                       </Popover>
-                                       <FormDescription className="pb-3">{!sectionDisabled ? "This is disabled until you have selected an academic year" : "This is the section where the recording will be kept."}</FormDescription>
-                                       <FormMessage />
-                                    </FormItem>
-                                 )}
-                                 />
-                                 {/* <p>{sections ? sections.id : "none found"}</p> */}
-                           </div>
-                           <div className="recording-title gap-3 mr-3 ml-3">
-                              <FormField
-                                 control={form.control}
-                                 name="recording_title"
-                                 render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel className="my-2 font-bold">Recording Title</FormLabel>
-                                    <FormControl>
-                                       <Input 
-                                       placeholder="Week 1 - introduction to course"
-                                       
-                                       type=""
-                                       {...field} />
-                                    </FormControl>
-                                    <FormDescription className="">This is the video title as seen by students.</FormDescription>
-                                    <FormMessage />
-                                    </FormItem>
-                                 )}
-                              />
-                           </div>
-                        </div>
+                        <AcademicYearCard />
                         <div className="room-inputs-container border p-3 mb-3 rounded-lg">
                            <div className="room gap-3 mr-3 ml-3">
-                              <FormField 
-                                 control={form.control}
-                                 name="room"
-                                 render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                       <FormLabel className="my-3 font-bold">Room</FormLabel>
-                                       <Popover>
-                                          <PopoverTrigger asChild>
-                                             <FormControl>
-                                                <Button 
-                                                   variant="outline"
-                                                   role="combobox"   
-                                                   className="w-full justify-between p-3"
-                                                >
-                                                   {field.value ? room.find((room) => room.value === field.value)?.label
-                                                   : "Select room..."}
-                                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
-                                                </Button>
-                                             </FormControl>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-full p-3 bg-background">
-                                             <Command className="bg-background">
-                                             <CommandInput placeholder="Search room..." />
-                                                <CommandList>
-                                                   <CommandEmpty>No room found.</CommandEmpty>
-                                                   <CommandGroup>
-                                                      {room.map((room) => (
-                                                      <CommandItem
-                                                         key={room.value}
-                                                         value={room.label}
-                                                         onSelect={() => {
-                                                            form.setValue("room", room.value);
-                                                         }}
-                                                      >
-                                                         <Check
-                                                            className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            room.value === field.value
-                                                               ? "opacity-100"
-                                                               : "opacity-0"
-                                                            )}
-                                                         />
-                                                         {room.label}
-                                                      </CommandItem>
-                                                      ))}
-                                                   </CommandGroup>
-                                                </CommandList> 
-                                             </Command>
-                                          </PopoverContent>
-                                       </Popover>
-                                       <FormDescription className="pb-3">This the room where the recording is taking place.</FormDescription>
-                                       <FormMessage />
-                                    </FormItem>
-                                 )}
-                                 />
+                              <RoomField />
                            </div>
                            <Separator />
                            <div className="truncate">
                               <div className="container-inputs flex flex-col lg:flex-row justify-between pb-5 px-3">
                                  <div className="room-input gap-3 mt-3">
-                                    <FormField
-                                       control={form.control}
-                                       name="input"
-                                       render={({ field }) => (
-                                          <FormItem className="space-y-3">
-                                          <FormLabel className="my-3 font-bold">Input</FormLabel>
-                                          <FormControl>
-                                             <RadioGroup
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                className="flex flex-col space-y-1"
-                                             >
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                   <RadioGroupItem value="[ADV] Audio/Display-1/Display-2" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                   [ADV] Audio/Display-1/Display-2
-                                                </FormLabel>
-                                                </FormItem>
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                   <RadioGroupItem value="[AV] Audio/Display-1" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                   [AV] Audio/Display-1
-                                                </FormLabel>
-                                                </FormItem>
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                   <RadioGroupItem value="[AD] Audio/Display-2" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                [AD] Audio/Display-2
-                                                </FormLabel>
-                                                </FormItem>
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                   <RadioGroupItem value="[A] Audio Only" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">[A] Audio Only</FormLabel>
-                                                </FormItem>
-                                             </RadioGroup>
-                                          </FormControl>
-                                          <FormMessage />
-                                          </FormItem>
-                                       )}
-                                    />
+                                   <RoomInputField />
                                  </div>
                                  <div className="capture-quality gap-3 mt-3 mr-16">
-                                    <FormField
-                                       control={form.control}
-                                       name="capture_quality"
-                                       render={({ field }) => (
-                                          <FormItem className="space-y-3">
-                                          <FormLabel className="my-3 font-bold">Capture Quality</FormLabel>
-                                          <FormControl>
-                                             <RadioGroup
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                className="flex flex-col space-y-1"
-                                             >
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                   <RadioGroupItem value="High Quality" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                   High Quality
-                                                </FormLabel>
-                                                </FormItem>
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                   <RadioGroupItem value="Standard Quality" />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                Standard Quality
-                                                </FormLabel>
-                                                </FormItem>
-                                             </RadioGroup>
-                                          </FormControl>
-                                          <FormMessage />
-                                          </FormItem>
-                                       )}
-                                    />
+                                    <CaptureQualityField />
                                  </div>
                               </div>
-
                            </div>
                         </div>
                         <div className="presenters border rounded-lg p-3 mb-3">
                            <div className="presenter gap-3 mx-3 mb-3">
-                              <FormField 
-                                 control={form.control}
-                                 name="presenter"
-                                 render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                       <FormLabel className="my-2 font-bold">Presenter</FormLabel>
-                                       <Popover>
-                                          <PopoverTrigger asChild>
-                                             <FormControl>
-                                                <Button 
-                                                   variant="outline"
-                                                   role="combobox"   
-                                                   className="w-full justify-between p-3"
-                                                >
-                                                   {field.value ? user.find((presenter) => presenter.value === field.value)?.label
-                                                   : "Select presenter..."}
-                                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
-                                                </Button>
-                                             </FormControl>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-full p-3 bg-background">
-                                             <Command className="bg-background">
-                                             <CommandInput placeholder="Search presenter..." />
-                                                <CommandList>
-                                                   <CommandEmpty>No presenter found.</CommandEmpty>
-                                                   <CommandGroup>
-                                                      {user.map((presenter) => (
-                                                      <CommandItem
-                                                         key={presenter.value}
-                                                         value={presenter.label}
-                                                         onSelect={() => {
-                                                            form.setValue("presenter", presenter.value);
-                                                         }}
-                                                      >
-                                                         <Check
-                                                            className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            presenter.value === field.value
-                                                               ? "opacity-100"
-                                                               : "opacity-0"
-                                                            )}
-                                                         />
-                                                         {presenter.label}
-                                                      </CommandItem>
-                                                      ))}
-                                                   </CommandGroup>
-                                                </CommandList> 
-                                             </Command>
-                                          </PopoverContent>
-                                       </Popover>
-                                       <FormDescription>This is the main presenter on the recording.</FormDescription>
-                                       <FormMessage />
-                                    </FormItem>
-                                 )}
-                                 />
+                              <PresenterField />
                            </div>
                         </div>
                      </div>
@@ -1010,7 +396,7 @@ export default function Schedule() {
                                           <FormControl>
                                              <Input 
                                              placeholder="Input name here"
-                                             
+                                             // onChangeCapture={handleChange}
                                              type=""
                                              {...field} />
                                           </FormControl>
@@ -1032,6 +418,6 @@ export default function Schedule() {
          </div>
       </div>
    </div>
-  )
+)
 }
 

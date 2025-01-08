@@ -64,4 +64,28 @@ public class RESTScheduleService {
       }
 
    }
+
+   public ResponseEntity<Schedule> updateSchedule(Schedule scheduleObject) throws Echo360Exception {
+      log.logString("updateSchedule called... ");
+      ScheduleService scheduleService = new ScheduleService(echo360ApiService.echo360Api());
+      try {
+         // make the POST request to schedule a new recording
+         Schedule updateSchedule = scheduleService.update(scheduleObject);
+         
+         // If successful, return with updated status
+         return new ResponseEntity<>(updateSchedule, HttpStatus.CREATED);
+      } catch (Echo360Exception ex) {
+         // If there is an error, return BAD_REQUEST status
+         log.logString("Echo360Exception thrown in updateSchedule call... ");
+         // print error message to console for debugging
+         log.logString(ex.getServerMessage());
+         log.logString(ex.getMessage());
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      } catch (Exception ex) {
+         // For any other errors, return BAD_REQUEST
+         log.logString("Exception thrown in updateSchedule call... ");
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
+
+   }
 }
