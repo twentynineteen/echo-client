@@ -372,8 +372,8 @@ export function convertCaptureQuality(captureQuality: string) {
    return qualityString;
 }
 
-// Toast setup for form submission response
-const { toast } = useToast();
+// // Toast setup for form submission response
+// const { toast } = useToast();
 
 // a function to send the form data to create a new scheduled recording on echo360
 export const createSchedule = async (data: z.infer < typeof formSchema > ) => {
