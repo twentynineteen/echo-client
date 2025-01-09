@@ -58,6 +58,33 @@ export function DataTable<TData, TValue>({
          rowSelection,
       }
    })
+   const handleTodayFilter = () => {
+      const today = getTodaysDate();
+      setFilterValue(today);
+      table.getColumn("startDate")?.setFilterValue(today);
+   }
+
+   const [filterValue, setFilterValue] = React.useState<string>("");
+
+   const handleFilterValue = (event) => {
+      console.log(event);
+      const value = setFilterValue(event);
+      table.getColumn("startDate")?.setFilterValue(value);
+   }
+
+   React.useEffect(() => {
+      table.getColumn("startDate")?.setFilterValue(filterValue);
+   }, [table]);
+
+   // Function to get today's date in "YYYY-MM-DD" format
+  const getTodaysDate = (): string => {
+   const today = new Date();
+   const yyyy = today.getFullYear();
+   const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+   const dd = String(today.getDate()).padStart(2, '0');
+   return `${yyyy}-${mm}-${dd}`;
+ };
+
    return (
       <div>
          
@@ -66,13 +93,20 @@ export function DataTable<TData, TValue>({
           <span className="w-16 font-bold p-3">Filter</span>
         <Input
           placeholder="Filter dates..."
+         //  value={filterValue}
           value={(table.getColumn("startDate")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("startDate")?.setFilterValue(event.target.value)
-          }
+         //  onChange={handleFilterValue}
+         onChange={(event) => {
+            // setFilterValue(event.target.value);
+            // console.log("event: " + event.target.value);
+            // console.log("state: " + filterValue);
+            // handleFilterValue(event.target.value);
+            table.getColumn("startDate")?.setFilterValue(event.target.value);
+          }}
           className="max-w-sm bg-background p-3"
           id="filter-input"
         />
+        <Button type="button" onClick={handleTodayFilter} name="filter for today" >Show today only</Button >
       </div>
          {/* Table content */}
          <div className="rounded-md border">
