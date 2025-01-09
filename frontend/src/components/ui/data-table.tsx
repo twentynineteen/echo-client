@@ -63,6 +63,11 @@ export function DataTable<TData, TValue>({
       setFilterValue(today);
       table.getColumn("startDate")?.setFilterValue(today);
    }
+   const handleMonthFilter = () => {
+      const today = getThisMonthsDate();
+      setFilterValue(today);
+      table.getColumn("startDate")?.setFilterValue(today);
+   }
 
    const [filterValue, setFilterValue] = React.useState<string>("");
 
@@ -78,12 +83,20 @@ export function DataTable<TData, TValue>({
 
    // Function to get today's date in "YYYY-MM-DD" format
   const getTodaysDate = (): string => {
-   const today = new Date();
-   const yyyy = today.getFullYear();
-   const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-   const dd = String(today.getDate()).padStart(2, '0');
-   return `${yyyy}-${mm}-${dd}`;
- };
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const dd = String(today.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+   };
+
+   // Function to get today's month in "YYYY-MM" format
+  const getThisMonthsDate = (): string => {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      return `${yyyy}-${mm}`;
+   };
 
    return (
       <div>
@@ -106,7 +119,8 @@ export function DataTable<TData, TValue>({
           className="max-w-sm bg-background p-3"
           id="filter-input"
         />
-        <Button type="button" onClick={handleTodayFilter} name="filter for today" >Show today only</Button >
+        <Button type="button" onClick={handleTodayFilter} name="filter for today" className="mx-3">Show today only</Button >
+        <Button type="button" onClick={handleMonthFilter} name="filter for month" >Show this month only</Button >
       </div>
          {/* Table content */}
          <div className="rounded-md border">
