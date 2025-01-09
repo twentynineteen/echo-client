@@ -19,8 +19,10 @@ const AcademicYearCard = () => {
    // without the use of a global state manager to pass props up
 
    const [year, setYear] = React.useState<DropdownItems[]>([]);
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
+
    
    const [sections, setSections] = React.useState<DropdownItems[]>([]);
 

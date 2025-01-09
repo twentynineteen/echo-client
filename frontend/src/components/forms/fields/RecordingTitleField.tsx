@@ -6,6 +6,7 @@ import { useFormContext } from "react-hook-form";
 const RecordingTitleField = () => {
    
    const form = useFormContext();
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const [title, setTitle] = React.useState("");
 
    // onChange handler to update input box state

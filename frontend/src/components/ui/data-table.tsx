@@ -75,15 +75,9 @@ export function DataTable<TData, TValue>({
 
    const [filterValue, setFilterValue] = React.useState<string>("");
 
-   const handleFilterValue = (event) => {
-      console.log(event);
-      const value = setFilterValue(event);
-      table.getColumn("startDate")?.setFilterValue(value);
-   }
-
    React.useEffect(() => {
       table.getColumn("startDate")?.setFilterValue(filterValue);
-   }, [table]);
+   }, [filterValue, table]);
 
    // Function to get today's date in "YYYY-MM-DD" format
   const getTodaysDate = (): string => {
@@ -110,14 +104,8 @@ export function DataTable<TData, TValue>({
           <span className="w-16 font-bold p-3">Filter</span>
         <Input
           placeholder="Filter dates..."
-         //  value={filterValue}
           value={(table.getColumn("startDate")?.getFilterValue() as string) ?? ""}
-         //  onChange={handleFilterValue}
          onChange={(event) => {
-            // setFilterValue(event.target.value);
-            // console.log("event: " + event.target.value);
-            // console.log("state: " + filterValue);
-            // handleFilterValue(event.target.value);
             table.getColumn("startDate")?.setFilterValue(event.target.value);
           }}
           className="max-w-2xl bg-background p-3"

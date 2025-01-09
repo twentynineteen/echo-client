@@ -12,7 +12,6 @@ import {
 import { useToast } from "@/@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Schedule } from "@/types";
-import { AxiosResponse } from "axios";
 import React from "react";
 import { client, headers } from "../../lib/utils";
 import { Input } from "../ui/input";
@@ -84,7 +83,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
       return;
     }
     // update request to echo 360
-    const request: AxiosResponse = await client.post(`/schedules/update`, recording, headers)
+    await client.post(`/schedules/update`, recording, headers)
                                               .then(function (response) {
                                                   // convert 201 status to success if response is successful
                                                   const status = response.status == 201 ? "Success!" : response.status;
@@ -121,7 +120,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
       return;
     }
     // delete request to echo 360
-    const request: AxiosResponse = await client.delete(`/schedules/${recording.id}`, headers)
+    await client.delete(`/schedules/${recording.id}`, headers)
                                               .then(function (response) {
                                                   // convert 201 status to success if response is successful
                                                   const status = response.status == 201 ? "Success!" : response.status;
@@ -156,19 +155,19 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
   }
 
   
-  // onChange handler to update input box state
-  const handleChangePresenter = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(event.target.value);
-   setRecording(prevState => ({
-    ...prevState,
-    presenter: {
-      fullName: recording.presenter.fullName, 
-      userEmail: event.target.value, 
-      userExternalId: recording.presenter.userExternalId, 
-      userId: recording.presenter.userId
-    }
-  }));
-  }
+  // // onChange handler to update input box state
+  // const handleChangePresenter = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   // console.log(event.target.value);
+  //  setRecording(prevState => ({
+  //   ...prevState,
+  //   presenter: {
+  //     fullName: recording.presenter.fullName, 
+  //     userEmail: event.target.value, 
+  //     userExternalId: recording.presenter.userExternalId, 
+  //     userId: recording.presenter.userId
+  //   }
+  // }));
+  // }
 // 
 
   return (

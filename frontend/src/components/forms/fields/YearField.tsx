@@ -15,7 +15,9 @@ import { useFormContext } from "react-hook-form";
 
 const YearField = () => {
    const [year, setYear] = React.useState<DropdownItems[]>([]);
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const [selectedAcademicYear, setSelectedAcademicYear] = React.useState<string>("");
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const [sectionDisabled, setSectionDisabled] = React.useState<boolean>(false);
 
    // Function to toggle disabled state in Section dropdown

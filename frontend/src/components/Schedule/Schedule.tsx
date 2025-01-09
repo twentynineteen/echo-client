@@ -1,15 +1,12 @@
-"use client"
-import { AxiosResponse } from 'axios'
 import * as React from 'react'
-import type { DropdownItems, Inputs, Room, Schedule, SchedulePresenter, ScheduleSection, Venue } from '../../types'
+import type { Schedule } from '../../types'
 // Scheduler functions
-import { convertCaptureQuality, convertDateToDateString, createSchedule, getInputs, getPresenter, getSection, getVenue, removeSeconds } from './ScheduleFunctions'
+import { createSchedule } from './ScheduleFunctions'
 // Shadcn components and dependencies
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/@/components/ui/form"
-import { useToast } from "@/@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
