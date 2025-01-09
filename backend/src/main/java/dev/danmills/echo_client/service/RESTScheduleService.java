@@ -41,6 +41,30 @@ public class RESTScheduleService {
 
    }
 
+   public ResponseEntity<Boolean> deleteSchedule(String id) throws Echo360Exception {
+      log.logString("updateSchedule called... ");
+      ScheduleService scheduleService = new ScheduleService(echo360ApiService.echo360Api());
+      try {
+         // make the POST request to schedule a new recording
+         boolean deleteSchedule = scheduleService.delete(id);
+
+         // If successful, return with updated status
+         return new ResponseEntity<>(deleteSchedule, HttpStatus.OK);
+      } catch (Echo360Exception ex) {
+         // If there is an error, return BAD_REQUEST status
+         log.logString("Echo360Exception thrown in deleteSchedule call... ");
+         // print error message to console for debugging
+         log.logString(ex.getServerMessage());
+         log.logString(ex.getMessage());
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      } catch (Exception ex) {
+         // For any other errors, return BAD_REQUEST
+         log.logString("Exception thrown in deleteSchedule call... ");
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
+
+   }
+
    public ResponseEntity<Schedule> postSchedule(Schedule scheduleObject) throws Echo360Exception {
       log.logString("postSchedule called... ");
       ScheduleService scheduleService = new ScheduleService(echo360ApiService.echo360Api());
@@ -88,4 +112,5 @@ public class RESTScheduleService {
       }
 
    }
+
 }

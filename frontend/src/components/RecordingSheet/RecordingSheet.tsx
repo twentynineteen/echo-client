@@ -19,10 +19,11 @@ import { Input } from "../ui/input";
 
 interface RecordingProps {
    selectedId: Schedule;
+   toggleVisibility: () => void; // Passes in toggle from parent component, updating state on component mount
 }
 
-export const RecordingSheet: React.FC<RecordingProps> = ({selectedId}) => {
-  
+export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisibility }) => {
+
   // recording name state for input box
   const [recording, setRecording] = React.useState({
        captureQuality: selectedId.captureQuality,
@@ -55,9 +56,15 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId}) => {
       name: recording.name,
       presenter: recording.presenter,
     }));
-    console.log(recording);
     updateRecording(recording);
+    window.location.reload(); // basic req to force page reload after submission
   };
+
+  // 
+  const handleDeleteRecording = () => {
+    deleteRecording(recording);
+    window.location.reload(); // basic req to force page reload after submission
+  }
 
   // Toast setup for save changes notification
   const { toast } = useToast();
@@ -78,6 +85,43 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId}) => {
     }
     // update request to echo 360
     const request: AxiosResponse = await client.post(`/schedules/update`, recording, headers)
+                                              .then(function (response) {
+                                                  // convert 201 status to success if response is successful
+                                                  const status = response.status == 201 ? "Success!" : response.status;
+                                                  toast({
+                                                    title: `Form submission status: ${status}`,
+                                                    description: `${recording.name} - ${recording.startDate} - ${recording.startTime} - ${recording.endTime}`,
+                                                    variant: "success"
+                                                  })
+                                                })
+                                                .catch(function (error) {
+                                                  console.log(error);
+                                                  // convert 400 status to failed if response is unsuccessful
+                                                  const status = error.status == 400 ? "Failed" : error.status;
+                                                  toast({
+                                                    title: `Form submission status: ${status}`,
+                                                    description: `${error.code}: ${error.message}`,
+                                                    variant: "destructive"
+                                                  })
+                                                });
+  }
+
+  const deleteRecording = async (recording: Schedule) => {
+    console.log("attempting to delete a recording");
+    // check recording data can be edited first
+    const requestDate = Date.parse(recording.startDate || "1900-01-01");
+    const today = Date.now();
+    if (requestDate < today) {
+      
+      toast({
+        title: `Unable to delete recordings from the past`,
+        description: `Date Error: Recording in past`,
+        variant: "destructive"
+      })
+      return;
+    }
+    // delete request to echo 360
+    const request: AxiosResponse = await client.delete(`/schedules/${recording.id}`, headers)
                                               .then(function (response) {
                                                   // convert 201 status to success if response is successful
                                                   const status = response.status == 201 ? "Success!" : response.status;
@@ -125,39 +169,52 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId}) => {
     }
   }));
   }
+// 
 
   return (
-    <Sheet key="right" defaultOpen={true}>
-      <SheetContent className="w-[540px] sm:w-[600px]">
-        <SheetHeader>
-          <SheetTitle>Edit recording</SheetTitle>
-          <SheetDescription>
-            Make changes to your recording here. Click save when you're done.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="recordingId" className="text-right">
-             ID
-            </Label>
-            <Input id="recordingId" value={recording.id} className="col-span-3" disabled/>
+    <div>
+
+      <Sheet key="right" 
+        defaultOpen={true} 
+        onOpenChange={toggleVisibility}
+        >
+        <SheetContent className="w-[540px] sm:w-[600px]">
+          <SheetHeader>
+            <SheetTitle>Edit recording</SheetTitle>
+            <SheetDescription>
+              Make changes to your recording here. Click save when you're done.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="recordingId" className="text-right">
+              ID
+              </Label>
+              <Input id="recordingId" value={recording.id} className="col-span-3" disabled/>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input id="name" value={recording.name} className="col-span-3" onChange={handleChangeName}/>
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value={recording.name} className="col-span-3" onChange={handleChangeName}/>
-          </div>
-        </div>
-        {/* <PresenterField /> */}
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button type="submit" 
-              onClick={saveChanges}
-            >Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+          {/* <PresenterField /> */}
+          <SheetFooter>
+              <Button 
+                type="button" 
+                name="delete"
+                variant="destructive"
+                onClick={handleDeleteRecording}
+                >Delete Recording</Button>
+            <SheetClose asChild>
+              <Button type="submit" 
+                onClick={saveChanges}
+                >Save changes</Button>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+    </div>
   )
 }

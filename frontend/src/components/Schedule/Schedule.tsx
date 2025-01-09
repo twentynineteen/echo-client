@@ -138,6 +138,7 @@ export default function Schedule() {
                                           <FormControl>
                                              <Input 
                                              type="Time"
+                                             // onChangeCapture={handleChange}
                                              {...field} />
                                           </FormControl>
                                           <FormDescription>Enter the start time of the recording.</FormDescription>
@@ -156,6 +157,7 @@ export default function Schedule() {
                                              <FormControl>
                                                 <Input                                         
                                                 type="Time"
+                                                // onChangeCapture={handleChange}
                                                 {...field} />
                                              </FormControl>
                                              <FormDescription>Enter the end time of the recording.</FormDescription>

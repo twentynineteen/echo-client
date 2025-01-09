@@ -2,6 +2,7 @@ package dev.danmills.echo_client.api.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,12 @@ public class ScheduleController {
   public Schedule getScheduleById(@PathVariable String id) throws Echo360Exception {
    log.logString("Attempting to get Schedules");
    return restScheduleService.getScheduleById(id);
+  }
+  @DeleteMapping("/schedules/{id}")
+  @ResponseBody
+  public ResponseEntity<Boolean> deleteSchedule(@PathVariable String id) throws Echo360Exception {
+   log.logString("Attempting to delete Schedule");
+   return restScheduleService.deleteSchedule(id);
   }
 
   @PostMapping("/schedules/update")

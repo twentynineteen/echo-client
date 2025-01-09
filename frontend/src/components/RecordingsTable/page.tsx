@@ -1,4 +1,5 @@
-import { Headers, ListRequest, Schedule } from '../../types';
+import { baseUrl, headers } from '@/lib/utils';
+import { ListRequest, Schedule } from '../../types';
 import { getSchedules } from "../Schedule/ScheduleFunctions";
 import { DataTable } from "../ui/data-table";
 import { columns } from "./columns";
@@ -7,16 +8,6 @@ import React from 'react';
 
 async function getScheduleData(): Promise<ListRequest<Schedule>> {
    
-   // axios set up
-   const baseUrl: string = 'http://localhost:8080';
-
-   // basic auth header to backend requests in axios
-   const headers: Headers = {
-      headers: { 
-         'X-API-KEY': 'DwightSchrute',            
-      }
-   };
-
    const schedules: ListRequest<Schedule> = await getSchedules(baseUrl, headers);
    return schedules;
 }

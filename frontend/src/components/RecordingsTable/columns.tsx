@@ -16,9 +16,10 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { client, headers } from "@/lib/utils";
 import { Schedule } from "@/types";
+import { AxiosResponse } from "axios";
 import React from "react";
-import type { Headers } from '../../types';
 import { RecordingSheet } from "../RecordingSheet/RecordingSheet";
 
 type Nullable<T> = T | null;
@@ -87,22 +88,8 @@ export type Recording = {
    streamQuality: Nullable<string>
 }
 
+
 // function to collect recording for editing
-import axios, { AxiosResponse } from "axios";
-
-// axios set up
-const baseUrl: string = 'http://localhost:8080';
-const client = axios.create({
-   baseURL: baseUrl,
-});
-
-// basic auth header to backend requests in axios
-const headers: Headers = {
-   headers: { 
-      'X-API-KEY': 'DwightSchrute',            
-    }
-};
-
 const getScheduleById = async (id: string)=> {
    try {
       const request: AxiosResponse = await client.get(`/schedules/${id}`, headers);
@@ -209,25 +196,27 @@ export const columns: ColumnDef<Schedule>[] = [
          const recording = row.original
 
          // State to track visibility
-         const [isVisible, setIsVisible] = React.useState(false);
+         const [isVisible, setIsVisible] = React.useState(false); // React does not like hooks usage not in a component
 
          // State to track current recording Id
-         const [selectedId, setSelectedId] = React.useState("");
+         const [selectedId, setSelectedId] = React.useState<Schedule>(); // React does not like hooks usage not in a component. 
 
          // Toggle visibility on click
          const toggleVisibility = () => {
             setIsVisible((prevState) => !prevState);
          };
+
+
    
          return (
-            <DropdownMenu>
+            <DropdownMenu >
             <DropdownMenuTrigger asChild>
                <Button variant="ghost" className="h-8 w-8 p-0">
                   <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background p-3 w-full">
+            <DropdownMenuContent align="end" className="bg-background p-3 w-full"  >
                <DropdownMenuLabel className="font-bold">Actions</DropdownMenuLabel>
                <DropdownMenuItem
                   onClick={() => navigator.clipboard.writeText(recording.id)}
@@ -253,7 +242,7 @@ export const columns: ColumnDef<Schedule>[] = [
                </DropdownMenuItem>
                <DropdownMenuItem>View schedule details</DropdownMenuItem>
             </DropdownMenuContent>
-            {isVisible && <RecordingSheet selectedId={selectedId} />}
+            {isVisible && <RecordingSheet selectedId={selectedId} toggleVisibility={toggleVisibility} /> }
             </DropdownMenu>
          )
       },
