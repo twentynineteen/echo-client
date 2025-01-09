@@ -1,22 +1,32 @@
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { ModeToggle } from "./mode-toggle"
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import React from 'react';
+import { ModeToggle } from "./mode-toggle";
 
-const navigation = [
+// type for navigation items
+interface NavigationItem {
+  name: string;
+  href: string;
+  current: boolean;
+}
+
+const navigation: NavigationItem[] = [
   { name: 'Dashboard', href: '/', current: true },
   { name: 'Schedule a Recording', href: '/schedule', current: false },
-  { name: 'My Recordings', href: '/myrecordings', current: false },
+  { name: 'Recordings', href: '/recordings', current: false },
   { name: 'Rooms', href: '/rooms', current: false },
   { name: 'Modules', href: '/modules', current: false },
   { name: 'Presenters', href: '/presenters', current: false },
   { name: 'Options', href: '/options', current: false },
 ]
 
-function classNames(...classes) {
+// type for classNames function
+function classNames(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function NavBar() {
+const NavBar: React.FC = () => {
+
   return (
     <Disclosure as="nav">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -60,7 +70,9 @@ export default function NavBar() {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             
-              <ModeToggle className="h-0 w-0"/>
+              <ModeToggle 
+                // className="h-0 w-0" 
+              />
           </div>
         </div>
       </div>
@@ -86,3 +98,5 @@ export default function NavBar() {
     </Disclosure>
   )
 }
+
+export default NavBar

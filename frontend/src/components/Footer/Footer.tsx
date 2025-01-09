@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Footer() {
+const Footer: React.FC = () => {
   return (
     <div className="bg-white mx-auto h-48 max-w-7xl">
       <div className="grid grid-cols-5">
@@ -23,3 +23,5 @@ export default function Footer() {
     </div>
   )
 }
+
+export default Footer

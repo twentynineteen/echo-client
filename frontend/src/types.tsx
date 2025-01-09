@@ -49,31 +49,6 @@ export interface Schedule {
    venue: Venue;                 // The Venue object containing details of where the Schedule will capture
  }
 
- // // initialise type for schedule - CHANGED TO INTERFRACE LINKED ABOVE
-// export type Schedule = {
-//    id: string;
-//    startDate: string;
-//    startTime: string;
-//    endDate: string | null;
-//    endTime: string;
-//    daysOfWeek: string | null;
-//    exclusionDates: string | null;
-//    sections: Section;
-//    name: string;
-//    externalId: string | null;
-//    venue: Venue;
-//    presenter: Presenter;
-//    guestPresenter: Presenter | null;
-//    shouldCaption: boolean;
-//    shouldStreamLive: boolean;
-//    shouldAutoPublish: boolean;
-//    shouldRecurCapture: boolean;
-//    input1: string;
-//    input2: string | null;
-//    captureQuality: string;
-//    streamQuality: string | null;
-// }
-
 // Course type
 export type Course = {
    courseIdentifier: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import data from "../../assets/courses.json";
 
-function Modules() {
+const Modules: React.FC = () => {
    
   return (
    <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 flex flex-1 items-center pb-20">

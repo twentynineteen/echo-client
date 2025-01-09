@@ -12,6 +12,6 @@
     "**/*.js",
     "**/*.jsx",
     "tailwind.config.tsss"
-  ],
+, "src/components/Navbar.tsx", "src/components/Modules/Modules.tsx", "src/components/Footer/Footer.tsx", "src/App.tsx"  ],
   "exclude": ["node_modules"]
  }

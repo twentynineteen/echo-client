@@ -1,6 +1,6 @@
 import React from 'react'
 
-function UserOptions() {
+const UserOptions: React.FC = () => {
   return (
    <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 flex flex-1 items-center pb-20">
       <div className="grid py-3">

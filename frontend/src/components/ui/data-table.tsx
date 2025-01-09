@@ -68,6 +68,10 @@ export function DataTable<TData, TValue>({
       setFilterValue(today);
       table.getColumn("startDate")?.setFilterValue(today);
    }
+   const handleClearFilter = () => {
+      setFilterValue("");
+      table.getColumn("startDate")?.setFilterValue("");
+   }
 
    const [filterValue, setFilterValue] = React.useState<string>("");
 
@@ -102,7 +106,7 @@ export function DataTable<TData, TValue>({
       <div>
          
          {/* Filter content by... */}
-         <div className="flex items-center py-4">
+         <div className="flex items-center justify-around py-4">
           <span className="w-16 font-bold p-3">Filter</span>
         <Input
           placeholder="Filter dates..."
@@ -116,11 +120,12 @@ export function DataTable<TData, TValue>({
             // handleFilterValue(event.target.value);
             table.getColumn("startDate")?.setFilterValue(event.target.value);
           }}
-          className="max-w-sm bg-background p-3"
+          className="max-w-2xl bg-background p-3"
           id="filter-input"
         />
-        <Button type="button" onClick={handleTodayFilter} name="filter for today" className="mx-3">Show today only</Button >
-        <Button type="button" onClick={handleMonthFilter} name="filter for month" >Show this month only</Button >
+        <Button type="button" onClick={handleTodayFilter} name="filter-today" className="ml-3 mr-3" variant="secondary">Show today only</Button >
+        <Button type="button" onClick={handleMonthFilter} name="filter-month" className="mr-3" variant="secondary">Show this month only</Button >
+        <Button type="button" onClick={handleClearFilter} name="clear-filter" variant="destructive" >Clear Filter</Button >
       </div>
          {/* Table content */}
          <div className="rounded-md border">
