@@ -20,78 +20,11 @@ import { AxiosResponse } from "axios";
 import React from "react";
 import { RecordingSheet } from "../RecordingSheet/RecordingSheet";
 
-type Nullable<T> = T | null;
-
-// define the shape of input data
-type Sections = {
-   courseId: Nullable<string>
-   courseIdentifier: Nullable<string>
-   courseExternalId: Nullable<string>
-   termId: Nullable<string>
-   termName: Nullable<string>
-   termExternalId: Nullable<string>
-   sectionId: Nullable<string>
-   sectionName: Nullable<string>
-   sectionExternalId: Nullable<string>
-   availability: Availability
-};
-
-type Availability = {
-   availability: Nullable<string>
-   relativeDelay: Nullable<number>
-   concreteTime: Nullable<string>
-   unavailabilityDelay: Nullable<number>
-}
-
-type Venue = {
-   campusId: Nullable<string>
-   campusName: Nullable<string>
-   campusExternalId: Nullable<string>
-   buildingId: Nullable<string>
-   buildingName: Nullable<string>
-   buildingExternalId: Nullable<string>
-   roomId: Nullable<string>
-   roomName: Nullable<string>
-   roomExternalId: Nullable<string>
-}
-
-type Presenter = {
-   userId: Nullable<string>
-   userEmail: Nullable<string>
-   fullName: Nullable<string>
-   userExternalId: Nullable<string>
-}
-
-export type Recording = {
-   id: string
-   startDate: string
-   startTime: string
-   endDate: Nullable<string>
-   endTime: string
-   daysOfWeek: Nullable<string>
-   exclusionDates: Nullable<string>
-   sections: Sections[]
-   name: Nullable<string>
-   externalId: Nullable<string>
-   venue: Nullable<Venue>
-   presenter: Nullable<Presenter>
-   guestPresenter: Nullable<string>
-   shouldCaption: Nullable<boolean>
-   shouldStreamLive: Nullable<boolean>
-   shouldAutoPublish: Nullable<boolean>
-   shouldRecurCapture: Nullable<boolean>
-   input1: Nullable<string>
-   input2: Nullable<string>
-   captureQuality: Nullable<string>
-   streamQuality: Nullable<string>
-}
-
 
 // function to collect recording for editing
 const getScheduleById = async (id: string)=> {
    try {
-      const request: AxiosResponse = await client.get(`/schedules/${id}`, headers);
-                                                // console.log(request.data);                                                
+      const request: AxiosResponse = await client.get(`/schedules/${id}`, headers);                                               
                                                 return request.data;
       } catch(err) {
          console.error(err);
@@ -174,6 +107,12 @@ export const columns: ColumnDef<Schedule>[] = [
       accessorKey: "sections.0.availability.availability",
       header: ({ column }) => (
          <DataTableColumnHeader column={column} title="Availability" />
+       ),
+   },
+   {
+      accessorKey: "sections.0.availability.concreteTime",
+      header: ({ column }) => (
+         <DataTableColumnHeader column={column} title="Availability Date" />
        ),
    },
    {
