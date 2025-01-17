@@ -8,10 +8,10 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
-type Props = {
-   selectedDate: string;
-   value: string;
-}
+// type Props = {
+//    selectedDate: string;
+//    value: string;
+// }
 
 const RecordingDateField: React.FC = () => {
    const form = useFormContext();
