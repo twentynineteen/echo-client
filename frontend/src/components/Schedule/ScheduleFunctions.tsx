@@ -73,7 +73,7 @@ export async function getSections(academicYear: string) {
       const foundSections: Section[] = Object.values(searchResponse.data['data']);
 
       // map sections to state for dropdown menu
-      const mapped = foundSections.map((item) => {
+      const mapped: DropdownItems[] = foundSections.map((item) => {
          return {
             value: item.id,
             label: item.sectionNumber,

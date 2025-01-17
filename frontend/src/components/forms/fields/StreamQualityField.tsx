@@ -4,17 +4,15 @@ import React from "react";
 
 import { useFormContext } from "react-hook-form";
 
-const CaptureQualityField: React.FC = () => {
-
+const StreamQualityField: React.FC = () => {
    const form = useFormContext();
-   
-   return (
+  return (
       <FormField
          control={form.control}
-         name="capture_quality"
+         name="stream_quality"
          render={({ field }) => (
             <FormItem className="space-y-3">
-            <FormLabel className="my-3 font-bold">Capture Quality</FormLabel>
+            <FormLabel className="my-2 font-bold">Stream Quality</FormLabel>
             <FormControl>
                <RadioGroup
                   onValueChange={field.onChange}
@@ -46,4 +44,4 @@ const CaptureQualityField: React.FC = () => {
    )
 }
 
-export default CaptureQualityField
+export default StreamQualityField

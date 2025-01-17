@@ -1,4 +1,5 @@
 // import { FormControl } from "@/@/components/ui/form";
+import { Form } from "@/@/components/ui/form";
 import { Label } from "@/@/components/ui/label";
 import {
   Sheet,
@@ -14,7 +15,16 @@ import { Button } from "@/components/ui/button";
 import { Schedule } from "@/types";
 import React from "react";
 import { client, headers } from "../../lib/utils";
+
 import { Input } from "../ui/input";
+
+// zod and form imports / dependencies
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { DatePicker } from "../DatePicker/DatePicker";
+import { defaultValues, formSchema } from "../Schedule/ScheduleUtils";
+
 
 interface RecordingProps {
    selectedId: Schedule;
@@ -169,6 +179,18 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
   // }));
   // }
 // 
+  const form = useForm < z.infer < typeof formSchema >> ({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultValues
+  });
+
+  const handleChangeDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setRecording(prevState => ({
+      ...prevState,
+      startDate: event?.target.value
+    }));
+    console.log(recording.startDate);
+  }
 
   return (
     <div>
@@ -177,27 +199,39 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
         defaultOpen={true} 
         onOpenChange={toggleVisibility}
         >
-        <SheetContent className="w-[540px] sm:w-[600px]">
+        <SheetContent className="w-[540px] sm:w-[800px]" style={{ maxWidth: '50vw' }}>
           <SheetHeader>
             <SheetTitle>Edit recording</SheetTitle>
             <SheetDescription>
               Make changes to your recording here. Click save when you're done.
             </SheetDescription>
           </SheetHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="recordingId" className="text-right">
-              ID
-              </Label>
-              <Input id="recordingId" value={recording.id} className="col-span-3" disabled/>
+          <Form {...form}>
+            <form>
+
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="recordingId" className="text-right">
+                ID
+                </Label>
+                <Input id="recordingId" value={recording.id} className="col-span-3" disabled/>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input id="name" value={recording.name} className="col-span-3" onChange={handleChangeName}/>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="start-date" className="text-right">
+                  Date
+                </Label>
+                {/* <RecordingDateField selectedDate={recording.startDate} value={recording.startDate} onChange={handleChangeDate} /> */}
+                <DatePicker startDate={recording.startDate} onChange={handleChangeDate}/>
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
-              <Input id="name" value={recording.name} className="col-span-3" onChange={handleChangeName}/>
-            </div>
-          </div>
+            </form>
+          </Form>
           {/* <PresenterField /> */}
           <SheetFooter>
               <Button 

@@ -13,8 +13,13 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
-export function DatePicker() {
-  const [date, setDate] = React.useState<Date>()
+type Props = {
+  startDate: string | undefined | Date;
+}
+
+export function DatePicker(props: Props) {
+
+  const [date, setDate] = React.useState<Date | string | undefined>(props.startDate);
 
   return (
     <Popover>
