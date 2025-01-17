@@ -24,6 +24,45 @@ interface Identifiable {
    id: string;
 }
 
+export type Nullable<T> = T | null;
+
+export type Sections = {
+   courseId: Nullable<string>
+   courseIdentifier: Nullable<string>
+   courseExternalId: Nullable<string>
+   termId: Nullable<string>
+   termName: Nullable<string>
+   termExternalId: Nullable<string>
+   sectionId: Nullable<string>
+   sectionName: Nullable<string>
+   sectionExternalId: Nullable<string>
+   availability: Availability
+};
+
+export type Recording = {
+   id: string
+   startDate: string
+   startTime: string
+   endDate: Nullable<string>
+   endTime: string
+   daysOfWeek: Nullable<string>
+   exclusionDates: Nullable<string>
+   sections: Sections[]
+   name: Nullable<string>
+   externalId: Nullable<string>
+   venue: Nullable<Venue>
+   presenter: Nullable<Presenter>
+   guestPresenter: Nullable<string>
+   shouldCaption: Nullable<boolean>
+   shouldStreamLive: Nullable<boolean>
+   shouldAutoPublish: Nullable<boolean>
+   shouldRecurCapture: Nullable<boolean>
+   input1: Nullable<string>
+   input2: Nullable<string>
+   captureQuality: Nullable<string>
+   streamQuality: Nullable<string>
+}
+
 // Schedule class interface
 export interface Schedule {
    captureQuality: string;               // Identifies the quality for the generated capture(s)
@@ -168,7 +207,6 @@ export type Availability = {
    concreteTime: string | null;
    unavailabilityDelay: number;
 }
-
 
 export type Venue = {
    campusId: string;

@@ -72,13 +72,13 @@ const Schedule: React.FC = () => {
                               </div>
                            </div>
                         </div>
+                     </div>
+                     <div className="form-container-2">
                         <div className="presenters border rounded-lg p-3 mb-3">
                            <div className="presenter gap-3 mx-3 mb-3">
                               <PresenterField />
                            </div>
                         </div>
-                     </div>
-                     <div className="form-container-2">
                         <div className="recording-date border rounded-lg pt-3 mb-3">
                            <div className="flex flex-col lg:flex-row justify-evenly mr-6 ml-3 px-3 gap-3">
                               <div className="recording-date-left ml-1">
@@ -106,19 +106,18 @@ const Schedule: React.FC = () => {
                               </div>
                            </div>
                         </div>
-                        <div className="live-stream border rounded-lg p-3 mb-3">
+                        {/* <div className="live-stream border rounded-lg p-3 mb-3">
                            <div className="flex flex-col lg:flex-row justify-between gap-3 px-3 pt-2 pb-3">
                               <div className="basis-1/2 mr-3">
                                  <LiveStreamField />
                               </div>
                               <div className="basis-1/2">
-                                 {/* Stream quality */}
                                  <div className="stream-quality">
                                     <StreamQualityField />
                                  </div>
                               </div>
                            </div>
-                        </div>
+                        </div> */}
                         <div className="optional-fields border rounded-lg p-3 mb-3">
                            <div className="flex flex-col lg:flex-row justify-evenly gap-3 px-3 ">
                               {/* group dropdown */}

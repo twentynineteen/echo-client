@@ -1,5 +1,6 @@
 import { toast } from '@/@/hooks/use-toast';
 import axios, { AxiosResponse } from 'axios';
+import { z } from 'zod';
 import { baseUrl, client, headers } from "../../lib/utils";
 import type { Availability, Building, Campus, Course, DropdownItems, Headers, Inputs, ListRequest, Room, Schedule, SchedulePresenter, ScheduleSection, Section, User, Venue, Year } from '../../types';
 import { formSchema } from './ScheduleUtils';
@@ -375,11 +376,77 @@ export function convertCaptureQuality(captureQuality: string) {
 // // Toast setup for form submission response
 // const { toast } = useToast();
 
+// A function to handle schedule availability when booking in
+function setAvailability (availability: string, availabilityDate: Date): Availability {
+   // build date string 
+   const year: string = String(availabilityDate.getFullYear());
+   const month: string = String(availabilityDate.getMonth() + 1).padStart(2, '0');
+   const day: string = String(availabilityDate.getDate()).padStart(2, '0');
+   const dateString: string = `${year}-${month}-${day}`
+
+   let output: Availability = {
+      "availability": availability,
+      "relativeDelay": 0,
+      "concreteTime": null,
+      "unavailabilityDelay": 0
+      };
+   
+
+   if (availability == "Immediate") {
+      output = {
+         "availability": "Immediate",
+         "relativeDelay": 0,
+         "concreteTime": null,
+         "unavailabilityDelay": 0
+         };
+   }
+
+   if (availability == "Manual") {
+      output = {
+         "availability": "Concrete",
+         "relativeDelay": 0,
+         "concreteTime": dateString,
+         "unavailabilityDelay": 0
+         };
+   }
+
+   if (availability == "Unavailable") {
+      output = {
+         "availability": "Unavailable",
+         "relativeDelay": 0,
+         "concreteTime": null,
+         "unavailabilityDelay": 0
+         };
+   }
+
+   return output;
+}
+
 // a function to send the form data to create a new scheduled recording on echo360
 export const createSchedule = async (data: z.infer < typeof formSchema > ) => {
-   // console.log("-----createSchedule called--------");
 
    const section: ScheduleSection = await getSection(data.section, baseUrl, headers);
+
+   // rebuild section to include requested availability
+   const availability: Availability = setAvailability(data.availability, data.availability_date);
+   console.log("Availability");
+   console.log(availability);
+   const updatedSection: ScheduleSection = {
+      "courseId": section.courseId,
+      "courseIdentifier": section.courseIdentifier,
+      "courseExternalId": section.courseExternalId, 
+      "termId": section.termId,
+      "termName": section.termName,
+      "termExternalId": section.termExternalId,
+      "sectionId": section.sectionId,
+      "sectionName": section.sectionName,
+      "sectionExternalId": section.sectionExternalId, 
+      "availability": availability,
+   };
+
+
+   // update section with updated availability
+
    const venue: Venue = await getVenue(data.room, baseUrl, headers);
    const presenter: SchedulePresenter = await getPresenter(data.presenter, baseUrl, headers);
    const startDate: string = convertDateToDateString(data.start_date);
@@ -391,7 +458,7 @@ export const createSchedule = async (data: z.infer < typeof formSchema > ) => {
             "startTime": startTime,
             "startDate": startDate,
             "endTime": endTime,
-            "sections": [section],
+            "sections": [updatedSection],
             "name": data.recording_title,
             "venue": venue,
             "presenter": presenter,
