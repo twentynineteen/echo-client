@@ -20,14 +20,14 @@ import AvailabilityField from '../forms/fields/AvailabilityField'
 import CaptureQualityField from '../forms/fields/CaptureQualityField'
 import EndTimeField from '../forms/fields/EndTimeField'
 import GroupSelectField from '../forms/fields/GroupSelectField'
-import LiveStreamField from '../forms/fields/LiveStreamField'
+// import LiveStreamField from '../forms/fields/LiveStreamField'
 import PresenterField from '../forms/fields/PresenterField'
 import RecordingDateField from '../forms/fields/RecordingDateField'
 import RequestedByField from '../forms/fields/RequestedByField'
 import RoomField from '../forms/fields/RoomField'
 import RoomInputField from '../forms/fields/RoomInputField'
 import StartTimeField from '../forms/fields/StartTimeField'
-import StreamQualityField from '../forms/fields/StreamQualityField'
+// import StreamQualityField from '../forms/fields/StreamQualityField'
 
 const Schedule: React.FC = () => {
 
@@ -57,7 +57,7 @@ const Schedule: React.FC = () => {
                      <div className="form-container">
                         <AcademicYearCard />
                         <div className="room-inputs-container border p-3 mb-3 rounded-lg">
-                           <div className="room gap-3 mr-3 ml-3">
+                           <div className="room gap-3 mr-3 ml-3 mb-2">
                               <RoomField />
                            </div>
                            <Separator />
