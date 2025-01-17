@@ -8,11 +8,16 @@ import { CalendarIcon } from 'lucide-react';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
+interface Props {
+   disabled: boolean;
+}
 
+const AvailabilityDateField: React.FC<Props> = (props: Props) => {
+   const { disabled } = props;
 
-const AvailabilityDateField: React.FC = () => {
    const form = useFormContext();
-  return (
+
+   return (
       <FormField
          control={form.control}
          name="availability_date"
@@ -24,6 +29,7 @@ const AvailabilityDateField: React.FC = () => {
                      <FormControl>
                         <Button
                            variant={"outline"}
+                           disabled={disabled}
                            className={cn(
                               "w-[240px] pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"

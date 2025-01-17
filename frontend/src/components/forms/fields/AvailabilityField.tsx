@@ -11,7 +11,6 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 
-
 const AvailabilityField: React.FC = () => {
    const form = useFormContext();
   return (
@@ -47,6 +46,7 @@ const AvailabilityField: React.FC = () => {
                            value={availability.label}
                            onSelect={() => {
                               form.setValue("availability", availability.value);
+                              
                            }}
                         >
                            <Check

@@ -21,6 +21,7 @@ import CaptureQualityField from '../forms/fields/CaptureQualityField'
 import EndTimeField from '../forms/fields/EndTimeField'
 import GroupSelectField from '../forms/fields/GroupSelectField'
 // import LiveStreamField from '../forms/fields/LiveStreamField'
+import AvailabilityCard from '../forms/fields/AvailabilityCard'
 import PresenterField from '../forms/fields/PresenterField'
 import RecordingDateField from '../forms/fields/RecordingDateField'
 import RequestedByField from '../forms/fields/RequestedByField'
@@ -95,16 +96,7 @@ const Schedule: React.FC = () => {
                            </div>
                         </div>
                         <div className="availability border rounded-lg p-3 mb-3">
-                           <div className="flex flex-col lg:flex-row justify-between gap-4">
-                              <div className="select-availability gap-3 mx-3">
-                                 {/* switch */}                      
-                                 <AvailabilityField />
-                              </div>
-                              <div className="availability-date gap-3 mr-16">
-                                 {/* datepicker if set to manual */}
-                                <AvailabilityDateField />
-                              </div>
-                           </div>
+                           <AvailabilityCard />
                         </div>
                         {/* <div className="live-stream border rounded-lg p-3 mb-3">
                            <div className="flex flex-col lg:flex-row justify-between gap-3 px-3 pt-2 pb-3">
