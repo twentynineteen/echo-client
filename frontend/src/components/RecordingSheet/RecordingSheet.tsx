@@ -152,9 +152,6 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
                                                 });
   }
 
-  // set inputs as controlled to allow changes to recording
-  // setRecording(selectedId);
-
 
   // onChange handler to update input box state
   const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,21 +161,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
   }));
   }
 
-  
-  // // onChange handler to update input box state
-  // const handleChangePresenter = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   // console.log(event.target.value);
-  //  setRecording(prevState => ({
-  //   ...prevState,
-  //   presenter: {
-  //     fullName: recording.presenter.fullName, 
-  //     userEmail: event.target.value, 
-  //     userExternalId: recording.presenter.userExternalId, 
-  //     userId: recording.presenter.userId
-  //   }
-  // }));
-  // }
-// 
+
   const form = useForm < z.infer < typeof formSchema >> ({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues
@@ -208,31 +191,29 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
           </SheetHeader>
           <Form {...form}>
             <form>
-
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="recordingId" className="text-right">
-                ID
-                </Label>
-                <Input id="recordingId" value={recording.id} className="col-span-3" disabled/>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="recordingId" className="text-right">
+                  ID
+                  </Label>
+                  <Input id="recordingId" value={recording.id} className="col-span-3" disabled/>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input id="name" value={recording.name} className="col-span-3" onChange={handleChangeName}/>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="start-date" className="text-right">
+                    Date
+                  </Label>
+                  <DatePicker startDate={recording.startDate} />
+                </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input id="name" value={recording.name} className="col-span-3" onChange={handleChangeName}/>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="start-date" className="text-right">
-                  Date
-                </Label>
-                {/* <RecordingDateField selectedDate={recording.startDate} value={recording.startDate} onChange={handleChangeDate} /> */}
-                <DatePicker startDate={recording.startDate} onChange={handleChangeDate}/>
-              </div>
-            </div>
             </form>
           </Form>
-          {/* <PresenterField /> */}
+
           <SheetFooter>
               <Button 
                 type="button" 

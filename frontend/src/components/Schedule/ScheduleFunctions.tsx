@@ -429,8 +429,6 @@ export const createSchedule = async (data: z.infer < typeof formSchema > ) => {
 
    // rebuild section to include requested availability
    const availability: Availability = setAvailability(data.availability, data.availability_date);
-   console.log("Availability");
-   console.log(availability);
    const updatedSection: ScheduleSection = {
       "courseId": section.courseId,
       "courseIdentifier": section.courseIdentifier,
@@ -467,8 +465,8 @@ export const createSchedule = async (data: z.infer < typeof formSchema > ) => {
             "captureQuality": captureQuality,
             "shouldStreamLive": data.live_stream_toggle,
          };
-
-   console.log(dataBody); 
+   // print dataBody to console for testing
+   // console.log(dataBody); 
    const request: AxiosResponse = await client.post(`/schedules/create`, dataBody, headers)
                                                 .then(function (response) {
                                                    // convert 201 status to success if response is successful
