@@ -41,7 +41,7 @@ export function DatePicker(props: Props) {
           selected={date}
           onSelect={setDate}
           initialFocus
-          className=""
+          className="pointer-events-auto" // bugfix for Sheet form
         />
       </PopoverContent>
     </Popover>
