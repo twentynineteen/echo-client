@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { DatePicker } from "../DatePicker/DatePicker";
-import { defaultValues, formSchema } from "../Schedule/ScheduleUtils";
+import { formSchema } from "../RecordingSheet/RecordingSheetUtils";
 
 
 interface RecordingProps {
@@ -32,6 +32,8 @@ interface RecordingProps {
 }
 
 export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisibility }) => {
+
+  console.log(selectedId);
 
   // recording name state for input box
   const [recording, setRecording] = React.useState({
@@ -51,11 +53,12 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
        shouldAutoPublish: selectedId.shouldAutoPublish,         
        shouldCaption: selectedId.shouldCaption,             
        shouldRecurCapture: selectedId.shouldRecurCapture,        
-       shouldStreamLive: selectedId.shouldStreamLive,          
+       shouldStreamLive: selectedId.shouldStreamLive,        
        startDate: selectedId.startDate,             
        startTime: selectedId.startTime,              
        streamQuality: selectedId.streamQuality,    
        venue: selectedId.venue,
+       availability: selectedId.sections[0].availability || {availability: "", concreteTime: null, relativeDelay: 0, unavailabilityDelay: 0},
   });
   
   // Update recording state - then send request to echo 360 api
@@ -66,7 +69,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
       presenter: recording.presenter,
     }));
     updateRecording(recording);
-    window.location.reload(); // basic req to force page reload after submission
+    // window.location.reload(); // basic req to force page reload after submission
   };
 
   // 
@@ -178,7 +181,22 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
   //   }
   // }));
   // }
-// 
+  // 
+
+  // return undefined if start date is not found in recording
+  const startDate = recording.startDate ? new Date(recording.startDate) : undefined ;
+
+  const defaultValues = {
+               "occasion": "1",
+               "start_date": startDate,
+               "live_stream_toggle": recording.shouldStreamLive,
+               "input": recording.input1,
+               "capture_quality": recording.captureQuality,
+               "recording_title": recording.name,
+               "availability": recording.availability.availability,
+               "stream_quality": recording.streamQuality,
+            }
+
   const form = useForm < z.infer < typeof formSchema >> ({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues
@@ -191,6 +209,14 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
     }));
     console.log(recording.startDate);
   }
+
+  function onSubmit(values: z.infer < typeof formSchema > ) {
+        try {
+          console.log(values);       
+        } catch (error) {
+          console.error("Form submission error", error);        
+        }
+      }
 
   return (
     <div>
@@ -207,7 +233,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
-            <form>
+            <form onSubmit={form.handleSubmit(onSubmit)} >
 
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
@@ -226,13 +252,11 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
                 <Label htmlFor="start-date" className="text-right">
                   Date
                 </Label>
-                {/* <RecordingDateField selectedDate={recording.startDate} value={recording.startDate} onChange={handleChangeDate} /> */}
-                <DatePicker startDate={recording.startDate} onChange={handleChangeDate}/>
+                <DatePicker />
               </div>
             </div>
             </form>
           </Form>
-          {/* <PresenterField /> */}
           <SheetFooter>
               <Button 
                 type="button" 
