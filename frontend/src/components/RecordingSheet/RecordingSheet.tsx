@@ -155,9 +155,6 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
                                                 });
   }
 
-  // set inputs as controlled to allow changes to recording
-  // setRecording(selectedId);
-
 
   // onChange handler to update input box state
   const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,6 +163,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
     name: event.target.value
   }));
   }
+
 
   
   // // onChange handler to update input box state
@@ -196,6 +194,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
                "availability": recording.availability.availability,
                "stream_quality": recording.streamQuality,
             }
+
 
   const form = useForm < z.infer < typeof formSchema >> ({
     resolver: zodResolver(formSchema),
@@ -233,6 +232,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
+
             <form onSubmit={form.handleSubmit(onSubmit)} >
 
             <div className="grid gap-4 py-4">
@@ -257,6 +257,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
             </div>
             </form>
           </Form>
+
           <SheetFooter>
               <Button 
                 type="button" 
