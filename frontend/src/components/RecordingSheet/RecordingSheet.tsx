@@ -24,6 +24,14 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { DatePicker } from "../DatePicker/DatePicker";
 import { formSchema } from "../RecordingSheet/RecordingSheetUtils";
+import AvailabilityDateField from "../forms/fields/AvailabilityDateField";
+import AvailabilityField from "../forms/fields/AvailabilityField";
+import EndTimeField from "../forms/fields/EndTimeField";
+import LiveStreamField from "../forms/fields/LiveStreamField";
+import PresenterField from "../forms/fields/PresenterField";
+import RoomField from "../forms/fields/RoomField";
+import RoomInputField from "../forms/fields/RoomInputField";
+import StartTimeField from "../forms/fields/StartTimeField";
 
 
 interface RecordingProps {
@@ -249,27 +257,98 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
                 <Input id="name" value={recording.name} className="col-span-3" onChange={handleChangeName}/>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="start-date" className="text-right">
+                <Label htmlFor="start-date" className="text-right col-span-1">
                   Date
                 </Label>
-                <DatePicker />
+                <div className="col-span-3">
+                  <DatePicker />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="start-time" className="text-right">
+                  Start Time
+                </Label>
+                <div className="col-span-3">
+                  <StartTimeField messageDisabled={true} />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="end-time" className="text-right">
+                  End Time
+                </Label>
+                <div className="col-span-3">
+                  <EndTimeField messageDisabled={true} />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="availability" className="text-right">
+                  Availability
+                </Label>
+                <div className="col-span-3">
+                  <AvailabilityField messageDisabled={true} />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="availability-date" className="text-right">
+                  Availability Date
+                </Label>
+                <div className="col-span-3">
+                  <AvailabilityDateField messageDisabled={true} disabled={false}/>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="live-stream" className="text-right">
+                  Live Stream
+                </Label>
+                <div className="col-span-3 ">
+                  <LiveStreamField messageDisabled={true} />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="presenter" className="text-right">
+                  Presenter
+                </Label>
+                <div className="col-span-3">
+                  <PresenterField messageDisabled={true} />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="room" className="text-right">
+                  Room
+                </Label>
+                <div className="col-span-3">
+                  <RoomField messageDisabled={true} />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="inputs" className="text-right">
+                  Inputs
+                </Label>
+                <div className="col-span-3">
+                  <RoomInputField messageDisabled={true} />
+                </div>
               </div>
             </div>
             </form>
           </Form>
 
           <SheetFooter>
+            <div className="form-buttons grid grid-cols-3 items-center gap-4 mt-4">
               <Button 
                 type="button" 
                 name="delete"
                 variant="destructive"
                 onClick={handleDeleteRecording}
-                >Delete Recording</Button>
-            <SheetClose asChild>
-              <Button type="submit" 
-                onClick={saveChanges}
-                >Save changes</Button>
-            </SheetClose>
+                className=""
+                >
+                  Delete Recording
+              </Button>
+              <SheetClose asChild>
+                <Button type="submit" 
+                  onClick={saveChanges}
+                  >Save changes</Button>
+              </SheetClose>
+            </div>
           </SheetFooter>
         </SheetContent>
       </Sheet>

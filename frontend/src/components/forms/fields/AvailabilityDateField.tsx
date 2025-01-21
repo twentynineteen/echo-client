@@ -3,6 +3,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { Nullable } from '@/types';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import React from 'react';
@@ -10,10 +11,11 @@ import { useFormContext } from 'react-hook-form';
 
 interface Props {
    disabled: boolean;
+   messageDisabled: Nullable<boolean>;
 }
 
 const AvailabilityDateField: React.FC<Props> = (props: Props) => {
-   const { disabled } = props;
+   const { disabled, messageDisabled } = props;
 
    const form = useFormContext();
 
@@ -23,7 +25,7 @@ const AvailabilityDateField: React.FC<Props> = (props: Props) => {
          name="availability_date"
          render={({ field }) => (
             <FormItem className="flex flex-col">
-               <FormLabel className="my-2 font-bold">Availability Date</FormLabel>
+               { messageDisabled ? "" : <FormLabel className="my-2 font-bold">Availability Date</FormLabel>}
                <Popover>
                   <PopoverTrigger asChild>
                      <FormControl>
@@ -53,7 +55,7 @@ const AvailabilityDateField: React.FC<Props> = (props: Props) => {
                      />
                   </PopoverContent>
                </Popover>
-               <FormDescription>Select the date of release.</FormDescription>
+               { messageDisabled ? "" : <FormDescription>Select the date of release.</FormDescription>}
                <FormMessage />
             </FormItem>
          )}

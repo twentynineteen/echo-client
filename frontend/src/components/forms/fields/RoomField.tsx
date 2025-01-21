@@ -5,12 +5,18 @@ import { getRooms } from "@/components/Schedule/ScheduleFunctions";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { DropdownItems } from "@/types";
+import { DropdownItems, Nullable } from "@/types";
 import { Check, ChevronsUpDown } from "lucide-react";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
-const RoomField = () => {
+type Props = {
+   messageDisabled: Nullable<boolean>;
+}
+
+
+const RoomField: React.FC<Props> = (props: Props) => {
+   const { messageDisabled } = props;
    const [room, setRoom] = React.useState<DropdownItems[]>([]);
 
    // add list of users to user state - mapping echo 360 users to dropdown items
@@ -39,7 +45,7 @@ const RoomField = () => {
          name="room"
          render={({ field }) => (
             <FormItem className="flex flex-col">
-               <FormLabel className="my-3 font-bold">Room</FormLabel>
+               {messageDisabled ? "" : <FormLabel className="my-3 font-bold">Room</FormLabel>}
                <Popover>
                   <PopoverTrigger asChild>
                      <FormControl>
@@ -84,7 +90,7 @@ const RoomField = () => {
                      </Command>
                   </PopoverContent>
                </Popover>
-               <FormDescription className="pb-3">This the room where the recording is taking place.</FormDescription>
+               {messageDisabled ? "" : <FormDescription className="pb-3">This the room where the recording is taking place.</FormDescription>}
                <FormMessage />
             </FormItem>
          )}
