@@ -59,13 +59,13 @@ const Schedule: React.FC = () => {
                         <AcademicYearCard />
                         <div className="room-inputs-container border p-3 mb-3 rounded-lg">
                            <div className="room gap-3 mr-3 ml-3 mb-2">
-                              <RoomField />
+                              <RoomField messageDisabled={false} />
                            </div>
                            <Separator />
                            <div className="truncate">
                               <div className="container-inputs flex flex-col lg:flex-row justify-between pb-5 px-3">
                                  <div className="room-input gap-3 mt-3">
-                                   <RoomInputField />
+                                   <RoomInputField messageDisabled={false}/>
                                  </div>
                                  <div className="capture-quality gap-3 mt-3 mr-16">
                                     <CaptureQualityField />
@@ -77,7 +77,7 @@ const Schedule: React.FC = () => {
                      <div className="form-container-2">
                         <div className="presenters border rounded-lg p-3 mb-3">
                            <div className="presenter gap-3 mx-3 mb-3">
-                              <PresenterField />
+                              <PresenterField messageDisabled={false}/>
                            </div>
                         </div>
                         <div className="recording-date border rounded-lg pt-3 mb-3">
@@ -87,10 +87,10 @@ const Schedule: React.FC = () => {
                               </div>
                               <div className="recording-date-right mr-6">
                                  <div className="start my-3">
-                                    <StartTimeField />
+                                    <StartTimeField messageDisabled={false}/>
                                  </div>
                                  <div className="end_time my-3">
-                                    <EndTimeField />
+                                    <EndTimeField messageDisabled={false}/>
                                  </div>
                               </div>
                            </div>

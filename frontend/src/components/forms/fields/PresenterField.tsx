@@ -9,11 +9,17 @@ import { cn } from "@/lib/utils";
 import { DropdownItems } from "@/types";
 
 import { getUsers } from "@/components/Schedule/ScheduleFunctions";
+import { Nullable } from "@/types";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
+type Props = {
+   messageDisabled: Nullable<boolean>;
+}
 
-const PresenterField = () => {
+
+const PresenterField: React.FC<Props> = (props: Props) => {
+   const { messageDisabled } = props;
    const [user, setUser] = React.useState<DropdownItems[]>([]);
 
    // add list of users to user state - mapping echo 360 users to dropdown items
@@ -43,7 +49,7 @@ const PresenterField = () => {
          name="presenter"
          render={({ field }) => (
             <FormItem className="flex flex-col">
-               <FormLabel className="my-2 font-bold">Presenter</FormLabel>
+               { messageDisabled ? "" : <FormLabel className="my-2 font-bold">Presenter</FormLabel> }
                <Popover>
                   <PopoverTrigger asChild>
                      <FormControl>
@@ -88,7 +94,7 @@ const PresenterField = () => {
                      </Command>
                   </PopoverContent>
                </Popover>
-               <FormDescription>This is the main presenter on the recording.</FormDescription>
+               {messageDisabled ? "" : <FormDescription>This is the main presenter on the recording.</FormDescription>}
                <FormMessage />
             </FormItem>
          )}
