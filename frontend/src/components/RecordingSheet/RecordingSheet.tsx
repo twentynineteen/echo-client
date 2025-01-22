@@ -12,7 +12,13 @@ import {
 } from '@/@/components/ui/sheet';
 import { useToast } from '@/@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Presenter, Schedule, SchedulePresenter, ScheduleSection } from '@/types';
+import {
+	Inputs,
+	Schedule,
+	SchedulePresenter,
+	ScheduleSection,
+	Venue,
+} from '@/types';
 import React from 'react';
 import { baseUrl, client, headers } from '../../lib/utils';
 import { Input } from '../ui/input';
@@ -30,7 +36,14 @@ import RoomField from '../forms/fields/RoomField';
 import RoomInputField from '../forms/fields/RoomInputField';
 import StartTimeField from '../forms/fields/StartTimeField';
 import { formSchema } from '../RecordingSheet/RecordingSheetUtils';
-import { convertDateToDateString } from '../Schedule/ScheduleFunctions';
+import {
+	convertDateToDateString,
+	getInputs,
+	getPresenter,
+	getSection,
+	getVenue,
+	removeSeconds,
+} from '../Schedule/ScheduleFunctions';
 
 interface RecordingProps {
 	selectedId: Schedule;
@@ -74,18 +87,6 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 		availability: sections[0].availability?.availability,
 		availabilityDate: sections[0].availability?.concreteTime,
 	});
-
-	// Update recording state - then send request to echo 360 api
-	const saveChanges = () => {
-		setRecording((prevState) => ({
-			...prevState,
-			name: recording.name,
-			presenter: recording.presenter,
-		}));
-		console.log(recording);
-		// updateRecording(recording); // send to echo 360 to update recording with new form data
-		// window.location.reload(); // basic req to force page reload after submission
-	};
 
 	//
 	const handleDeleteRecording = () => {
@@ -177,64 +178,64 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 		}));
 	};
 
+	function convertStringToDate(date: string): Date {
+		return new Date(date);
+	}
+	
+	// A function to convert the selectedId availability options for the form input selectors
+	function convertAvailabilityOptions(availability?: string): string {
+		let output = availability;
+		if (availability == 'Concrete') {
+			output = 'Manual';
+		}
+		if (availability == 'Unavailable') {
+			output = 'Never';
+		}
+		if (availability == undefined) {
+			output = 'Immediate';
+			return output;
+		}
+		return output;
+	}
 
-  function convertStringToDate(date: string): Date {
-    return new Date(date);
-  }
-  // A function to convert the selectedId availability options for the form input selectors
-  function convertAvailabilityOptions(availability: string | undefined): string {
-    let output = availability;
-    if (availability == "Concrete") {
-      output = "Manual";
-    }
-    if (availability == "Unavailable") {
-      output = "Never";
-    }
-    if (availability == undefined) {
-      output = "Immediate";
-      return output;
-    }
-    return output;
-  }
+	// A function to convert the selectId input options for the form input selectors
+	function parseInputs(input1: string | null, input2: string | null): string {
+		let output = '[ADV] Audio/Display-1/Display-2';
+		if (input1 == 'Video' && input2 == null) {
+			output = '[AV] Audio/Display-1';
+			return output;
+		}
+		if (input1 == 'Display' && input2 == null) {
+			output = '[AD] Audio/Display-2';
+			return output;
+		}
+		if (input1 == null && input2 == null) {
+			output = '[A] Audio Only';
+			return output;
+		}
 
-  // A function to convert the selectId input options for the form input selectors
-  function parseInputs(input1: string, input2: string): string {
-    let output = "[ADV] Audio/Display-1/Display-2";
-    if (input1 == "Video" && input2 == null) {
-      output = "[AV] Audio/Display-1";
-      return output;
-    }
-    if (input1 == "Display" && input2 == null) {
-      output = "[AD] Audio/Display-2";
-      return output;
-    }
-    if (input1 == null && input2 == null) {
-      output = "[A] Audio Only";
-      return output;
-    }
-   
-    return output;
-  }
+		return output;
+	}
 
-  const parsedInputs = parseInputs(recording.input1, recording.input2);
-  
-	// return undefined if field is not found in recording 
-  // required to meet formSchema validation criteria
+	const parsedInputs = parseInputs(recording.input1, recording.input2);
+
+	// return undefined if field is not found in recording
+	// required to meet formSchema validation criteria
 	const startDate = recording.startDate
 		? convertStringToDate(recording.startDate)
 		: undefined;
 	const availabilityDate = sections[0].availability?.concreteTime
 		? convertStringToDate(sections[0].availability?.concreteTime)
 		: undefined;
-  const academicYear = sections[0].termName
-    ? sections[0].termName
-    : undefined;
-  const sectionName = sections[0].sectionName
-    ? sections[0].sectionName
-    : undefined;
-  
-  const defaultAvailability = sections.length > 0 ? convertAvailabilityOptions(sections[0].availability?.availability) : "";
-  
+	const academicYear = sections[0].termName ? sections[0].termName : undefined;
+	const sectionName = sections[0].sectionName
+		? sections[0].sectionName
+		: undefined;
+
+	const defaultAvailability =
+		sections.length > 0
+			? convertAvailabilityOptions(sections[0].availability?.availability)
+			: '';
 
 	const defaultValues = {
 		academic_year: academicYear,
@@ -259,21 +260,48 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 		defaultValues: defaultValues,
 	});
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log('onSubmit pressed');
-    // rebuild values as valid Schedule type.
-    console.log("Availability Date: ")
-    console.log(convertDateToDateString(values.availability_date));
-    console.log("Start Date: ")
-    console.log(convertDateToDateString(values.start_date));
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		const inputs: Inputs = getInputs(values.input);
+		const presenter: SchedulePresenter = await getPresenter(
+			values.presenter,
+			baseUrl,
+			headers
+		);
+		const sections: ScheduleSection = await getSection(
+			selectedId.sections[0].sectionId,
+			baseUrl,
+			headers
+		);
+		const startDate: string = convertDateToDateString(values.start_date);
+		const startTime: string = removeSeconds(values.start_time);
+		const endTime: string = removeSeconds(values.end_time);
+		const venue: Venue = await getVenue(values.room, baseUrl, headers);
+		const schedule: Schedule = {
+			captureQuality: values.capture_quality,
+			endTime: endTime,
+			id: selectedId.id,
+			externalId: selectedId.externalId,
+			input1: inputs.input1,
+			input2: inputs.input2,
+			name: values.recording_title,
+			presenter: presenter,
+			sections: [sections],
+			shouldStreamLive: values.live_stream_toggle,
+			startDate: startDate,
+			startTime: startTime,
+			streamQuality: values.capture_quality,
+			venue: venue,
+		};
 
 		try {
+			updateRecording(schedule);
 			console.log(values);
+			console.log(schedule);
 		} catch (error) {
 			console.error('Form submission error', error);
 		}
 	}
-	
+
 	// state handling for selected recording - disable fields if in past
 	const [isInPast, setIsInPast] = React.useState<boolean>(false);
 
@@ -289,9 +317,9 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 		}
 	}
 	// set state to disable fields if recording is in the past and unable to change
-	React.useEffect(()=>{
+	React.useEffect(() => {
 		isSelectedIdInPast(selectedId.startDate);
-	},[selectedId, isInPast]);
+	}, [selectedId, isInPast]);
 
 	return (
 		<div>
@@ -425,13 +453,6 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										/>
 									</div>
 								</div>
-								<Button
-									type="submit"
-									disabled={isInPast}
-									// onClick={form.handleSubmit(onSubmit)}
-								>
-									submit
-								</Button>
 							</div>
 						</form>
 					</Form>
@@ -447,7 +468,11 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 								Delete Recording
 							</Button>
 							<SheetClose asChild>
-								<Button type="submit" onClick={saveChanges} disabled={isInPast}>
+								<Button
+									type="submit"
+									onClick={form.handleSubmit(onSubmit)}
+									disabled={isInPast}
+								>
 									Save changes
 								</Button>
 							</SheetClose>
