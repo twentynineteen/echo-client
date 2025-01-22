@@ -181,7 +181,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
   function convertStringToDate(date: string): Date {
     return new Date(date);
   }
-
+  // A function to convert the selectedId availability options for the form input selectors
   function convertAvailabilityOptions(availability: string | undefined): string {
     let output = availability;
     if (availability == "Concrete") {
@@ -189,14 +189,34 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
     }
     if (availability == undefined) {
       output = "Immediate";
+      return output;
     }
     return output;
   }
 
+  // A function to convert the selectId input options for the form input selectors
+  function parseInputs(input1: string, input2: string): string {
+    let output = "[ADV] Audio/Display-1/Display-2";
+    if (input1 == "Video" && input2 == null) {
+      output = "[AV] Audio/Display-1";
+      return output;
+    }
+    if (input1 == "Display" && input2 == null) {
+      output = "[AD] Audio/Display-2";
+      return output;
+    }
+    if (input1 == null && input2 == null) {
+      output = "[A] Audio Only";
+      return output;
+    }
+   
+    return output;
+  }
 
+  const parsedInputs = parseInputs(recording.input1, recording.input2);
   
 	// return undefined if field is not found in recording 
-  // required to meet formSchema validation
+  // required to meet formSchema validation criteria
 	const startDate = recording.startDate
 		? convertStringToDate(recording.startDate)
 		: undefined;
@@ -225,7 +245,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 		live_stream_toggle: recording.shouldStreamLive,
 		presenter: recording.presenter.userId,
 		room: recording.venue.roomId,
-		input: recording.input1,
+		input: parsedInputs,
 		capture_quality: recording.captureQuality,
 		recording_title: recording.name,
 		// stream_quality: streamQuality,
@@ -250,14 +270,6 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 			console.error('Form submission error', error);
 		}
 	}
-
-	// React.useEffect(() => {
-	// 	errors();
-	// }, []);
-
-	// function errors() {
-	// 	console.log(form.formState.errors);
-	// }
 
 	return (
 		<div>
