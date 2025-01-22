@@ -49,6 +49,7 @@ const AvailabilityField: React.FC<Props> = (props: Props) => {
                               <CommandItem
                                  key={availability.value}
                                  value={availability.label}
+                                 className="pointer-events-auto" // bugfix for Sheet form
                                  onSelect={() => {
                                     form.setValue("availability", availability.value);
                                     

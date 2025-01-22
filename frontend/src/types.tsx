@@ -77,7 +77,7 @@ export interface Schedule {
    input2: string;                       // Identifies the input being used as the secondary visual input
    name?: string;                        // (Optional) Name for the capture(s)
    presenter?: SchedulePresenter;        // (Optional) The Presenter details for the Schedule
-   sections?: ScheduleSection[];         // (Optional) Publish to multiple sections
+   sections: ScheduleSection[];         // (Optional) Publish to multiple sections
    shouldAutoPublish?: boolean;          // (Optional) Whether the capture(s) should auto-publish
    shouldCaption?: boolean;              // (Optional) Whether to send the capture(s) for closed captioning
    shouldRecurCapture?: boolean;         // (Optional) Whether the capture(s) are recurring

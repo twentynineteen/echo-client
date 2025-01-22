@@ -12,7 +12,7 @@ import {
 } from "@/@/components/ui/sheet";
 import { useToast } from "@/@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Schedule } from "@/types";
+import { Schedule, ScheduleSection } from "@/types";
 import React from "react";
 import { client, headers } from "../../lib/utils";
 
@@ -22,9 +22,8 @@ import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { DatePicker } from "../DatePicker/DatePicker";
+import DatePicker from "../DatePicker/DatePicker";
 import { formSchema } from "../RecordingSheet/RecordingSheetUtils";
-import AvailabilityDateField from "../forms/fields/AvailabilityDateField";
 import AvailabilityField from "../forms/fields/AvailabilityField";
 import EndTimeField from "../forms/fields/EndTimeField";
 import LiveStreamField from "../forms/fields/LiveStreamField";
@@ -42,6 +41,16 @@ interface RecordingProps {
 export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisibility }) => {
 
   console.log(selectedId);
+  // const sections: ScheduleSection[] = [];
+  // if (selectedId.sections.length > 0) {
+  //   sections.push(selectedId.sections[0]);
+  //   return sections;
+  // };
+
+  const [sections, setSections] = React.useState(selectedId.sections);
+  console.log(sections[0]);
+
+
 
   // recording name state for input box
   const [recording, setRecording] = React.useState({
@@ -57,7 +66,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
        input2: selectedId.input2,                     
        name: selectedId.name,                
        presenter: selectedId.presenter || {fullName: "", userEmail: "", userExternalId: "", userId: ""},       
-       sections: selectedId.sections,        
+       sections: sections,        
        shouldAutoPublish: selectedId.shouldAutoPublish,         
        shouldCaption: selectedId.shouldCaption,             
        shouldRecurCapture: selectedId.shouldRecurCapture,        
@@ -66,7 +75,9 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
        startTime: selectedId.startTime,              
        streamQuality: selectedId.streamQuality,    
        venue: selectedId.venue,
-       availability: selectedId.sections[0].availability || {availability: "", concreteTime: null, relativeDelay: 0, unavailabilityDelay: 0},
+       availability: sections[0].availability?.availability,
+       availabilityDate: sections[0].availability?.concreteTime,
+      //  availability: selectedId.sections[0].availability || {availability: "", concreteTime: null, relativeDelay: 0, unavailabilityDelay: 0},
   });
   
   // Update recording state - then send request to echo 360 api
@@ -191,15 +202,21 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
 
   // return undefined if start date is not found in recording
   const startDate = recording.startDate ? new Date(recording.startDate) : undefined ;
+  const availabilityDate = sections[0].availability?.concreteTime ? new Date(sections[0].availability?.concreteTime) : undefined ;
 
   const defaultValues = {
                "occasion": "1",
                "start_date": startDate,
+               "start_time": recording.startTime,
+               "end_time": recording.endTime,
+               "availability": sections[0].availability?.availability,
+               "availability_date": availabilityDate,
                "live_stream_toggle": recording.shouldStreamLive,
+               "presenter": recording.presenter.fullName,
+               "room": recording.venue.roomName,
                "input": recording.input1,
                "capture_quality": recording.captureQuality,
                "recording_title": recording.name,
-               "availability": recording.availability.availability,
                "stream_quality": recording.streamQuality,
             }
 
@@ -209,13 +226,13 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
     defaultValues: defaultValues
   });
 
-  const handleChangeDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRecording(prevState => ({
-      ...prevState,
-      startDate: event?.target.value
-    }));
-    console.log(recording.startDate);
-  }
+  // const handleChangeDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setRecording(prevState => ({
+  //     ...prevState,
+  //     startDate: event?.target.value
+  //   }));
+  //   console.log(recording.startDate);
+  // }
 
   function onSubmit(values: z.infer < typeof formSchema > ) {
         try {
@@ -261,7 +278,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
                   Date
                 </Label>
                 <div className="col-span-3">
-                  <DatePicker />
+                  <DatePicker fieldName="start_date"/>
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -293,7 +310,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({selectedId, toggleVisi
                   Availability Date
                 </Label>
                 <div className="col-span-3">
-                  <AvailabilityDateField messageDisabled={true} disabled={false}/>
+                  <DatePicker fieldName="availability_date"/>
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">

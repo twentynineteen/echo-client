@@ -70,6 +70,7 @@ const RoomField: React.FC<Props> = (props: Props) => {
                               <CommandItem
                                  key={room.value}
                                  value={room.label}
+                                 className="pointer-events-auto" // bugfix for Sheet form
                                  onSelect={() => {
                                     form.setValue("room", room.value);
                                  }}
