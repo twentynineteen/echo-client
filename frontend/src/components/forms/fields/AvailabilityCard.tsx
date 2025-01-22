@@ -25,11 +25,11 @@ const AvailabilityCard: React.FC = () => {
   return (
    <div className="flex flex-col lg:flex-row justify-between gap-4">
       <div className="select-availability gap-3 mx-3 w-1/2">                 
-         <AvailabilityField />
+         <AvailabilityField messageDisabled={false} />
       </div>
       <div className="availability-date gap-3 mr-12 pr-1">
          {/* unlock datepicker if availability set to manual */}
-         <AvailabilityDateField disabled={!isVisible}/>
+         <AvailabilityDateField disabled={!isVisible} messageDisabled={false} />
          
       </div>
    </div>

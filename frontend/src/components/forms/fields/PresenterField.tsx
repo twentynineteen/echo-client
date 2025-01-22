@@ -74,6 +74,7 @@ const PresenterField: React.FC<Props> = (props: Props) => {
                               <CommandItem
                                  key={presenter.value}
                                  value={presenter.label}
+                                 className="pointer-events-auto" // bugfix for Sheet form
                                  onSelect={() => {
                                     form.setValue("presenter", presenter.value);
                                  }}

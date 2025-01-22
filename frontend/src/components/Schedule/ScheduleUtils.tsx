@@ -50,8 +50,8 @@ export const defaultValues = {
 // Dropdown options for video availability
 export const availability_options = [
    {
-      value: "Immediately",
-      label: "Immediately",
+      value: "Immediate",
+      label: "Immediate",
    },
    {
       value: "Never",

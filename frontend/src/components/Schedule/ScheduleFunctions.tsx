@@ -422,6 +422,48 @@ function setAvailability (availability: string, availabilityDate: Date): Availab
    return output;
 }
 
+// a function to retrieve the selected Schedule by its ID
+export async function getScheduleById(id: string): Promise<Schedule> {
+
+   const request = await client.get(`/schedules/${id}`, headers)
+                                             .then(async function (response) {
+                                                const data: Schedule = response.data;
+                                                const schedule: Schedule = {
+                                                   captureQuality: data.captureQuality,
+                                                   endDate: data.endDate,                    
+                                                   endTime: data.endTime,                     
+                                                   externalId: data.externalId,          
+                                                   id: data.id,                          
+                                                   input1: data.input1,                      
+                                                   input2: data.input2,                      
+                                                   name: data.name,                       
+                                                   presenter: data.presenter,       
+                                                   sections: data.sections,        
+                                                   shouldAutoPublish: data.shouldAutoPublish,         
+                                                   shouldCaption: data.shouldCaption,             
+                                                   shouldStreamLive: data.shouldStreamLive,          
+                                                   startDate: data.startDate,                  
+                                                   startTime: data.startTime,                   
+                                                   streamQuality: data.streamQuality,               
+                                                   venue: data.venue,              
+                                                 }
+                                                return schedule;
+
+                                             })
+                                             .catch(function (error) {
+                                                console.log(error);
+                                                // convert 400 status to failed if response is unsuccessful
+                                                const status = error.status == 400 ? "Failed" : error.status;
+                                                toast({
+                                                   title: `Form submission status: ${status}`,
+                                                   description: `${error.code}: ${error.message}`,
+                                                   variant: "destructive"
+                                                })
+                                                return error;
+                                             });
+   return request;
+}
+
 // a function to send the form data to create a new scheduled recording on echo360
 export const createSchedule = async (data: z.infer < typeof formSchema > ) => {
 
