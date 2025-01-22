@@ -6,11 +6,12 @@ import { useFormContext } from 'react-hook-form';
 
 type Props = {
    messageDisabled: Nullable<boolean>;
+   disabled?: boolean;
 }
 
 
 const LiveStreamField: React.FC<Props> = (props: Props) => {
-   const { messageDisabled } = props;
+   const { messageDisabled, disabled } = props;
    const form = useFormContext();
    return (
       <FormField
@@ -26,6 +27,7 @@ const LiveStreamField: React.FC<Props> = (props: Props) => {
                   <Switch
                      checked={field.value}
                      onCheckedChange={field.onChange}
+                     disabled={disabled}
                      // disabled
                      aria-readonly
                   />

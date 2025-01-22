@@ -10,7 +10,7 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 interface Props {
-   disabled: boolean;
+   disabled?: boolean;
    messageDisabled: Nullable<boolean>;
 }
 
@@ -26,7 +26,7 @@ const AvailabilityDateField: React.FC<Props> = (props: Props) => {
          render={({ field }) => (
             <FormItem className="flex flex-col">
                { messageDisabled ? "" : <FormLabel className="my-2 font-bold">Availability Date</FormLabel>}
-               <Popover>
+               <Popover >
                   <PopoverTrigger asChild>
                      <FormControl>
                         <Button

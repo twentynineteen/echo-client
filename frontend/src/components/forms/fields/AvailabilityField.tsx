@@ -12,26 +12,31 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 type Props = {
-   messageDisabled: Nullable<boolean>;
+   messageDisabled: Nullable<boolean>,
+   disabled?: boolean, 
 }
 
 const AvailabilityField: React.FC<Props> = (props: Props) => {
-   const { messageDisabled } = props;
+   const { messageDisabled, disabled } = props;
    const form = useFormContext();
+   
    return (
       <FormField 
          control={form.control}
          name="availability"
+         disabled={disabled}
          render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex flex-col" >
             { messageDisabled ? "" : <FormLabel className="my-2 font-bold">Availability</FormLabel>}
-               <Popover>
-                  <PopoverTrigger asChild>
+               <Popover >
+                  <PopoverTrigger asChild >
                      <FormControl>
                         <Button 
                            variant="outline"
                            role="combobox"   
+                           disabled={disabled}
                            className="w-full justify-between p-3"
+                           
                         >
                            {field.value ? availability_options.find((availability) => availability.value === field.value)?.label
                            : "Select availability..."}
@@ -39,7 +44,7 @@ const AvailabilityField: React.FC<Props> = (props: Props) => {
                         </Button>
                      </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-full p-3 bg-background">
+                  <PopoverContent className="w-full p-3 bg-background" >
                      <Command className="bg-background">
                      {/* <CommandInput placeholder="Search availability..." /> */}
                         <CommandList>
@@ -49,6 +54,7 @@ const AvailabilityField: React.FC<Props> = (props: Props) => {
                               <CommandItem
                                  key={availability.value}
                                  value={availability.label}
+                                 disabled={disabled}
                                  className="pointer-events-auto" // bugfix for Sheet form
                                  onSelect={() => {
                                     form.setValue("availability", availability.value);
