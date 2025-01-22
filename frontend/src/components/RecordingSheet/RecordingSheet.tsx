@@ -182,7 +182,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
     return new Date(date);
   }
   // A function to convert the selectedId availability options for the form input selectors
-  function convertAvailabilityOptions(availability: string | undefined): string {
+  function convertAvailabilityOptions(availability?: string): string {
     let output = availability;
     if (availability == "Concrete") {
       output = "Manual";
