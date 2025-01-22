@@ -11,7 +11,7 @@ export const formSchema = z.object({
       room: z.string(),
       input: z.string(),
       capture_quality: z.string(),
-      stream_quality: z.string().optional(),
+      // stream_quality: z.string().optional(),
       presenter: z.string(),
       guest_presenter: z.string().optional(),
       start_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),

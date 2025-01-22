@@ -13,22 +13,17 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { defaultValues, formSchema } from "../Schedule/ScheduleUtils"
 
-
 import AcademicYearCard from '../forms/fields/AcademicYearCard'
-import AvailabilityDateField from '../forms/fields/AvailabilityDateField'
-import AvailabilityField from '../forms/fields/AvailabilityField'
+import AvailabilityCard from '../forms/fields/AvailabilityCard'
 import CaptureQualityField from '../forms/fields/CaptureQualityField'
 import EndTimeField from '../forms/fields/EndTimeField'
 import GroupSelectField from '../forms/fields/GroupSelectField'
-// import LiveStreamField from '../forms/fields/LiveStreamField'
-import AvailabilityCard from '../forms/fields/AvailabilityCard'
 import PresenterField from '../forms/fields/PresenterField'
 import RecordingDateField from '../forms/fields/RecordingDateField'
 import RequestedByField from '../forms/fields/RequestedByField'
 import RoomField from '../forms/fields/RoomField'
 import RoomInputField from '../forms/fields/RoomInputField'
 import StartTimeField from '../forms/fields/StartTimeField'
-// import StreamQualityField from '../forms/fields/StreamQualityField'
 
 const Schedule: React.FC = () => {
 
