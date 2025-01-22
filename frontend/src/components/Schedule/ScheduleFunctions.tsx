@@ -3,22 +3,22 @@ import axios, { AxiosResponse } from 'axios';
 import { z } from 'zod';
 import { baseUrl, client, headers } from '../../lib/utils';
 import type {
-   Availability,
-   Building,
-   Campus,
-   Course,
-   DropdownItems,
-   Headers,
-   Inputs,
-   ListRequest,
-   Room,
-   Schedule,
-   SchedulePresenter,
-   ScheduleSection,
-   Section,
-   User,
-   Venue,
-   Year,
+	Availability,
+	Building,
+	Campus,
+	Course,
+	DropdownItems,
+	Headers,
+	Inputs,
+	ListRequest,
+	Room,
+	Schedule,
+	SchedulePresenter,
+	ScheduleSection,
+	Section,
+	User,
+	Venue,
+	Year,
 } from '../../types';
 import { formSchema } from './ScheduleUtils';
 
@@ -467,7 +467,7 @@ function setAvailability(
 		};
 	}
 
-	if (availability == 'Unavailable') {
+	if (availability == 'Never') {
 		output = {
 			availability: 'Unavailable',
 			relativeDelay: 0,

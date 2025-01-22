@@ -2,26 +2,26 @@ import React from 'react';
 // zod and form imports / dependencies
 import { Button } from '@/@/components/ui/button';
 import {
-   FormControl,
-   FormDescription,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
 } from '@/@/components/ui/form';
 
 import {
-   Command,
-   CommandEmpty,
-   CommandGroup,
-   CommandInput,
-   CommandItem,
-   CommandList,
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
 } from '@/components/ui/command';
 import {
-   Popover,
-   PopoverContent,
-   PopoverTrigger,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { DropdownItems } from '@/types';
@@ -34,10 +34,11 @@ import { useFormContext } from 'react-hook-form';
 type Props = {
 	messageDisabled: Nullable<boolean>;
 	userId?: string | undefined;
+	disabled?: boolean;
 };
 
 const PresenterField: React.FC<Props> = (props: Props) => {
-	const { messageDisabled, userId } = props;
+	const { messageDisabled, userId, disabled } = props;
 	const [user, setUser] = React.useState<DropdownItems[]>([]);
 
 	// add list of users to user state - mapping echo 360 users to dropdown items
@@ -86,6 +87,7 @@ const PresenterField: React.FC<Props> = (props: Props) => {
 									variant="outline"
 									role="combobox"
 									className="w-full justify-between p-3"
+									disabled={disabled}
 								>
 									{userOrField(field.value, userId)
 										? user.find((presenter) => presenter.value === field.value)

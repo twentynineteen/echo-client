@@ -2,13 +2,13 @@
 import { Form } from '@/@/components/ui/form';
 import { Label } from '@/@/components/ui/label';
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
+	Sheet,
+	SheetClose,
+	SheetContent,
+	SheetDescription,
+	SheetFooter,
+	SheetHeader,
+	SheetTitle,
 } from '@/@/components/ui/sheet';
 import { useToast } from '@/@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -181,22 +181,45 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
   function convertStringToDate(date: string): Date {
     return new Date(date);
   }
-
+  // A function to convert the selectedId availability options for the form input selectors
   function convertAvailabilityOptions(availability: string | undefined): string {
     let output = availability;
     if (availability == "Concrete") {
       output = "Manual";
     }
+    if (availability == "Unavailable") {
+      output = "Never";
+    }
     if (availability == undefined) {
       output = "Immediate";
+      return output;
     }
     return output;
   }
 
+  // A function to convert the selectId input options for the form input selectors
+  function parseInputs(input1: string, input2: string): string {
+    let output = "[ADV] Audio/Display-1/Display-2";
+    if (input1 == "Video" && input2 == null) {
+      output = "[AV] Audio/Display-1";
+      return output;
+    }
+    if (input1 == "Display" && input2 == null) {
+      output = "[AD] Audio/Display-2";
+      return output;
+    }
+    if (input1 == null && input2 == null) {
+      output = "[A] Audio Only";
+      return output;
+    }
+   
+    return output;
+  }
 
+  const parsedInputs = parseInputs(recording.input1, recording.input2);
   
 	// return undefined if field is not found in recording 
-  // required to meet formSchema validation
+  // required to meet formSchema validation criteria
 	const startDate = recording.startDate
 		? convertStringToDate(recording.startDate)
 		: undefined;
@@ -225,7 +248,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 		live_stream_toggle: recording.shouldStreamLive,
 		presenter: recording.presenter.userId,
 		room: recording.venue.roomId,
-		input: recording.input1,
+		input: parsedInputs,
 		capture_quality: recording.captureQuality,
 		recording_title: recording.name,
 		// stream_quality: streamQuality,
@@ -250,14 +273,25 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 			console.error('Form submission error', error);
 		}
 	}
+	
+	// state handling for selected recording - disable fields if in past
+	const [isInPast, setIsInPast] = React.useState<boolean>(false);
 
-	// React.useEffect(() => {
-	// 	errors();
-	// }, []);
-
-	// function errors() {
-	// 	console.log(form.formState.errors);
-	// }
+	function isSelectedIdInPast(startDate: string | undefined): void {
+		setIsInPast(false);
+		if (!startDate) {
+			setIsInPast(false);
+		} else {
+			const dateString = Date.parse(startDate);
+			if (dateString <= Date.now()) {
+				setIsInPast(true);
+			}
+		}
+	}
+	// set state to disable fields if recording is in the past and unable to change
+	React.useEffect(()=>{
+		isSelectedIdInPast(selectedId.startDate);
+	},[selectedId, isInPast]);
 
 	return (
 		<div>
@@ -269,7 +303,9 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 					<SheetHeader>
 						<SheetTitle>Edit recording</SheetTitle>
 						<SheetDescription>
-							Make changes to your recording here. Click save when you're done.
+							{isInPast
+								? 'This recording is in the past. You will be unable to make changes.'
+								: "Make changes to your recording here. Click save when you're done."}
 						</SheetDescription>
 					</SheetHeader>
 					<Form {...form}>
@@ -295,6 +331,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										value={recording.name}
 										className="col-span-3"
 										onChange={handleChangeName}
+										disabled={isInPast}
 									/>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -302,7 +339,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Date
 									</Label>
 									<div className="col-span-3">
-										<DatePicker fieldName="start_date" />
+										<DatePicker fieldName="start_date" disabled={isInPast} />
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -310,7 +347,10 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Start Time
 									</Label>
 									<div className="col-span-3">
-										<StartTimeField messageDisabled={true} />
+										<StartTimeField
+											messageDisabled={true}
+											disabled={isInPast}
+										/>
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -318,7 +358,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										End Time
 									</Label>
 									<div className="col-span-3">
-										<EndTimeField messageDisabled={true} />
+										<EndTimeField messageDisabled={true} disabled={isInPast} />
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -326,7 +366,10 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Availability
 									</Label>
 									<div className="col-span-3">
-										<AvailabilityField messageDisabled={true} />
+										<AvailabilityField
+											messageDisabled={true}
+											disabled={isInPast}
+										/>
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -334,7 +377,10 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Availability Date
 									</Label>
 									<div className="col-span-3">
-										<DatePicker fieldName="availability_date" />
+										<DatePicker
+											fieldName="availability_date"
+											disabled={isInPast}
+										/>
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -342,7 +388,10 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Live Stream
 									</Label>
 									<div className="col-span-3 ">
-										<LiveStreamField messageDisabled={true} />
+										<LiveStreamField
+											messageDisabled={true}
+											disabled={isInPast}
+										/>
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -350,7 +399,11 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Presenter
 									</Label>
 									<div className="col-span-3">
-										<PresenterField messageDisabled={true} userId={recording.presenter.userId} />
+										<PresenterField
+											messageDisabled={true}
+											userId={recording.presenter.userId}
+											disabled={isInPast}
+										/>
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -358,7 +411,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Room
 									</Label>
 									<div className="col-span-3">
-										<RoomField messageDisabled={true} />
+										<RoomField messageDisabled={true} disabled={isInPast} />
 									</div>
 								</div>
 								<div className="grid grid-cols-4 items-center gap-4">
@@ -366,12 +419,19 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 										Inputs
 									</Label>
 									<div className="col-span-3">
-										<RoomInputField messageDisabled={true} />
+										<RoomInputField
+											messageDisabled={true}
+											disabled={isInPast}
+										/>
 									</div>
 								</div>
-								<Button type="submit" 
-                  // onClick={form.handleSubmit(onSubmit)}
-                >submit</Button>
+								<Button
+									type="submit"
+									disabled={isInPast}
+									// onClick={form.handleSubmit(onSubmit)}
+								>
+									submit
+								</Button>
 							</div>
 						</form>
 					</Form>
@@ -387,7 +447,7 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 								Delete Recording
 							</Button>
 							<SheetClose asChild>
-								<Button type="submit" onClick={saveChanges}>
+								<Button type="submit" onClick={saveChanges} disabled={isInPast}>
 									Save changes
 								</Button>
 							</SheetClose>

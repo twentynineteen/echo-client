@@ -7,10 +7,11 @@ import { useFormContext } from "react-hook-form";
 
 type Props = {
    messageDisabled: Nullable<boolean>;
+   disabled: boolean;
 }
 
 export const RoomInputField: React.FC<Props> = (props: Props) => {
-   const { messageDisabled } = props;
+   const { messageDisabled, disabled } = props;
    const form = useFormContext();
    return (
       <FormField
@@ -24,6 +25,7 @@ export const RoomInputField: React.FC<Props> = (props: Props) => {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   className="flex flex-col space-y-1"
+                  disabled={disabled}
                >
                   <FormItem className="flex items-center space-x-3 space-y-0">
                   <FormControl>

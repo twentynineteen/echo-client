@@ -12,11 +12,12 @@ import { useFormContext } from "react-hook-form";
 
 type Props = {
    messageDisabled: Nullable<boolean>;
+   disabled: boolean;
 }
 
 
 const RoomField: React.FC<Props> = (props: Props) => {
-   const { messageDisabled } = props;
+   const { messageDisabled, disabled } = props;
    const [room, setRoom] = React.useState<DropdownItems[]>([]);
 
    // add list of users to user state - mapping echo 360 users to dropdown items
@@ -53,6 +54,7 @@ const RoomField: React.FC<Props> = (props: Props) => {
                            variant="outline"
                            role="combobox"   
                            className="w-full justify-between p-3"
+                           disabled={disabled}
                         >
                            {field.value ? room.find((room) => room.value === field.value)?.label
                            : "Select room..."}

@@ -13,15 +13,17 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 type Props = {
-  fieldName: string
+  fieldName: string,
+  disabled?: boolean,
 }
 
 const DatePicker: React.FC<Props> = (props: Props) => {
-  const { fieldName } = props;
+  const { fieldName, disabled } = props;
   const form = useFormContext();
 
   return (
     <FormField
+      
       control={form.control}
       name={fieldName}
       render={({ field }) => (
@@ -31,6 +33,7 @@ const DatePicker: React.FC<Props> = (props: Props) => {
               <FormControl>
                 <Button
                   variant={"outline"}
+                  disabled={disabled}
                   className={cn(
                     "w-full justify-start text-left font-normal",
                     !field.value && "text-muted-foreground"

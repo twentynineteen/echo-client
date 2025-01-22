@@ -6,11 +6,12 @@ import { useFormContext } from 'react-hook-form';
 
 // props is passed in to remove message and labels for use in edit recordings form
 type Props = {
-   messageDisabled: Nullable<boolean>
+   messageDisabled: Nullable<boolean>,
+   disabled?: boolean,
 }
 
 const StartTimeField: React.FC<Props> = (props: Props) => {
-   const {messageDisabled} = props;
+   const {messageDisabled, disabled} = props;
 
    const form = useFormContext();
    return (
@@ -22,9 +23,10 @@ const StartTimeField: React.FC<Props> = (props: Props) => {
             {messageDisabled ? "" : <FormLabel className="my-2 font-bold">Start time (24 hr clock)</FormLabel>}
             <FormControl>
                <Input 
-               type="Time"
-               // onChangeCapture={handleChange}
-               {...field} />
+                  type="Time"
+                  disabled={disabled}
+                  // onChangeCapture={handleChange}
+                  {...field} />
             </FormControl>
             {messageDisabled ? "" : <FormDescription >Enter the start time of the recording.</FormDescription>}
             <FormMessage />
