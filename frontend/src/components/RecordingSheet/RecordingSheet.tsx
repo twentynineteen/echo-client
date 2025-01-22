@@ -261,11 +261,14 @@ export const RecordingSheet: React.FC<RecordingProps> = ({
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		console.log('onSubmit pressed');
-    // rebuild values as valid Schedule type.
-    console.log("Availability Date: ")
-    console.log(convertDateToDateString(values.availability_date));
-    console.log("Start Date: ")
-    console.log(convertDateToDateString(values.start_date));
+		console.log("Building databody for submission");
+		// TODO 
+		// manual error handling for availability date if selected manual and date not supplied
+		// create function to update schedule
+		// update availability date format
+		// update start date format
+		// update start time seconds
+		// update end time seconds
 
 		try {
 			console.log(values);

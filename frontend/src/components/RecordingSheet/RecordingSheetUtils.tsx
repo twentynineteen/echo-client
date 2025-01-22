@@ -17,12 +17,12 @@ export const formSchema = z.object({
       start_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
       start_time: z.preprocess(input => `${input}:00`,
          z.string().time()),
-         end_time: z.preprocess(input => `${input}:00`,
-            z.string().time()),
-            availability: z.string(),
-            availability_date: z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."}),
-            live_stream_toggle: z.boolean(),
-            group: z.string().optional(),
+      end_time: z.preprocess(input => `${input}:00`,
+         z.string().time()),
+      availability: z.string(),
+      availability_date: z.string().optional().or(z.coerce.date().min(subtractOneDayFromDate(), { message: "Please choose a date in the future."})),
+      live_stream_toggle: z.boolean(),
+      group: z.string().optional(),
       requested_by: z.string().optional(),
    })
    .refine((data) => data.end_time > data.start_time, {
